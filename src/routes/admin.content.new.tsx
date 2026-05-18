@@ -4,13 +4,18 @@ import { ArrowLeft, Loader2, Save } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+const TYPES = ["article", "video", "tip"] as const;
+type ContentType = (typeof TYPES)[number];
+const CATEGORIES = ["Skincare", "Acne", "Melasma", "Procedimentos", "Proteção solar", "Cuidados diários"];
+
 export const Route = createFileRoute("/admin/content/new")({
   head: () => ({ meta: [{ title: "Novo conteúdo" }] }),
+  validateSearch: (search: Record<string, unknown>) => {
+    const t = search.type;
+    return { type: (TYPES as readonly string[]).includes(t as string) ? (t as ContentType) : undefined };
+  },
   component: NewContent,
 });
-
-const TYPES = ["article", "video", "tip"] as const;
-const CATEGORIES = ["Skincare", "Acne", "Melasma", "Procedimentos", "Proteção solar", "Cuidados diários"];
 
 function slugify(s: string) {
   return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
@@ -19,11 +24,12 @@ function slugify(s: string) {
 
 function NewContent() {
   const navigate = useNavigate();
+  const { type: initialType } = Route.useSearch();
   const [clinicId, setClinicId] = useState<string | null>(null);
   const [authorId, setAuthorId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
-    type: "article" as (typeof TYPES)[number],
+    type: (initialType ?? "article") as ContentType,
     title: "", category: CATEGORIES[0], summary: "", content: "",
     cover_image_url: "", read_time_minutes: 4, publish_now: true,
   });
