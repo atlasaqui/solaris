@@ -424,7 +424,7 @@ function ChartsTab({
         {improvement.length === 0 ? <Empty msg="Sem pontuações registradas ainda." /> : (
           <ResponsiveContainer width="100%" height={220}>
             <LineChart data={improvement} margin={{ top: 5, right: 12, left: -10, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis dataKey="week" tick={{ fontSize: 11 }} />
               <YAxis tick={{ fontSize: 11 }} domain={[0, 100]} />
               <Tooltip />
@@ -438,7 +438,7 @@ function ChartsTab({
         {uvByWeek.length === 0 ? <Empty msg="Sem registros de UV ainda." /> : (
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={uvByWeek} margin={{ top: 5, right: 12, left: -10, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis dataKey="week" tick={{ fontSize: 11 }} />
               <YAxis tick={{ fontSize: 11 }} />
               <Tooltip />
@@ -458,7 +458,7 @@ function ChartsTab({
                   <stop offset="100%" stopColor="#16a34a" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis dataKey="week" tick={{ fontSize: 11 }} />
               <YAxis tick={{ fontSize: 11 }} domain={[0, 100]} />
               <Tooltip />
