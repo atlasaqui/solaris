@@ -43,9 +43,9 @@ export const analyzePhoto = createServerFn({ method: "POST" })
 
     const [{ data: nowSigned }, baselineSigned] = await Promise.all([
       supabase.storage.from("evolution-photos").createSignedUrl(photo.storage_path, 600),
-      baseline
+      baseline?.storage_path
         ? supabase.storage.from("evolution-photos").createSignedUrl(baseline.storage_path, 600)
-        : Promise.resolve({ data: null }),
+        : Promise.resolve({ data: null as { signedUrl: string } | null }),
     ]);
 
     const apiKey = process.env.LOVABLE_API_KEY;
