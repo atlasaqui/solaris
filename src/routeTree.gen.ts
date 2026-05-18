@@ -22,6 +22,7 @@ import { Route as AppCameraRouteImport } from './routes/app.camera'
 import { Route as AdminWikiRouteImport } from './routes/admin.wiki'
 import { Route as AdminProfileRouteImport } from './routes/admin.profile'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
+import { Route as AdminCustomizeRouteImport } from './routes/admin.customize'
 import { Route as AdminContentRouteImport } from './routes/admin.content'
 import { Route as AppWikiSearchRouteImport } from './routes/app.wiki.search'
 import { Route as AppWikiSlugRouteImport } from './routes/app.wiki.$slug'
@@ -95,6 +96,11 @@ const AdminDashboardRoute = AdminDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminCustomizeRoute = AdminCustomizeRouteImport.update({
+  id: '/customize',
+  path: '/customize',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminContentRoute = AdminContentRouteImport.update({
   id: '/content',
   path: '/content',
@@ -136,6 +142,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
   '/admin/content': typeof AdminContentRouteWithChildren
+  '/admin/customize': typeof AdminCustomizeRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/profile': typeof AdminProfileRoute
   '/admin/wiki': typeof AdminWikiRouteWithChildren
@@ -158,6 +165,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
   '/admin/content': typeof AdminContentRouteWithChildren
+  '/admin/customize': typeof AdminCustomizeRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/profile': typeof AdminProfileRoute
   '/admin/wiki': typeof AdminWikiRouteWithChildren
@@ -181,6 +189,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
   '/admin/content': typeof AdminContentRouteWithChildren
+  '/admin/customize': typeof AdminCustomizeRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/profile': typeof AdminProfileRoute
   '/admin/wiki': typeof AdminWikiRouteWithChildren
@@ -205,6 +214,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/app'
     | '/admin/content'
+    | '/admin/customize'
     | '/admin/dashboard'
     | '/admin/profile'
     | '/admin/wiki'
@@ -227,6 +237,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/app'
     | '/admin/content'
+    | '/admin/customize'
     | '/admin/dashboard'
     | '/admin/profile'
     | '/admin/wiki'
@@ -249,6 +260,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/app'
     | '/admin/content'
+    | '/admin/customize'
     | '/admin/dashboard'
     | '/admin/profile'
     | '/admin/wiki'
@@ -369,6 +381,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/customize': {
+      id: '/admin/customize'
+      path: '/customize'
+      fullPath: '/admin/customize'
+      preLoaderRoute: typeof AdminCustomizeRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/content': {
       id: '/admin/content'
       path: '/content'
@@ -447,6 +466,7 @@ const AdminWikiRouteWithChildren = AdminWikiRoute._addFileChildren(
 
 interface AdminRouteChildren {
   AdminContentRoute: typeof AdminContentRouteWithChildren
+  AdminCustomizeRoute: typeof AdminCustomizeRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminProfileRoute: typeof AdminProfileRoute
   AdminWikiRoute: typeof AdminWikiRouteWithChildren
@@ -454,6 +474,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminContentRoute: AdminContentRouteWithChildren,
+  AdminCustomizeRoute: AdminCustomizeRoute,
   AdminDashboardRoute: AdminDashboardRoute,
   AdminProfileRoute: AdminProfileRoute,
   AdminWikiRoute: AdminWikiRouteWithChildren,
@@ -496,3 +517,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
