@@ -1,25 +1,54 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Camera, BookOpen, Building2, TrendingUp, Search, ArrowRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Camera, BookOpen, Building2, TrendingUp, Search, ArrowRight, Loader2 } from "lucide-react";
+import { fetchUV, uvLevel, type UVData } from "@/lib/uv";
+import { supabase } from "@/integrations/supabase/client";
+import { useWhiteLabel } from "@/components/clinic/WhiteLabelProvider";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/app/home")({
   head: () => ({ meta: [{ title: "Início" }] }),
   component: Home,
 });
 
-const UV_INDEX = 8;
-const UV_TEMP = 32;
-const UV_CITY = "Recife";
-
-function uvLevel(idx: number) {
-  if (idx <= 2) return { label: "Baixo", color: "#16A34A", pct: 18 };
-  if (idx <= 5) return { label: "Moderado", color: "#EAB308", pct: 42 };
-  if (idx <= 7) return { label: "Alto", color: "#F97316", pct: 68 };
-  if (idx <= 10) return { label: "Muito alto", color: "#EF4444", pct: 88 };
-  return { label: "Extremo", color: "#7C3AED", pct: 100 };
-}
-
 function Home() {
-  const uv = uvLevel(UV_INDEX);
+  useWhiteLabel();
+  const [uvData, setUvData] = useState<UVData | null>(null);
+  const [loadingUv, setLoadingUv] = useState(true);
+  const [registering, setRegistering] = useState(false);
+
+  useEffect(() => {
+    fetchUV()
+      .then(setUvData)
+      .catch(() => setUvData({ uvIndex: 0, temperature: 0, city: "—", lat: 0, lng: 0 }))
+      .finally(() => setLoadingUv(false));
+  }, []);
+
+  const uv = uvLevel(uvData?.uvIndex ?? 0);
+
+  const registerProtection = async () => {
+    if (!uvData) return;
+    setRegistering(true);
+    const { data: u } = await supabase.auth.getUser();
+    const { data: p } = await supabase
+      .from("patients")
+      .select("id, clinic_id")
+      .eq("user_id", u.user?.id ?? "")
+      .maybeSingle();
+    if (!p) { setRegistering(false); toast.error("Paciente não vinculado"); return; }
+    const { error } = await supabase.from("uv_protection_logs").insert({
+      patient_id: p.id,
+      clinic_id: p.clinic_id,
+      uv_index: uvData.uvIndex,
+      temperature: uvData.temperature,
+      city: uvData.city,
+      lat: uvData.lat,
+      lng: uvData.lng,
+    });
+    setRegistering(false);
+    if (error) toast.error("Erro ao registrar");
+    else toast.success("Proteção registrada ✓");
+  };
 
   return (
     <div className="space-y-6">
@@ -39,13 +68,13 @@ function Home() {
 
         <div className="flex items-center justify-between text-[11px] uppercase tracking-wider text-white/70">
           <span>Índice UV agora</span>
-          <span>📍 {UV_CITY}</span>
+          <span>📍 {uvData?.city ?? "—"}</span>
         </div>
 
         <div className="mt-4 flex items-end justify-between">
           <div className="flex items-baseline gap-3">
             <span className="font-display text-[64px] font-bold leading-none tracking-tight">
-              {UV_INDEX}
+              {loadingUv ? <Loader2 className="h-10 w-10 animate-spin" /> : uvData?.uvIndex ?? 0}
             </span>
             <div className="pb-2">
               <span
@@ -54,12 +83,11 @@ function Home() {
               >
                 {uv.label}
               </span>
-              <div className="mt-1 text-sm text-white/75">{UV_TEMP}° agora</div>
+              <div className="mt-1 text-sm text-white/75">{uvData?.temperature ?? 0}° agora</div>
             </div>
           </div>
         </div>
 
-        {/* Risk gradient bar */}
         <div className="mt-6">
           <div className="relative h-2 w-full overflow-hidden rounded-full bg-white/15">
             <div
@@ -81,10 +109,14 @@ function Home() {
           </div>
         </div>
 
+        <p className="mt-4 text-[13px] leading-relaxed text-white/85">{uv.advice}</p>
+
         <button
-          className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-white/15 py-3 text-sm font-semibold backdrop-blur transition hover:bg-white/25"
+          onClick={registerProtection}
+          disabled={registering || loadingUv}
+          className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-white/15 py-3 text-sm font-semibold backdrop-blur transition hover:bg-white/25 disabled:opacity-60"
         >
-          Registrar proteção solar
+          {registering ? <Loader2 className="h-4 w-4 animate-spin" /> : "Registrar proteção solar"}
         </button>
       </section>
 
