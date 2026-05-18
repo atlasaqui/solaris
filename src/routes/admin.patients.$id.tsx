@@ -3,10 +3,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft, Loader2, Mail, MapPin, Phone, Calendar, Hash, ShieldCheck,
   Camera, LineChart as LineIcon, NotebookPen, User as UserIcon,
-  Eye, EyeOff, Save, Archive, MessageCircle, Check,
+  Eye, EyeOff, Save, Archive, MessageCircle, Check, Sparkles, Send,
+  Plus, Trash2, X,
 } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { analyzePhoto, saveDoctorFeedback } from "@/lib/clinical.functions";
+import { PROGRESS_LEVEL_META, type ProgressLevel } from "@/lib/gamification";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   LineChart, Line, BarChart, Bar, AreaChart, Area,
