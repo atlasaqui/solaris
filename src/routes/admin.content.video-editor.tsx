@@ -407,11 +407,20 @@ function VideoEditor() {
             </Tool>
 
             <Tool icon={<Wand2 className="h-4 w-4" />} title="Filtro">
-              <div className="grid grid-cols-3 gap-1">
+              <div className="grid grid-cols-3 gap-1.5">
                 {FILTERS.map((f) => (
                   <button key={f.id} onClick={() => setFilter(f.id)}
-                    className={`rounded-lg px-1 py-1.5 text-[10px] font-semibold ${filter === f.id ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:text-foreground"}`}>
-                    {f.label}
+                    className={`group overflow-hidden rounded-lg border text-left transition ${filter === f.id ? "border-primary ring-2 ring-primary/40" : "border-border hover:border-primary/40"}`}>
+                    <div className="relative aspect-square w-full overflow-hidden bg-black">
+                      {videoUrl ? (
+                        <video src={videoUrl} muted playsInline preload="metadata"
+                          className="h-full w-full object-cover" style={{ filter: f.css }} />
+                      ) : <div className="h-full w-full bg-secondary" />}
+                      {filter === f.id && (
+                        <div className="absolute right-1 top-1 grid h-4 w-4 place-items-center rounded-full bg-primary text-[9px] text-primary-foreground">✓</div>
+                      )}
+                    </div>
+                    <div className={`px-1 py-1 text-[10px] font-semibold ${filter === f.id ? "text-primary" : "text-muted-foreground"}`}>{f.label}</div>
                   </button>
                 ))}
               </div>
