@@ -23,6 +23,7 @@ import { Route as AppClinicProfileRouteImport } from './routes/app.clinic-profil
 import { Route as AppCameraRouteImport } from './routes/app.camera'
 import { Route as AdminWikiRouteImport } from './routes/admin.wiki'
 import { Route as AdminProfileRouteImport } from './routes/admin.profile'
+import { Route as AdminPatientsRouteImport } from './routes/admin.patients'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 import { Route as AdminCustomizeRouteImport } from './routes/admin.customize'
 import { Route as AdminContentRouteImport } from './routes/admin.content'
@@ -32,6 +33,7 @@ import { Route as AppWikiSlugRouteImport } from './routes/app.wiki.$slug'
 import { Route as AppContentFeedRouteImport } from './routes/app.content.feed'
 import { Route as AppContentSlugRouteImport } from './routes/app.content.$slug'
 import { Route as AdminWikiNewRouteImport } from './routes/admin.wiki.new'
+import { Route as AdminPatientsIdRouteImport } from './routes/admin.patients.$id'
 import { Route as AdminContentNewRouteImport } from './routes/admin.content.new'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
@@ -105,6 +107,11 @@ const AdminProfileRoute = AdminProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPatientsRoute = AdminPatientsRouteImport.update({
+  id: '/patients',
+  path: '/patients',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminDashboardRoute = AdminDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -150,6 +157,11 @@ const AdminWikiNewRoute = AdminWikiNewRouteImport.update({
   path: '/new',
   getParentRoute: () => AdminWikiRoute,
 } as any)
+const AdminPatientsIdRoute = AdminPatientsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AdminPatientsRoute,
+} as any)
 const AdminContentNewRoute = AdminContentNewRouteImport.update({
   id: '/new',
   path: '/new',
@@ -171,6 +183,7 @@ export interface FileRoutesByFullPath {
   '/admin/content': typeof AdminContentRouteWithChildren
   '/admin/customize': typeof AdminCustomizeRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/patients': typeof AdminPatientsRouteWithChildren
   '/admin/profile': typeof AdminProfileRoute
   '/admin/wiki': typeof AdminWikiRouteWithChildren
   '/app/camera': typeof AppCameraRoute
@@ -182,6 +195,7 @@ export interface FileRoutesByFullPath {
   '/auth/register-patient': typeof AuthRegisterPatientRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/admin/content/new': typeof AdminContentNewRoute
+  '/admin/patients/$id': typeof AdminPatientsIdRoute
   '/admin/wiki/new': typeof AdminWikiNewRoute
   '/app/content/$slug': typeof AppContentSlugRoute
   '/app/content/feed': typeof AppContentFeedRoute
@@ -198,6 +212,7 @@ export interface FileRoutesByTo {
   '/admin/content': typeof AdminContentRouteWithChildren
   '/admin/customize': typeof AdminCustomizeRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/patients': typeof AdminPatientsRouteWithChildren
   '/admin/profile': typeof AdminProfileRoute
   '/admin/wiki': typeof AdminWikiRouteWithChildren
   '/app/camera': typeof AppCameraRoute
@@ -209,6 +224,7 @@ export interface FileRoutesByTo {
   '/auth/register-patient': typeof AuthRegisterPatientRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/admin/content/new': typeof AdminContentNewRoute
+  '/admin/patients/$id': typeof AdminPatientsIdRoute
   '/admin/wiki/new': typeof AdminWikiNewRoute
   '/app/content/$slug': typeof AppContentSlugRoute
   '/app/content/feed': typeof AppContentFeedRoute
@@ -226,6 +242,7 @@ export interface FileRoutesById {
   '/admin/content': typeof AdminContentRouteWithChildren
   '/admin/customize': typeof AdminCustomizeRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/patients': typeof AdminPatientsRouteWithChildren
   '/admin/profile': typeof AdminProfileRoute
   '/admin/wiki': typeof AdminWikiRouteWithChildren
   '/app/camera': typeof AppCameraRoute
@@ -237,6 +254,7 @@ export interface FileRoutesById {
   '/auth/register-patient': typeof AuthRegisterPatientRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/admin/content/new': typeof AdminContentNewRoute
+  '/admin/patients/$id': typeof AdminPatientsIdRoute
   '/admin/wiki/new': typeof AdminWikiNewRoute
   '/app/content/$slug': typeof AppContentSlugRoute
   '/app/content/feed': typeof AppContentFeedRoute
@@ -255,6 +273,7 @@ export interface FileRouteTypes {
     | '/admin/content'
     | '/admin/customize'
     | '/admin/dashboard'
+    | '/admin/patients'
     | '/admin/profile'
     | '/admin/wiki'
     | '/app/camera'
@@ -266,6 +285,7 @@ export interface FileRouteTypes {
     | '/auth/register-patient'
     | '/checkout/return'
     | '/admin/content/new'
+    | '/admin/patients/$id'
     | '/admin/wiki/new'
     | '/app/content/$slug'
     | '/app/content/feed'
@@ -282,6 +302,7 @@ export interface FileRouteTypes {
     | '/admin/content'
     | '/admin/customize'
     | '/admin/dashboard'
+    | '/admin/patients'
     | '/admin/profile'
     | '/admin/wiki'
     | '/app/camera'
@@ -293,6 +314,7 @@ export interface FileRouteTypes {
     | '/auth/register-patient'
     | '/checkout/return'
     | '/admin/content/new'
+    | '/admin/patients/$id'
     | '/admin/wiki/new'
     | '/app/content/$slug'
     | '/app/content/feed'
@@ -309,6 +331,7 @@ export interface FileRouteTypes {
     | '/admin/content'
     | '/admin/customize'
     | '/admin/dashboard'
+    | '/admin/patients'
     | '/admin/profile'
     | '/admin/wiki'
     | '/app/camera'
@@ -320,6 +343,7 @@ export interface FileRouteTypes {
     | '/auth/register-patient'
     | '/checkout/return'
     | '/admin/content/new'
+    | '/admin/patients/$id'
     | '/admin/wiki/new'
     | '/app/content/$slug'
     | '/app/content/feed'
@@ -440,6 +464,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProfileRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/patients': {
+      id: '/admin/patients'
+      path: '/patients'
+      fullPath: '/admin/patients'
+      preLoaderRoute: typeof AdminPatientsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/dashboard': {
       id: '/admin/dashboard'
       path: '/dashboard'
@@ -503,6 +534,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminWikiNewRouteImport
       parentRoute: typeof AdminWikiRoute
     }
+    '/admin/patients/$id': {
+      id: '/admin/patients/$id'
+      path: '/$id'
+      fullPath: '/admin/patients/$id'
+      preLoaderRoute: typeof AdminPatientsIdRouteImport
+      parentRoute: typeof AdminPatientsRoute
+    }
     '/admin/content/new': {
       id: '/admin/content/new'
       path: '/new'
@@ -532,6 +570,18 @@ const AdminContentRouteWithChildren = AdminContentRoute._addFileChildren(
   AdminContentRouteChildren,
 )
 
+interface AdminPatientsRouteChildren {
+  AdminPatientsIdRoute: typeof AdminPatientsIdRoute
+}
+
+const AdminPatientsRouteChildren: AdminPatientsRouteChildren = {
+  AdminPatientsIdRoute: AdminPatientsIdRoute,
+}
+
+const AdminPatientsRouteWithChildren = AdminPatientsRoute._addFileChildren(
+  AdminPatientsRouteChildren,
+)
+
 interface AdminWikiRouteChildren {
   AdminWikiNewRoute: typeof AdminWikiNewRoute
 }
@@ -549,6 +599,7 @@ interface AdminRouteChildren {
   AdminContentRoute: typeof AdminContentRouteWithChildren
   AdminCustomizeRoute: typeof AdminCustomizeRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
+  AdminPatientsRoute: typeof AdminPatientsRouteWithChildren
   AdminProfileRoute: typeof AdminProfileRoute
   AdminWikiRoute: typeof AdminWikiRouteWithChildren
 }
@@ -558,6 +609,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminContentRoute: AdminContentRouteWithChildren,
   AdminCustomizeRoute: AdminCustomizeRoute,
   AdminDashboardRoute: AdminDashboardRoute,
+  AdminPatientsRoute: AdminPatientsRouteWithChildren,
   AdminProfileRoute: AdminProfileRoute,
   AdminWikiRoute: AdminWikiRouteWithChildren,
 }
