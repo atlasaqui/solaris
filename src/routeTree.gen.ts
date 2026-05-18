@@ -9,38 +9,145 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AppRouteImport } from './routes/app'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthRegisterPatientRouteImport } from './routes/auth.register-patient'
+import { Route as AuthRegisterDoctorRouteImport } from './routes/auth.register-doctor'
+import { Route as AuthLoginRouteImport } from './routes/auth.login'
+import { Route as AppHomeRouteImport } from './routes/app.home'
+import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRegisterPatientRoute = AuthRegisterPatientRouteImport.update({
+  id: '/auth/register-patient',
+  path: '/auth/register-patient',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRegisterDoctorRoute = AuthRegisterDoctorRouteImport.update({
+  id: '/auth/register-doctor',
+  path: '/auth/register-doctor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthLoginRoute = AuthLoginRouteImport.update({
+  id: '/auth/login',
+  path: '/auth/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppHomeRoute = AppHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => AppRoute,
+} as any)
+const AdminDashboardRoute = AdminDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/app': typeof AppRouteWithChildren
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/app/home': typeof AppHomeRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/register-doctor': typeof AuthRegisterDoctorRoute
+  '/auth/register-patient': typeof AuthRegisterPatientRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/app': typeof AppRouteWithChildren
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/app/home': typeof AppHomeRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/register-doctor': typeof AuthRegisterDoctorRoute
+  '/auth/register-patient': typeof AuthRegisterPatientRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/app': typeof AppRouteWithChildren
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/app/home': typeof AppHomeRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/register-doctor': typeof AuthRegisterDoctorRoute
+  '/auth/register-patient': typeof AuthRegisterPatientRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/app'
+    | '/admin/dashboard'
+    | '/app/home'
+    | '/auth/login'
+    | '/auth/register-doctor'
+    | '/auth/register-patient'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/admin'
+    | '/app'
+    | '/admin/dashboard'
+    | '/app/home'
+    | '/auth/login'
+    | '/auth/register-doctor'
+    | '/auth/register-patient'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/app'
+    | '/admin/dashboard'
+    | '/app/home'
+    | '/auth/login'
+    | '/auth/register-doctor'
+    | '/auth/register-patient'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
+  AppRoute: typeof AppRouteWithChildren
+  AuthLoginRoute: typeof AuthLoginRoute
+  AuthRegisterDoctorRoute: typeof AuthRegisterDoctorRoute
+  AuthRegisterPatientRoute: typeof AuthRegisterPatientRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +155,71 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/register-patient': {
+      id: '/auth/register-patient'
+      path: '/auth/register-patient'
+      fullPath: '/auth/register-patient'
+      preLoaderRoute: typeof AuthRegisterPatientRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/register-doctor': {
+      id: '/auth/register-doctor'
+      path: '/auth/register-doctor'
+      fullPath: '/auth/register-doctor'
+      preLoaderRoute: typeof AuthRegisterDoctorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/login': {
+      id: '/auth/login'
+      path: '/auth/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/home': {
+      id: '/app/home'
+      path: '/home'
+      fullPath: '/app/home'
+      preLoaderRoute: typeof AppHomeRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/admin/dashboard': {
+      id: '/admin/dashboard'
+      path: '/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminDashboardRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
+interface AdminRouteChildren {
+  AdminDashboardRoute: typeof AdminDashboardRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminDashboardRoute: AdminDashboardRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface AppRouteChildren {
+  AppHomeRoute: typeof AppHomeRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppHomeRoute: AppHomeRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
+  AppRoute: AppRouteWithChildren,
+  AuthLoginRoute: AuthLoginRoute,
+  AuthRegisterDoctorRoute: AuthRegisterDoctorRoute,
+  AuthRegisterPatientRoute: AuthRegisterPatientRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
