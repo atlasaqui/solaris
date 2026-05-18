@@ -12,7 +12,7 @@ export const Route = createFileRoute("/app/home")({
 });
 
 function Home() {
-  const { brand } = useWhiteLabel();
+  useWhiteLabel();
   const [uvData, setUvData] = useState<UVData | null>(null);
   const [loadingUv, setLoadingUv] = useState(true);
   const [registering, setRegistering] = useState(false);
