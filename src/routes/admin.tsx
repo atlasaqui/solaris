@@ -5,7 +5,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useWhiteLabel } from "@/components/clinic/WhiteLabelProvider";
 
 export const Route = createFileRoute("/admin")({
+  ssr: false,
   beforeLoad: async () => {
+    if (typeof window === "undefined") return;
     const { data } = await supabase.auth.getUser();
     if (!data.user) throw redirect({ to: "/auth/login" });
   },
