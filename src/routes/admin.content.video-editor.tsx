@@ -170,20 +170,25 @@ export function VideoEditorPanel({ embedded = false }: { embedded?: boolean }) {
       const { data: doc } = await supabase.from("doctors").select("id, clinic_id").eq("user_id", u.user!.id).maybeSingle();
       if (!doc?.clinic_id) throw new Error("Clínica não encontrada");
 
+      setUploadProgress(1);
       const baseId = crypto.randomUUID();
-      const videoPath = `${doc.clinic_id}/${baseId}.webm`;
-      const { error: vErr } = await supabase.storage.from("content-videos").upload(videoPath, videoBlob, { contentType: videoBlob.type || "video/webm" });
-      if (vErr) throw vErr;
+      const videoExt = videoBlob.type.includes("mp4") ? "mp4" : "webm";
+      const videoPath = `${doc.clinic_id}/${baseId}.${videoExt}`;
+      await uploadToStorageWithProgress({
+        bucket: "content-videos",
+        path: videoPath,
+        file: videoBlob,
+        contentType: videoBlob.type || "video/webm",
+        onProgress: (value) => setUploadProgress(Math.min(value, 88)),
+      });
       const { data: vSigned } = await supabase.storage.from("content-videos").createSignedUrl(videoPath, 60 * 60 * 24 * 365);
 
       let thumbPublicUrl: string | null = null;
       if (thumbBlob) {
         const tPath = `${doc.clinic_id}/${baseId}.jpg`;
-        const { error: tErr } = await supabase.storage.from("content-thumbnails").upload(tPath, thumbBlob, { contentType: "image/jpeg" });
-        if (!tErr) {
-          const { data: pub } = supabase.storage.from("content-thumbnails").getPublicUrl(tPath);
-          thumbPublicUrl = pub.publicUrl;
-        }
+        await uploadToStorageWithProgress({ bucket: "content-thumbnails", path: tPath, file: thumbBlob, contentType: thumbBlob.type || "image/jpeg", onProgress: (value) => setUploadProgress(88 + Math.round(value * 0.07)) });
+        const { data: pub } = supabase.storage.from("content-thumbnails").getPublicUrl(tPath);
+        thumbPublicUrl = pub.publicUrl;
       }
 
       const editorMeta = {
@@ -202,11 +207,12 @@ export function VideoEditorPanel({ embedded = false }: { embedded?: boolean }) {
       });
       if (pErr) throw pErr;
 
+      setUploadProgress(100);
       toast.success("Vídeo publicado");
       navigate({ to: "/admin/content/list" });
     } catch (e: any) {
       toast.error(e.message ?? "Falha ao publicar");
-    } finally { setPublishing(false); }
+    } finally { setPublishing(false); setTimeout(() => setUploadProgress(0), 900); }
   };
 
   const filterCss = FILTERS.find((f) => f.id === filter)?.css ?? "none";
