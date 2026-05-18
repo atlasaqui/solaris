@@ -4,28 +4,24 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/*
- * Design system definition.
- *
- * The @theme inline block maps CSS custom properties to Tailwind utility
- * classes (e.g. --color-primary -> bg-primary, text-primary).
- *
- * The :root and .dark blocks define the actual color values using oklch.
- * All colors MUST use oklch format.
- *
- * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
- * 2. Register it in @theme inline as --color-<name>: var(--<name>)
- */
+/* ============================================================
+ * SOLARIS — DESIGN SYSTEM
+ * Tokens: oklch ou hex em variáveis CSS — sobrescritos dinamicamente
+ * pelo WhiteLabelProvider para o app do paciente.
+ * ============================================================ */
 
 @theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "DM Sans", "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+  --radius-full: 9999px;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -34,6 +30,9 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-dark: var(--primary-dark);
+  --color-primary-light: var(--primary-light);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -45,12 +44,16 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-ring-offset-background: var(--background);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
+  --color-night: var(--bg-night);
+  --color-midnight: var(--bg-midnight);
+  --color-surface-2: var(--bg-surface-2);
+  --color-ice: var(--bg-ice);
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-info: var(--info);
+  --color-info-bg: var(--info-bg);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -59,77 +62,112 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-lift: 0 8px 24px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(15, 23, 42, 0.04);
+  --shadow-glow: 0 0 32px rgba(var(--clinic-primary-rgb, 27, 138, 122), 0.25);
 }
 
 :root {
+  /* SOLARIS BRAND BASE (sobrescrita por White Label no app do paciente) */
+  --brand-primary: #1B8A7A;
+  --brand-primary-hover: #157066;
+  --brand-primary-light: #E1F5F2;
+  --brand-primary-dark: #0D4F47;
+
+  /* Backgrounds */
+  --bg-night: #0A1628;
+  --bg-midnight: #060F1E;
+  --bg-surface-2: #F0F7FA;
+  --bg-ice: #F8FAFC;
+
+  /* SHADCN MAPPING */
+  --background: #FFFFFF;
+  --foreground: #0F172A;
+  --card: #FFFFFF;
+  --card-foreground: #0F172A;
+  --popover: #FFFFFF;
+  --popover-foreground: #0F172A;
+
+  --primary: #1B8A7A;
+  --primary-foreground: #FFFFFF;
+  --primary-hover: #157066;
+  --primary-dark: #0D4F47;
+  --primary-light: #E1F5F2;
+
+  --secondary: #F0F7FA;
+  --secondary-foreground: #0A1628;
+
+  --muted: #F8FAFC;
+  --muted-foreground: #64748B;
+
+  --accent: #E1F5F2;
+  --accent-foreground: #0D4F47;
+
+  --destructive: #DC2626;
+  --destructive-foreground: #FFFFFF;
+
+  --border: rgba(15, 23, 42, 0.08);
+  --input: rgba(15, 23, 42, 0.10);
+  --ring: #1B8A7A;
+
+  --success: #16A34A;
+  --success-bg: #DCFCE7;
+  --warning: #D97706;
+  --warning-bg: #FEF9C3;
+  --info: #0EA5E9;
+  --info-bg: #E0F4FD;
+
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
+
+  /* SIDEBAR (Admin dark sidebar) */
+  --sidebar: #0A1628;
+  --sidebar-foreground: #E2E8F0;
+  --sidebar-primary: #1B8A7A;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: rgba(27, 138, 122, 0.15);
+  --sidebar-accent-foreground: #1B8A7A;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ring: #1B8A7A;
+
+  --chart-1: #1B8A7A;
+  --chart-2: #0EA5E9;
+  --chart-3: #D97706;
+  --chart-4: #DC2626;
+  --chart-5: #8B5CF6;
+
+  /* === WHITE LABEL — injetadas dinamicamente === */
+  --clinic-primary: #1B8A7A;
+  --clinic-primary-hover: #157066;
+  --clinic-primary-dark: #0D4F47;
+  --clinic-primary-light: #E1F5F2;
+  --clinic-primary-rgb: 27, 138, 122;
+  --clinic-accent: #0A1628;
 }
 
 .dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+  --background: #060F1E;
+  --foreground: #F8FAFC;
+  --card: #0A1628;
+  --card-foreground: #F8FAFC;
+  --popover: #0A1628;
+  --popover-foreground: #F8FAFC;
+  --primary: #1B8A7A;
+  --primary-foreground: #FFFFFF;
+  --secondary: #0F1B2E;
+  --secondary-foreground: #F8FAFC;
+  --muted: #0F1B2E;
+  --muted-foreground: #94A3B8;
+  --accent: #0F1B2E;
+  --accent-foreground: #F8FAFC;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.12);
+  --ring: #1B8A7A;
 }
 
 @layer base {
@@ -137,8 +175,45 @@
     border-color: var(--color-border);
   }
 
+  html,
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+}
+
+/* Utility: gradient teal hero */
+.bg-solaris-hero {
+  background:
+    radial-gradient(ellipse at top right, rgba(27, 138, 122, 0.25), transparent 60%),
+    radial-gradient(ellipse at bottom left, rgba(14, 165, 233, 0.15), transparent 50%),
+    linear-gradient(180deg, #060F1E 0%, #0A1628 100%);
+}
+
+.bg-clinic-gradient {
+  background: linear-gradient(135deg, var(--clinic-primary) 0%, var(--clinic-primary-dark) 100%);
+}
+
+.text-gradient-clinic {
+  background: linear-gradient(135deg, var(--clinic-primary), var(--clinic-primary-dark));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Mobile-first frame for PWA */
+.app-frame {
+  max-width: 430px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--background);
+  position: relative;
 }
