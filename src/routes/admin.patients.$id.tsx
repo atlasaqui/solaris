@@ -31,7 +31,8 @@ type Patient = {
 type Photo = {
   id: string; week_number: number; angle: string; storage_path: string;
   taken_at: string; doctor_comment: string | null; improvement_score: number | null;
-  reviewed_at: string | null;
+  reviewed_at: string | null; patient_id: string | null; treatment_id: string | null;
+  ai_analysis: any;
 };
 type Comment = {
   id: string; content: string; created_at: string;
