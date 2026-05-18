@@ -66,7 +66,7 @@ function Feed() {
         .select("id, slug, title, summary, type, category, cover_image_url, video_thumbnail_url, read_time_minutes, duration_seconds, published_at, created_at, like_count, comment_count, wiki_conditions(name, slug)")
         .eq("clinic_id", pt.clinic_id)
         .eq("is_published", true).order("published_at", { ascending: false }).limit(50);
-      setPosts((data ?? []) as Post[]);
+      setPosts((data ?? []) as unknown as Post[]);
 
       const [{ data: lks }, { data: bms }] = await Promise.all([
         supabase.from("content_post_likes").select("post_id").eq("patient_id", pt.id),
