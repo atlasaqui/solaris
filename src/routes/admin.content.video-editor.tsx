@@ -7,10 +7,11 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { uploadToStorageWithProgress } from "@/lib/storage-upload";
 
 export const Route = createFileRoute("/admin/content/video-editor")({
   head: () => ({ meta: [{ title: "Editor de vídeo" }] }),
-  component: VideoEditor,
+  component: () => <VideoEditorPanel />,
 });
 
 const FILTERS: { id: string; label: string; css: string }[] = [
@@ -25,7 +26,7 @@ const SPEEDS = [0.5, 1, 1.5];
 
 type Step = "capture" | "edit" | "publish";
 
-function VideoEditor() {
+export function VideoEditorPanel({ embedded = false }: { embedded?: boolean }) {
   const navigate = useNavigate();
   const [step, setStep] = useState<Step>("capture");
   const [videoBlob, setVideoBlob] = useState<Blob | null>(null);
@@ -60,6 +61,7 @@ function VideoEditor() {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [publishing, setPublishing] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   useEffect(() => () => { streamRef.current?.getTracks().forEach((t) => t.stop()); }, []);
 
