@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { TrendingUp, Loader2, MessageCircle, Image as ImageIcon, BarChart3, Send, Camera as CamIcon, Sun, Calendar } from "lucide-react";
+import { TrendingUp, Loader2, MessageCircle, Image as ImageIcon, BarChart3, Send, Camera as CamIcon, Sun, Calendar, Plus, Check, X, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
