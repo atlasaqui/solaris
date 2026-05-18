@@ -16,7 +16,7 @@ const nav = [
   { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/admin/profile", label: "Perfil da Clínica", icon: Building2 },
   { to: "/admin/patients", label: "Pacientes", icon: Users },
-  { to: "/admin/content", label: "Biblioteca", icon: BookOpen },
+  { to: "/admin/content/list", label: "Biblioteca", icon: BookOpen },
   { to: "/admin/wiki", label: "Wiki-Clínica", icon: Library },
   { to: "/admin/customize", label: "Personalizar", icon: Palette },
   { to: "/admin/settings", label: "Configurações", icon: Settings },

@@ -34,6 +34,7 @@ import { Route as AppContentFeedRouteImport } from './routes/app.content.feed'
 import { Route as AppContentSlugRouteImport } from './routes/app.content.$slug'
 import { Route as AdminWikiNewRouteImport } from './routes/admin.wiki.new'
 import { Route as AdminPatientsIdRouteImport } from './routes/admin.patients.$id'
+import { Route as AdminContentVideoEditorRouteImport } from './routes/admin.content.video-editor'
 import { Route as AdminContentNewRouteImport } from './routes/admin.content.new'
 import { Route as AdminContentListRouteImport } from './routes/admin.content.list'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
@@ -163,6 +164,11 @@ const AdminPatientsIdRoute = AdminPatientsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AdminPatientsRoute,
 } as any)
+const AdminContentVideoEditorRoute = AdminContentVideoEditorRouteImport.update({
+  id: '/video-editor',
+  path: '/video-editor',
+  getParentRoute: () => AdminContentRoute,
+} as any)
 const AdminContentNewRoute = AdminContentNewRouteImport.update({
   id: '/new',
   path: '/new',
@@ -202,6 +208,7 @@ export interface FileRoutesByFullPath {
   '/checkout/return': typeof CheckoutReturnRoute
   '/admin/content/list': typeof AdminContentListRoute
   '/admin/content/new': typeof AdminContentNewRoute
+  '/admin/content/video-editor': typeof AdminContentVideoEditorRoute
   '/admin/patients/$id': typeof AdminPatientsIdRoute
   '/admin/wiki/new': typeof AdminWikiNewRoute
   '/app/content/$slug': typeof AppContentSlugRoute
@@ -232,6 +239,7 @@ export interface FileRoutesByTo {
   '/checkout/return': typeof CheckoutReturnRoute
   '/admin/content/list': typeof AdminContentListRoute
   '/admin/content/new': typeof AdminContentNewRoute
+  '/admin/content/video-editor': typeof AdminContentVideoEditorRoute
   '/admin/patients/$id': typeof AdminPatientsIdRoute
   '/admin/wiki/new': typeof AdminWikiNewRoute
   '/app/content/$slug': typeof AppContentSlugRoute
@@ -263,6 +271,7 @@ export interface FileRoutesById {
   '/checkout/return': typeof CheckoutReturnRoute
   '/admin/content/list': typeof AdminContentListRoute
   '/admin/content/new': typeof AdminContentNewRoute
+  '/admin/content/video-editor': typeof AdminContentVideoEditorRoute
   '/admin/patients/$id': typeof AdminPatientsIdRoute
   '/admin/wiki/new': typeof AdminWikiNewRoute
   '/app/content/$slug': typeof AppContentSlugRoute
@@ -295,6 +304,7 @@ export interface FileRouteTypes {
     | '/checkout/return'
     | '/admin/content/list'
     | '/admin/content/new'
+    | '/admin/content/video-editor'
     | '/admin/patients/$id'
     | '/admin/wiki/new'
     | '/app/content/$slug'
@@ -325,6 +335,7 @@ export interface FileRouteTypes {
     | '/checkout/return'
     | '/admin/content/list'
     | '/admin/content/new'
+    | '/admin/content/video-editor'
     | '/admin/patients/$id'
     | '/admin/wiki/new'
     | '/app/content/$slug'
@@ -355,6 +366,7 @@ export interface FileRouteTypes {
     | '/checkout/return'
     | '/admin/content/list'
     | '/admin/content/new'
+    | '/admin/content/video-editor'
     | '/admin/patients/$id'
     | '/admin/wiki/new'
     | '/app/content/$slug'
@@ -553,6 +565,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPatientsIdRouteImport
       parentRoute: typeof AdminPatientsRoute
     }
+    '/admin/content/video-editor': {
+      id: '/admin/content/video-editor'
+      path: '/video-editor'
+      fullPath: '/admin/content/video-editor'
+      preLoaderRoute: typeof AdminContentVideoEditorRouteImport
+      parentRoute: typeof AdminContentRoute
+    }
     '/admin/content/new': {
       id: '/admin/content/new'
       path: '/new'
@@ -580,11 +599,13 @@ declare module '@tanstack/react-router' {
 interface AdminContentRouteChildren {
   AdminContentListRoute: typeof AdminContentListRoute
   AdminContentNewRoute: typeof AdminContentNewRoute
+  AdminContentVideoEditorRoute: typeof AdminContentVideoEditorRoute
 }
 
 const AdminContentRouteChildren: AdminContentRouteChildren = {
   AdminContentListRoute: AdminContentListRoute,
   AdminContentNewRoute: AdminContentNewRoute,
+  AdminContentVideoEditorRoute: AdminContentVideoEditorRoute,
 }
 
 const AdminContentRouteWithChildren = AdminContentRoute._addFileChildren(
