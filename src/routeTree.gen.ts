@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as AuthRegisterPatientRouteImport } from './routes/auth.register-patient'
 import { Route as AuthRegisterDoctorRouteImport } from './routes/auth.register-doctor'
 import { Route as AuthLoginRouteImport } from './routes/auth.login'
@@ -24,12 +25,14 @@ import { Route as AdminProfileRouteImport } from './routes/admin.profile'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 import { Route as AdminCustomizeRouteImport } from './routes/admin.customize'
 import { Route as AdminContentRouteImport } from './routes/admin.content'
+import { Route as AdminBillingRouteImport } from './routes/admin.billing'
 import { Route as AppWikiSearchRouteImport } from './routes/app.wiki.search'
 import { Route as AppWikiSlugRouteImport } from './routes/app.wiki.$slug'
 import { Route as AppContentFeedRouteImport } from './routes/app.content.feed'
 import { Route as AppContentSlugRouteImport } from './routes/app.content.$slug'
 import { Route as AdminWikiNewRouteImport } from './routes/admin.wiki.new'
 import { Route as AdminContentNewRouteImport } from './routes/admin.content.new'
+import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
 const AppRoute = AppRouteImport.update({
   id: '/app',
@@ -44,6 +47,11 @@ const AdminRoute = AdminRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
+  id: '/checkout/return',
+  path: '/checkout/return',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRegisterPatientRoute = AuthRegisterPatientRouteImport.update({
@@ -106,6 +114,11 @@ const AdminContentRoute = AdminContentRouteImport.update({
   path: '/content',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminBillingRoute = AdminBillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AppWikiSearchRoute = AppWikiSearchRouteImport.update({
   id: '/wiki/search',
   path: '/wiki/search',
@@ -136,11 +149,18 @@ const AdminContentNewRoute = AdminContentNewRouteImport.update({
   path: '/new',
   getParentRoute: () => AdminContentRoute,
 } as any)
+const ApiPublicPaymentsWebhookRoute =
+  ApiPublicPaymentsWebhookRouteImport.update({
+    id: '/api/public/payments/webhook',
+    path: '/api/public/payments/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
+  '/admin/billing': typeof AdminBillingRoute
   '/admin/content': typeof AdminContentRouteWithChildren
   '/admin/customize': typeof AdminCustomizeRoute
   '/admin/dashboard': typeof AdminDashboardRoute
@@ -153,17 +173,20 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register-doctor': typeof AuthRegisterDoctorRoute
   '/auth/register-patient': typeof AuthRegisterPatientRoute
+  '/checkout/return': typeof CheckoutReturnRoute
   '/admin/content/new': typeof AdminContentNewRoute
   '/admin/wiki/new': typeof AdminWikiNewRoute
   '/app/content/$slug': typeof AppContentSlugRoute
   '/app/content/feed': typeof AppContentFeedRoute
   '/app/wiki/$slug': typeof AppWikiSlugRoute
   '/app/wiki/search': typeof AppWikiSearchRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
+  '/admin/billing': typeof AdminBillingRoute
   '/admin/content': typeof AdminContentRouteWithChildren
   '/admin/customize': typeof AdminCustomizeRoute
   '/admin/dashboard': typeof AdminDashboardRoute
@@ -176,18 +199,21 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register-doctor': typeof AuthRegisterDoctorRoute
   '/auth/register-patient': typeof AuthRegisterPatientRoute
+  '/checkout/return': typeof CheckoutReturnRoute
   '/admin/content/new': typeof AdminContentNewRoute
   '/admin/wiki/new': typeof AdminWikiNewRoute
   '/app/content/$slug': typeof AppContentSlugRoute
   '/app/content/feed': typeof AppContentFeedRoute
   '/app/wiki/$slug': typeof AppWikiSlugRoute
   '/app/wiki/search': typeof AppWikiSearchRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
+  '/admin/billing': typeof AdminBillingRoute
   '/admin/content': typeof AdminContentRouteWithChildren
   '/admin/customize': typeof AdminCustomizeRoute
   '/admin/dashboard': typeof AdminDashboardRoute
@@ -200,12 +226,14 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register-doctor': typeof AuthRegisterDoctorRoute
   '/auth/register-patient': typeof AuthRegisterPatientRoute
+  '/checkout/return': typeof CheckoutReturnRoute
   '/admin/content/new': typeof AdminContentNewRoute
   '/admin/wiki/new': typeof AdminWikiNewRoute
   '/app/content/$slug': typeof AppContentSlugRoute
   '/app/content/feed': typeof AppContentFeedRoute
   '/app/wiki/$slug': typeof AppWikiSlugRoute
   '/app/wiki/search': typeof AppWikiSearchRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -213,6 +241,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/app'
+    | '/admin/billing'
     | '/admin/content'
     | '/admin/customize'
     | '/admin/dashboard'
@@ -225,17 +254,20 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register-doctor'
     | '/auth/register-patient'
+    | '/checkout/return'
     | '/admin/content/new'
     | '/admin/wiki/new'
     | '/app/content/$slug'
     | '/app/content/feed'
     | '/app/wiki/$slug'
     | '/app/wiki/search'
+    | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/admin'
     | '/app'
+    | '/admin/billing'
     | '/admin/content'
     | '/admin/customize'
     | '/admin/dashboard'
@@ -248,17 +280,20 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register-doctor'
     | '/auth/register-patient'
+    | '/checkout/return'
     | '/admin/content/new'
     | '/admin/wiki/new'
     | '/app/content/$slug'
     | '/app/content/feed'
     | '/app/wiki/$slug'
     | '/app/wiki/search'
+    | '/api/public/payments/webhook'
   id:
     | '__root__'
     | '/'
     | '/admin'
     | '/app'
+    | '/admin/billing'
     | '/admin/content'
     | '/admin/customize'
     | '/admin/dashboard'
@@ -271,12 +306,14 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register-doctor'
     | '/auth/register-patient'
+    | '/checkout/return'
     | '/admin/content/new'
     | '/admin/wiki/new'
     | '/app/content/$slug'
     | '/app/content/feed'
     | '/app/wiki/$slug'
     | '/app/wiki/search'
+    | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -286,6 +323,8 @@ export interface RootRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterDoctorRoute: typeof AuthRegisterDoctorRoute
   AuthRegisterPatientRoute: typeof AuthRegisterPatientRoute
+  CheckoutReturnRoute: typeof CheckoutReturnRoute
+  ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -309,6 +348,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout/return': {
+      id: '/checkout/return'
+      path: '/checkout/return'
+      fullPath: '/checkout/return'
+      preLoaderRoute: typeof CheckoutReturnRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/register-patient': {
@@ -395,6 +441,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminContentRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/billing': {
+      id: '/admin/billing'
+      path: '/billing'
+      fullPath: '/admin/billing'
+      preLoaderRoute: typeof AdminBillingRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/app/wiki/search': {
       id: '/app/wiki/search'
       path: '/wiki/search'
@@ -437,6 +490,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminContentNewRouteImport
       parentRoute: typeof AdminContentRoute
     }
+    '/api/public/payments/webhook': {
+      id: '/api/public/payments/webhook'
+      path: '/api/public/payments/webhook'
+      fullPath: '/api/public/payments/webhook'
+      preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -465,6 +525,7 @@ const AdminWikiRouteWithChildren = AdminWikiRoute._addFileChildren(
 )
 
 interface AdminRouteChildren {
+  AdminBillingRoute: typeof AdminBillingRoute
   AdminContentRoute: typeof AdminContentRouteWithChildren
   AdminCustomizeRoute: typeof AdminCustomizeRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
@@ -473,6 +534,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminBillingRoute: AdminBillingRoute,
   AdminContentRoute: AdminContentRouteWithChildren,
   AdminCustomizeRoute: AdminCustomizeRoute,
   AdminDashboardRoute: AdminDashboardRoute,
@@ -513,17 +575,9 @@ const rootRouteChildren: RootRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterDoctorRoute: AuthRegisterDoctorRoute,
   AuthRegisterPatientRoute: AuthRegisterPatientRoute,
+  CheckoutReturnRoute: CheckoutReturnRoute,
+  ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
