@@ -266,9 +266,4 @@ function InviteDialog({
     </Dialog>
   );
 }
-          </p>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-}
+
