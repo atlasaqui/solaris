@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
@@ -34,6 +35,11 @@ import { Route as AdminWikiNewRouteImport } from './routes/admin.wiki.new'
 import { Route as AdminContentNewRouteImport } from './routes/admin.content.new'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppRoute = AppRouteImport.update({
   id: '/app',
   path: '/app',
@@ -160,6 +166,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
+  '/onboarding': typeof OnboardingRoute
   '/admin/billing': typeof AdminBillingRoute
   '/admin/content': typeof AdminContentRouteWithChildren
   '/admin/customize': typeof AdminCustomizeRoute
@@ -186,6 +193,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
+  '/onboarding': typeof OnboardingRoute
   '/admin/billing': typeof AdminBillingRoute
   '/admin/content': typeof AdminContentRouteWithChildren
   '/admin/customize': typeof AdminCustomizeRoute
@@ -213,6 +221,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
+  '/onboarding': typeof OnboardingRoute
   '/admin/billing': typeof AdminBillingRoute
   '/admin/content': typeof AdminContentRouteWithChildren
   '/admin/customize': typeof AdminCustomizeRoute
@@ -241,6 +250,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/app'
+    | '/onboarding'
     | '/admin/billing'
     | '/admin/content'
     | '/admin/customize'
@@ -267,6 +277,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/app'
+    | '/onboarding'
     | '/admin/billing'
     | '/admin/content'
     | '/admin/customize'
@@ -293,6 +304,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/app'
+    | '/onboarding'
     | '/admin/billing'
     | '/admin/content'
     | '/admin/customize'
@@ -320,6 +332,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
   AppRoute: typeof AppRouteWithChildren
+  OnboardingRoute: typeof OnboardingRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterDoctorRoute: typeof AuthRegisterDoctorRoute
   AuthRegisterPatientRoute: typeof AuthRegisterPatientRoute
@@ -329,6 +342,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/app': {
       id: '/app'
       path: '/app'
@@ -572,6 +592,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
   AppRoute: AppRouteWithChildren,
+  OnboardingRoute: OnboardingRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterDoctorRoute: AuthRegisterDoctorRoute,
   AuthRegisterPatientRoute: AuthRegisterPatientRoute,

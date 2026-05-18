@@ -248,6 +248,7 @@ export type Database = {
           logo_url: string | null
           max_patients: number | null
           name: string
+          onboarding_completed_at: string | null
           plan: string | null
           profile_address: string | null
           profile_banner_url: string | null
@@ -284,6 +285,7 @@ export type Database = {
           logo_url?: string | null
           max_patients?: number | null
           name: string
+          onboarding_completed_at?: string | null
           plan?: string | null
           profile_address?: string | null
           profile_banner_url?: string | null
@@ -320,6 +322,7 @@ export type Database = {
           logo_url?: string | null
           max_patients?: number | null
           name?: string
+          onboarding_completed_at?: string | null
           plan?: string | null
           profile_address?: string | null
           profile_banner_url?: string | null
