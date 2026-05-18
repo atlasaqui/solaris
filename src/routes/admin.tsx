@@ -13,14 +13,16 @@ export const Route = createFileRoute("/admin")({
 });
 
 const nav = [
-  { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/admin/profile", label: "Perfil da Clínica", icon: Building2 },
-  { to: "/admin/patients", label: "Pacientes", icon: Users },
-  { to: "/admin/content/list", label: "Biblioteca", icon: BookOpen },
-  { to: "/admin/wiki", label: "Wiki-Clínica", icon: Library },
-  { to: "/admin/customize", label: "Personalizar", icon: Palette },
-  { to: "/admin/settings", label: "Configurações", icon: Settings },
-  { to: "/admin/billing", label: "Faturamento", icon: CreditCard },
+  { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard, group: "main" },
+  { to: "/admin/profile", label: "Perfil da Clínica", icon: Building2, group: "main" },
+  { to: "/admin/patients", label: "Pacientes", icon: Users, group: "clinic" },
+  { to: "/admin/content/new", label: "Novo Post", icon: FilePlus2, group: "clinic" },
+  { to: "/admin/content/video-editor", label: "Editor de Vídeo", icon: Video, group: "clinic" },
+  { to: "/admin/content/list", label: "Biblioteca", icon: BookOpen, group: "clinic" },
+  { to: "/admin/wiki", label: "Wiki-Clínica", icon: Library, group: "clinic" },
+  { to: "/admin/customize", label: "Personalizar", icon: Palette, group: "settings" },
+  { to: "/admin/settings", label: "Configurações", icon: Settings, group: "settings" },
+  { to: "/admin/billing", label: "Faturamento", icon: CreditCard, group: "settings" },
 ] as const;
 
 function AdminLayout() {
