@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, useRouterState, redirect } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { Home, Camera, Building2, BookOpen, User, Bell } from "lucide-react";
+import { Home, Search, Building2, Activity, Bell } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useWhiteLabel } from "@/components/clinic/WhiteLabelProvider";
 
@@ -13,11 +13,10 @@ export const Route = createFileRoute("/app")({
 });
 
 const tabs = [
-  { to: "/app/home", label: "Início", icon: Home },
-  { to: "/app/camera", label: "Foto", icon: Camera },
+  { to: "/app/home", label: "Feed", icon: Home },
+  { to: "/app/wiki/search", label: "Biblioteca", icon: Search },
   { to: "/app/clinic-profile", label: "Clínica", icon: Building2 },
-  { to: "/app/content/feed", label: "Biblioteca", icon: BookOpen },
-  { to: "/app/profile", label: "Perfil", icon: User },
+  { to: "/app/evolution", label: "Acompanhar", icon: Activity },
 ] as const;
 
 function AppLayout() {
@@ -51,12 +50,8 @@ function AppLayout() {
               )}
             </div>
             <div className="min-w-0">
-              <div className="truncate font-display text-[16px] font-semibold leading-tight">
-                {brand.name}
-              </div>
-              <div className="truncate text-[13px] font-normal text-white/75">
-                {brand.doctorName}
-              </div>
+              <div className="truncate font-display text-[16px] font-semibold leading-tight">{brand.name}</div>
+              <div className="truncate text-[13px] font-normal text-white/75">{brand.doctorName}</div>
             </div>
           </div>
           <button
@@ -79,7 +74,7 @@ function AppLayout() {
       </main>
 
       <nav className="fixed bottom-0 left-1/2 z-30 w-full max-w-[430px] -translate-x-1/2 border-t border-[rgba(15,23,42,0.06)] bg-white/95 backdrop-blur-xl">
-        <ul className="grid grid-cols-5 px-2 pb-2 pt-2">
+        <ul className="grid grid-cols-4 px-2 pb-2 pt-2">
           {tabs.map((t) => {
             const active = path.startsWith(t.to);
             const Icon = t.icon;
