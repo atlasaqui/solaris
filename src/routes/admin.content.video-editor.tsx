@@ -305,30 +305,63 @@ function VideoEditor() {
             {/* Timeline */}
             <div className="rounded-2xl border border-border bg-card p-4">
               <div className="mb-2 flex items-center justify-between text-[11px] text-muted-foreground">
-                <span>{fmt(current)}</span>
-                <span>Trim: {fmt(trimStart)} → {fmt(trimEnd)}</span>
-                <span>{fmt(duration)}</span>
+                <span className="tabular-nums">{fmt(current)}</span>
+                <span className="font-semibold text-primary">Trecho: {fmt(trimEnd - trimStart)}</span>
+                <span className="tabular-nums">{fmt(duration)}</span>
               </div>
-              <div className="relative h-10">
-                <div className="absolute inset-y-3 left-0 right-0 rounded-full bg-secondary" />
+              <div className="relative h-12 select-none">
+                {/* track */}
+                <div className="absolute inset-y-4 left-0 right-0 rounded-full bg-secondary" />
+                {/* selected range */}
                 {duration > 0 && (
-                  <div className="absolute inset-y-3 rounded-full bg-primary/30"
+                  <div className="absolute inset-y-4 rounded-full bg-primary/40 ring-1 ring-primary/60"
                     style={{ left: `${(trimStart / duration) * 100}%`, right: `${100 - (trimEnd / duration) * 100}%` }} />
                 )}
+                {/* outside ranges dimmed */}
                 {duration > 0 && (
-                  <div className="absolute top-0 h-10 w-0.5 bg-destructive"
-                    style={{ left: `${(current / duration) * 100}%` }} />
+                  <>
+                    <div className="absolute inset-y-4 left-0 rounded-l-full bg-foreground/10"
+                      style={{ width: `${(trimStart / duration) * 100}%` }} />
+                    <div className="absolute inset-y-4 right-0 rounded-r-full bg-foreground/10"
+                      style={{ width: `${100 - (trimEnd / duration) * 100}%` }} />
+                  </>
                 )}
+                {/* playhead */}
+                {duration > 0 && (
+                  <div className="pointer-events-none absolute top-0 h-12 w-0.5 bg-destructive"
+                    style={{ left: `${(current / duration) * 100}%` }}>
+                    <div className="absolute -top-1 left-1/2 h-3 w-3 -translate-x-1/2 rounded-full bg-destructive shadow" />
+                  </div>
+                )}
+                {/* trim handles visual */}
+                {duration > 0 && (
+                  <>
+                    <div className="pointer-events-none absolute top-2 grid h-8 w-3 -translate-x-1/2 place-items-center rounded-md bg-primary text-[10px] font-bold text-primary-foreground shadow"
+                      style={{ left: `${(trimStart / duration) * 100}%` }}>‖</div>
+                    <div className="pointer-events-none absolute top-2 grid h-8 w-3 -translate-x-1/2 place-items-center rounded-md bg-primary text-[10px] font-bold text-primary-foreground shadow"
+                      style={{ left: `${(trimEnd / duration) * 100}%` }}>‖</div>
+                  </>
+                )}
+                {/* draggable inputs (transparent, stacked) */}
                 <input type="range" min={0} max={duration || 1} step="0.05" value={trimStart}
                   onChange={(e) => setTrimStart(Math.min(Number(e.target.value), trimEnd - 0.1))}
-                  className="absolute inset-0 w-full appearance-none bg-transparent" />
+                  className="trim-range absolute inset-0 w-full appearance-none bg-transparent" />
                 <input type="range" min={0} max={duration || 1} step="0.05" value={trimEnd}
                   onChange={(e) => setTrimEnd(Math.max(Number(e.target.value), trimStart + 0.1))}
-                  className="absolute inset-0 w-full appearance-none bg-transparent" />
+                  className="trim-range absolute inset-0 w-full appearance-none bg-transparent" />
               </div>
-              <input type="range" min={0} max={duration || 1} step="0.05" value={current}
-                onChange={(e) => seek(Number(e.target.value))}
-                className="mt-2 w-full" />
+              <div className="mt-3">
+                <div className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Playhead</div>
+                <input type="range" min={0} max={duration || 1} step="0.05" value={current}
+                  onChange={(e) => seek(Number(e.target.value))}
+                  className="w-full accent-primary" />
+              </div>
+              <style>{`
+                .trim-range::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; height: 40px; width: 16px; background: transparent; cursor: ew-resize; }
+                .trim-range::-moz-range-thumb { height: 40px; width: 16px; background: transparent; border: none; cursor: ew-resize; }
+                .trim-range::-webkit-slider-runnable-track { background: transparent; }
+                .trim-range::-moz-range-track { background: transparent; }
+              `}</style>
             </div>
 
             <div className="flex justify-end gap-2">
@@ -374,11 +407,20 @@ function VideoEditor() {
             </Tool>
 
             <Tool icon={<Wand2 className="h-4 w-4" />} title="Filtro">
-              <div className="grid grid-cols-3 gap-1">
+              <div className="grid grid-cols-3 gap-1.5">
                 {FILTERS.map((f) => (
                   <button key={f.id} onClick={() => setFilter(f.id)}
-                    className={`rounded-lg px-1 py-1.5 text-[10px] font-semibold ${filter === f.id ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:text-foreground"}`}>
-                    {f.label}
+                    className={`group overflow-hidden rounded-lg border text-left transition ${filter === f.id ? "border-primary ring-2 ring-primary/40" : "border-border hover:border-primary/40"}`}>
+                    <div className="relative aspect-square w-full overflow-hidden bg-black">
+                      {videoUrl ? (
+                        <video src={videoUrl} muted playsInline preload="metadata"
+                          className="h-full w-full object-cover" style={{ filter: f.css }} />
+                      ) : <div className="h-full w-full bg-secondary" />}
+                      {filter === f.id && (
+                        <div className="absolute right-1 top-1 grid h-4 w-4 place-items-center rounded-full bg-primary text-[9px] text-primary-foreground">✓</div>
+                      )}
+                    </div>
+                    <div className={`px-1 py-1 text-[10px] font-semibold ${filter === f.id ? "text-primary" : "text-muted-foreground"}`}>{f.label}</div>
                   </button>
                 ))}
               </div>
