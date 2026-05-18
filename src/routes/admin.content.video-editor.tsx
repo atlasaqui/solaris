@@ -220,9 +220,11 @@ export function VideoEditorPanel({ embedded = false }: { embedded?: boolean }) {
 
   return (
     <div className="mx-auto max-w-6xl space-y-5">
-      <Link to="/admin/content/list" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="h-4 w-4" /> Voltar para biblioteca
-      </Link>
+      {!embedded && (
+        <Link to="/admin/content/list" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+          <ArrowLeft className="h-4 w-4" /> Voltar para biblioteca
+        </Link>
+      )}
 
       <header className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -302,11 +304,11 @@ export function VideoEditorPanel({ embedded = false }: { embedded?: boolean }) {
             {/* Transport */}
             <div className="flex items-center justify-center gap-2">
               <IconBtn onClick={() => seek(0)}><SkipBack className="h-4 w-4" /></IconBtn>
-              <IconBtn onClick={() => seek(current - 5)}><Rewind className="h-4 w-4" /></IconBtn>
+              <IconBtn onClick={() => seek(current - 10)}><Rewind className="h-4 w-4" /><span className="sr-only">Voltar 10s</span></IconBtn>
               <button onClick={togglePlay} className="grid h-12 w-12 place-items-center rounded-full bg-primary text-primary-foreground">
                 {playing ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 fill-current" />}
               </button>
-              <IconBtn onClick={() => seek(current + 5)}><FastForward className="h-4 w-4" /></IconBtn>
+              <IconBtn onClick={() => seek(current + 10)}><FastForward className="h-4 w-4" /><span className="sr-only">Avançar 10s</span></IconBtn>
               <IconBtn onClick={() => seek(duration)}><SkipForward className="h-4 w-4" /></IconBtn>
             </div>
 
@@ -488,6 +490,14 @@ export function VideoEditorPanel({ embedded = false }: { embedded?: boolean }) {
               <div>
                 <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Capa selecionada</span>
                 <img src={thumbUrl} alt="" className="aspect-video w-full rounded-lg object-cover" />
+              </div>
+            )}
+            {uploadProgress > 0 && (
+              <div>
+                <div className="mb-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  <span>Upload</span><span>{uploadProgress}%</span>
+                </div>
+                <div className="h-2 overflow-hidden rounded-full bg-secondary"><div className="h-full bg-primary transition-all" style={{ width: `${uploadProgress}%` }} /></div>
               </div>
             )}
             <div className="flex justify-end gap-2 pt-2">
