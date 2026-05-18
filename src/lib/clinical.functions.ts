@@ -31,6 +31,7 @@ export const analyzePhoto = createServerFn({ method: "POST" })
       .eq("id", data.photoId)
       .maybeSingle();
     if (pErr || !photo) throw new Error("Foto não encontrada");
+    if (!photo.patient_id) throw new Error("Foto sem paciente associado");
 
     // Reference: week 1 photo for the same patient/treatment
     const { data: baseline } = await supabase
