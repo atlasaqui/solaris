@@ -34,7 +34,9 @@ import { Route as AppContentFeedRouteImport } from './routes/app.content.feed'
 import { Route as AppContentSlugRouteImport } from './routes/app.content.$slug'
 import { Route as AdminWikiNewRouteImport } from './routes/admin.wiki.new'
 import { Route as AdminPatientsIdRouteImport } from './routes/admin.patients.$id'
+import { Route as AdminContentVideoEditorRouteImport } from './routes/admin.content.video-editor'
 import { Route as AdminContentNewRouteImport } from './routes/admin.content.new'
+import { Route as AdminContentListRouteImport } from './routes/admin.content.list'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -162,9 +164,19 @@ const AdminPatientsIdRoute = AdminPatientsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AdminPatientsRoute,
 } as any)
+const AdminContentVideoEditorRoute = AdminContentVideoEditorRouteImport.update({
+  id: '/video-editor',
+  path: '/video-editor',
+  getParentRoute: () => AdminContentRoute,
+} as any)
 const AdminContentNewRoute = AdminContentNewRouteImport.update({
   id: '/new',
   path: '/new',
+  getParentRoute: () => AdminContentRoute,
+} as any)
+const AdminContentListRoute = AdminContentListRouteImport.update({
+  id: '/list',
+  path: '/list',
   getParentRoute: () => AdminContentRoute,
 } as any)
 const ApiPublicPaymentsWebhookRoute =
@@ -194,7 +206,9 @@ export interface FileRoutesByFullPath {
   '/auth/register-doctor': typeof AuthRegisterDoctorRoute
   '/auth/register-patient': typeof AuthRegisterPatientRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/admin/content/list': typeof AdminContentListRoute
   '/admin/content/new': typeof AdminContentNewRoute
+  '/admin/content/video-editor': typeof AdminContentVideoEditorRoute
   '/admin/patients/$id': typeof AdminPatientsIdRoute
   '/admin/wiki/new': typeof AdminWikiNewRoute
   '/app/content/$slug': typeof AppContentSlugRoute
@@ -223,7 +237,9 @@ export interface FileRoutesByTo {
   '/auth/register-doctor': typeof AuthRegisterDoctorRoute
   '/auth/register-patient': typeof AuthRegisterPatientRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/admin/content/list': typeof AdminContentListRoute
   '/admin/content/new': typeof AdminContentNewRoute
+  '/admin/content/video-editor': typeof AdminContentVideoEditorRoute
   '/admin/patients/$id': typeof AdminPatientsIdRoute
   '/admin/wiki/new': typeof AdminWikiNewRoute
   '/app/content/$slug': typeof AppContentSlugRoute
@@ -253,7 +269,9 @@ export interface FileRoutesById {
   '/auth/register-doctor': typeof AuthRegisterDoctorRoute
   '/auth/register-patient': typeof AuthRegisterPatientRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/admin/content/list': typeof AdminContentListRoute
   '/admin/content/new': typeof AdminContentNewRoute
+  '/admin/content/video-editor': typeof AdminContentVideoEditorRoute
   '/admin/patients/$id': typeof AdminPatientsIdRoute
   '/admin/wiki/new': typeof AdminWikiNewRoute
   '/app/content/$slug': typeof AppContentSlugRoute
@@ -284,7 +302,9 @@ export interface FileRouteTypes {
     | '/auth/register-doctor'
     | '/auth/register-patient'
     | '/checkout/return'
+    | '/admin/content/list'
     | '/admin/content/new'
+    | '/admin/content/video-editor'
     | '/admin/patients/$id'
     | '/admin/wiki/new'
     | '/app/content/$slug'
@@ -313,7 +333,9 @@ export interface FileRouteTypes {
     | '/auth/register-doctor'
     | '/auth/register-patient'
     | '/checkout/return'
+    | '/admin/content/list'
     | '/admin/content/new'
+    | '/admin/content/video-editor'
     | '/admin/patients/$id'
     | '/admin/wiki/new'
     | '/app/content/$slug'
@@ -342,7 +364,9 @@ export interface FileRouteTypes {
     | '/auth/register-doctor'
     | '/auth/register-patient'
     | '/checkout/return'
+    | '/admin/content/list'
     | '/admin/content/new'
+    | '/admin/content/video-editor'
     | '/admin/patients/$id'
     | '/admin/wiki/new'
     | '/app/content/$slug'
@@ -541,11 +565,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPatientsIdRouteImport
       parentRoute: typeof AdminPatientsRoute
     }
+    '/admin/content/video-editor': {
+      id: '/admin/content/video-editor'
+      path: '/video-editor'
+      fullPath: '/admin/content/video-editor'
+      preLoaderRoute: typeof AdminContentVideoEditorRouteImport
+      parentRoute: typeof AdminContentRoute
+    }
     '/admin/content/new': {
       id: '/admin/content/new'
       path: '/new'
       fullPath: '/admin/content/new'
       preLoaderRoute: typeof AdminContentNewRouteImport
+      parentRoute: typeof AdminContentRoute
+    }
+    '/admin/content/list': {
+      id: '/admin/content/list'
+      path: '/list'
+      fullPath: '/admin/content/list'
+      preLoaderRoute: typeof AdminContentListRouteImport
       parentRoute: typeof AdminContentRoute
     }
     '/api/public/payments/webhook': {
@@ -559,11 +597,15 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminContentRouteChildren {
+  AdminContentListRoute: typeof AdminContentListRoute
   AdminContentNewRoute: typeof AdminContentNewRoute
+  AdminContentVideoEditorRoute: typeof AdminContentVideoEditorRoute
 }
 
 const AdminContentRouteChildren: AdminContentRouteChildren = {
+  AdminContentListRoute: AdminContentListRoute,
   AdminContentNewRoute: AdminContentNewRoute,
+  AdminContentVideoEditorRoute: AdminContentVideoEditorRoute,
 }
 
 const AdminContentRouteWithChildren = AdminContentRoute._addFileChildren(
