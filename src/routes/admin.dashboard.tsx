@@ -204,25 +204,27 @@ function InviteDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle className="font-display text-xl">Convidar paciente</DialogTitle>
-          <DialogDescription>
-            Compartilhe o código ou o link abaixo. O paciente cria a conta e entra direto na sua clínica.
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="w-[calc(100vw-2rem)] max-w-md overflow-hidden p-0 sm:rounded-2xl">
+        <div className="relative overflow-hidden px-6 pt-6 pb-5 text-white" style={{ background: "radial-gradient(circle at 0% 0%, rgba(255,255,255,0.08), transparent 60%), #0A1628" }}>
+          <DialogHeader className="space-y-1.5 text-left">
+            <DialogTitle className="font-display text-xl font-semibold text-white">Convidar paciente</DialogTitle>
+            <DialogDescription className="text-sm text-white/70">
+              Compartilhe o código ou o link. O paciente cria a conta e entra direto na sua clínica.
+            </DialogDescription>
+          </DialogHeader>
+        </div>
 
-        <div className="space-y-4 pt-2">
-          <div>
-            <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Código da clínica</div>
-            <div className="mt-1.5 flex items-center gap-2">
-              <div className="flex-1 rounded-xl border border-border bg-secondary px-4 py-3 font-mono text-lg font-bold tracking-widest text-foreground">
+        <div className="space-y-5 px-6 pb-6 pt-5">
+          <div className="space-y-1.5">
+            <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Código da clínica</div>
+            <div className="flex items-stretch gap-2">
+              <div className="flex min-w-0 flex-1 items-center rounded-xl border border-border bg-secondary px-4 font-mono text-lg font-bold tracking-[0.2em] text-foreground">
                 {clinic?.access_code ?? "—"}
               </div>
               <button
                 type="button"
                 onClick={() => clinic?.access_code && copy(clinic.access_code, "code")}
-                className="grid h-12 w-12 place-items-center rounded-xl bg-primary text-primary-foreground hover:bg-primary-hover"
+                className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground transition hover:bg-primary-hover"
                 aria-label="Copiar código"
               >
                 {copied === "code" ? <Check className="h-5 w-5" /> : <Copy className="h-5 w-5" />}
@@ -230,16 +232,16 @@ function InviteDialog({
             </div>
           </div>
 
-          <div>
-            <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Link de convite</div>
-            <div className="mt-1.5 flex items-center gap-2">
-              <div className="flex-1 truncate rounded-xl border border-border bg-secondary px-4 py-3 text-xs text-foreground">
-                {inviteUrl || "—"}
+          <div className="space-y-1.5">
+            <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Link de convite</div>
+            <div className="flex items-stretch gap-2">
+              <div className="flex min-w-0 flex-1 items-center rounded-xl border border-border bg-secondary px-4">
+                <span className="truncate text-xs text-foreground">{inviteUrl || "—"}</span>
               </div>
               <button
                 type="button"
                 onClick={() => inviteUrl && copy(inviteUrl, "link")}
-                className="grid h-12 w-12 place-items-center rounded-xl border border-border bg-card hover:bg-secondary"
+                className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-border bg-card transition hover:bg-secondary"
                 aria-label="Copiar link"
               >
                 {copied === "link" ? <Check className="h-5 w-5 text-primary" /> : <Copy className="h-5 w-5" />}
@@ -251,13 +253,19 @@ function InviteDialog({
             href={`https://wa.me/?text=${whatsappText}`}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary-hover"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition hover:bg-primary-hover"
           >
             <Send className="h-4 w-4" /> Enviar pelo WhatsApp
           </a>
 
-          <p className="text-xs text-muted-foreground">
-            Após o cadastro, o paciente aparece automaticamente em <Link to="/admin/patients" className="font-semibold text-primary hover:underline">Pacientes</Link>.
+          <p className="text-center text-xs text-muted-foreground">
+            Após o cadastro, o paciente aparece em <Link to="/admin/patients" className="font-semibold text-primary hover:underline">Pacientes</Link>.
+          </p>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
           </p>
         </div>
       </DialogContent>
