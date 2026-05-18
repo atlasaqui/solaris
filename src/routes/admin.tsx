@@ -56,23 +56,32 @@ function AdminLayout() {
             <div className="truncate text-[11px] text-white/50">{brand.doctorName}</div>
           </div>
         </div>
-        <nav className="flex-1 space-y-1 p-3">
-          {nav.map((item) => {
-            const active = path.startsWith(item.to);
-            return (
-              <Link
-                key={item.to} to={item.to}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition ${
-                  active
-                    ? "bg-sidebar-accent text-sidebar-accent-foreground border-l-[3px] border-primary"
-                    : "text-white/70 hover:bg-white/5 hover:text-white"
-                }`}
-              >
-                <item.icon className="h-4 w-4" />
-                {item.label}
-              </Link>
-            );
-          })}
+        <nav className="flex-1 space-y-4 p-3">
+          {(["main", "clinic", "settings"] as const).map((group) => (
+            <div key={group} className="space-y-1">
+              {group !== "main" && (
+                <div className="px-3 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-wider text-white/40">
+                  {group === "clinic" ? "Clínica" : "Ajustes"}
+                </div>
+              )}
+              {nav.filter((i) => i.group === group).map((item) => {
+                const active = path === item.to || (item.to !== "/admin/dashboard" && path.startsWith(item.to));
+                return (
+                  <Link
+                    key={item.to} to={item.to}
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition ${
+                      active
+                        ? "bg-sidebar-accent text-sidebar-accent-foreground border-l-[3px] border-primary"
+                        : "text-white/70 hover:bg-white/5 hover:text-white"
+                    }`}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
         </nav>
         <button
           onClick={logout}
