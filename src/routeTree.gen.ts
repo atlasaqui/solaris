@@ -16,7 +16,13 @@ import { Route as AuthRegisterPatientRouteImport } from './routes/auth.register-
 import { Route as AuthRegisterDoctorRouteImport } from './routes/auth.register-doctor'
 import { Route as AuthLoginRouteImport } from './routes/auth.login'
 import { Route as AppHomeRouteImport } from './routes/app.home'
+import { Route as AppClinicProfileRouteImport } from './routes/app.clinic-profile'
+import { Route as AdminProfileRouteImport } from './routes/admin.profile'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
+import { Route as AdminContentRouteImport } from './routes/admin.content'
+import { Route as AppContentFeedRouteImport } from './routes/app.content.feed'
+import { Route as AppContentSlugRouteImport } from './routes/app.content.$slug'
+import { Route as AdminContentNewRouteImport } from './routes/admin.content.new'
 
 const AppRoute = AppRouteImport.update({
   id: '/app',
@@ -53,42 +59,90 @@ const AppHomeRoute = AppHomeRouteImport.update({
   path: '/home',
   getParentRoute: () => AppRoute,
 } as any)
+const AppClinicProfileRoute = AppClinicProfileRouteImport.update({
+  id: '/clinic-profile',
+  path: '/clinic-profile',
+  getParentRoute: () => AppRoute,
+} as any)
+const AdminProfileRoute = AdminProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminDashboardRoute = AdminDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => AdminRoute,
+} as any)
+const AdminContentRoute = AdminContentRouteImport.update({
+  id: '/content',
+  path: '/content',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AppContentFeedRoute = AppContentFeedRouteImport.update({
+  id: '/content/feed',
+  path: '/content/feed',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppContentSlugRoute = AppContentSlugRouteImport.update({
+  id: '/content/$slug',
+  path: '/content/$slug',
+  getParentRoute: () => AppRoute,
+} as any)
+const AdminContentNewRoute = AdminContentNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AdminContentRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
+  '/admin/content': typeof AdminContentRouteWithChildren
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/profile': typeof AdminProfileRoute
+  '/app/clinic-profile': typeof AppClinicProfileRoute
   '/app/home': typeof AppHomeRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register-doctor': typeof AuthRegisterDoctorRoute
   '/auth/register-patient': typeof AuthRegisterPatientRoute
+  '/admin/content/new': typeof AdminContentNewRoute
+  '/app/content/$slug': typeof AppContentSlugRoute
+  '/app/content/feed': typeof AppContentFeedRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
+  '/admin/content': typeof AdminContentRouteWithChildren
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/profile': typeof AdminProfileRoute
+  '/app/clinic-profile': typeof AppClinicProfileRoute
   '/app/home': typeof AppHomeRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register-doctor': typeof AuthRegisterDoctorRoute
   '/auth/register-patient': typeof AuthRegisterPatientRoute
+  '/admin/content/new': typeof AdminContentNewRoute
+  '/app/content/$slug': typeof AppContentSlugRoute
+  '/app/content/feed': typeof AppContentFeedRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
+  '/admin/content': typeof AdminContentRouteWithChildren
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/profile': typeof AdminProfileRoute
+  '/app/clinic-profile': typeof AppClinicProfileRoute
   '/app/home': typeof AppHomeRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register-doctor': typeof AuthRegisterDoctorRoute
   '/auth/register-patient': typeof AuthRegisterPatientRoute
+  '/admin/content/new': typeof AdminContentNewRoute
+  '/app/content/$slug': typeof AppContentSlugRoute
+  '/app/content/feed': typeof AppContentFeedRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -96,31 +150,49 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/app'
+    | '/admin/content'
     | '/admin/dashboard'
+    | '/admin/profile'
+    | '/app/clinic-profile'
     | '/app/home'
     | '/auth/login'
     | '/auth/register-doctor'
     | '/auth/register-patient'
+    | '/admin/content/new'
+    | '/app/content/$slug'
+    | '/app/content/feed'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/admin'
     | '/app'
+    | '/admin/content'
     | '/admin/dashboard'
+    | '/admin/profile'
+    | '/app/clinic-profile'
     | '/app/home'
     | '/auth/login'
     | '/auth/register-doctor'
     | '/auth/register-patient'
+    | '/admin/content/new'
+    | '/app/content/$slug'
+    | '/app/content/feed'
   id:
     | '__root__'
     | '/'
     | '/admin'
     | '/app'
+    | '/admin/content'
     | '/admin/dashboard'
+    | '/admin/profile'
+    | '/app/clinic-profile'
     | '/app/home'
     | '/auth/login'
     | '/auth/register-doctor'
     | '/auth/register-patient'
+    | '/admin/content/new'
+    | '/app/content/$slug'
+    | '/app/content/feed'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -183,6 +255,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppHomeRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/clinic-profile': {
+      id: '/app/clinic-profile'
+      path: '/clinic-profile'
+      fullPath: '/app/clinic-profile'
+      preLoaderRoute: typeof AppClinicProfileRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/admin/profile': {
+      id: '/admin/profile'
+      path: '/profile'
+      fullPath: '/admin/profile'
+      preLoaderRoute: typeof AdminProfileRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/dashboard': {
       id: '/admin/dashboard'
       path: '/dashboard'
@@ -190,25 +276,75 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/content': {
+      id: '/admin/content'
+      path: '/content'
+      fullPath: '/admin/content'
+      preLoaderRoute: typeof AdminContentRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/app/content/feed': {
+      id: '/app/content/feed'
+      path: '/content/feed'
+      fullPath: '/app/content/feed'
+      preLoaderRoute: typeof AppContentFeedRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/content/$slug': {
+      id: '/app/content/$slug'
+      path: '/content/$slug'
+      fullPath: '/app/content/$slug'
+      preLoaderRoute: typeof AppContentSlugRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/admin/content/new': {
+      id: '/admin/content/new'
+      path: '/new'
+      fullPath: '/admin/content/new'
+      preLoaderRoute: typeof AdminContentNewRouteImport
+      parentRoute: typeof AdminContentRoute
+    }
   }
 }
 
+interface AdminContentRouteChildren {
+  AdminContentNewRoute: typeof AdminContentNewRoute
+}
+
+const AdminContentRouteChildren: AdminContentRouteChildren = {
+  AdminContentNewRoute: AdminContentNewRoute,
+}
+
+const AdminContentRouteWithChildren = AdminContentRoute._addFileChildren(
+  AdminContentRouteChildren,
+)
+
 interface AdminRouteChildren {
+  AdminContentRoute: typeof AdminContentRouteWithChildren
   AdminDashboardRoute: typeof AdminDashboardRoute
+  AdminProfileRoute: typeof AdminProfileRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminContentRoute: AdminContentRouteWithChildren,
   AdminDashboardRoute: AdminDashboardRoute,
+  AdminProfileRoute: AdminProfileRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface AppRouteChildren {
+  AppClinicProfileRoute: typeof AppClinicProfileRoute
   AppHomeRoute: typeof AppHomeRoute
+  AppContentSlugRoute: typeof AppContentSlugRoute
+  AppContentFeedRoute: typeof AppContentFeedRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppClinicProfileRoute: AppClinicProfileRoute,
   AppHomeRoute: AppHomeRoute,
+  AppContentSlugRoute: AppContentSlugRoute,
+  AppContentFeedRoute: AppContentFeedRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
