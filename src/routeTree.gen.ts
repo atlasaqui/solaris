@@ -26,8 +26,8 @@ import { Route as AdminProfileRouteImport } from './routes/admin.profile'
 import { Route as AdminPatientsRouteImport } from './routes/admin.patients'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 import { Route as AdminCustomizeRouteImport } from './routes/admin.customize'
-import { Route as AdminContentRouteImport } from './routes/admin.content'
 import { Route as AdminBillingRouteImport } from './routes/admin.billing'
+import { Route as AdminContentIndexRouteImport } from './routes/admin.content.index'
 import { Route as AppWikiSearchRouteImport } from './routes/app.wiki.search'
 import { Route as AppWikiSlugRouteImport } from './routes/app.wiki.$slug'
 import { Route as AppContentFeedRouteImport } from './routes/app.content.feed'
@@ -124,14 +124,14 @@ const AdminCustomizeRoute = AdminCustomizeRouteImport.update({
   path: '/customize',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminContentRoute = AdminContentRouteImport.update({
-  id: '/content',
-  path: '/content',
-  getParentRoute: () => AdminRoute,
-} as any)
 const AdminBillingRoute = AdminBillingRouteImport.update({
   id: '/billing',
   path: '/billing',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminContentIndexRoute = AdminContentIndexRouteImport.update({
+  id: '/content/',
+  path: '/content/',
   getParentRoute: () => AdminRoute,
 } as any)
 const AppWikiSearchRoute = AppWikiSearchRouteImport.update({
@@ -165,19 +165,19 @@ const AdminPatientsIdRoute = AdminPatientsIdRouteImport.update({
   getParentRoute: () => AdminPatientsRoute,
 } as any)
 const AdminContentVideoEditorRoute = AdminContentVideoEditorRouteImport.update({
-  id: '/video-editor',
-  path: '/video-editor',
-  getParentRoute: () => AdminContentRoute,
+  id: '/content/video-editor',
+  path: '/content/video-editor',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AdminContentNewRoute = AdminContentNewRouteImport.update({
-  id: '/new',
-  path: '/new',
-  getParentRoute: () => AdminContentRoute,
+  id: '/content/new',
+  path: '/content/new',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AdminContentListRoute = AdminContentListRouteImport.update({
-  id: '/list',
-  path: '/list',
-  getParentRoute: () => AdminContentRoute,
+  id: '/content/list',
+  path: '/content/list',
+  getParentRoute: () => AdminRoute,
 } as any)
 const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
@@ -192,7 +192,6 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRouteWithChildren
   '/onboarding': typeof OnboardingRoute
   '/admin/billing': typeof AdminBillingRoute
-  '/admin/content': typeof AdminContentRouteWithChildren
   '/admin/customize': typeof AdminCustomizeRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/patients': typeof AdminPatientsRouteWithChildren
@@ -215,6 +214,7 @@ export interface FileRoutesByFullPath {
   '/app/content/feed': typeof AppContentFeedRoute
   '/app/wiki/$slug': typeof AppWikiSlugRoute
   '/app/wiki/search': typeof AppWikiSearchRoute
+  '/admin/content/': typeof AdminContentIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -223,7 +223,6 @@ export interface FileRoutesByTo {
   '/app': typeof AppRouteWithChildren
   '/onboarding': typeof OnboardingRoute
   '/admin/billing': typeof AdminBillingRoute
-  '/admin/content': typeof AdminContentRouteWithChildren
   '/admin/customize': typeof AdminCustomizeRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/patients': typeof AdminPatientsRouteWithChildren
@@ -246,6 +245,7 @@ export interface FileRoutesByTo {
   '/app/content/feed': typeof AppContentFeedRoute
   '/app/wiki/$slug': typeof AppWikiSlugRoute
   '/app/wiki/search': typeof AppWikiSearchRoute
+  '/admin/content': typeof AdminContentIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesById {
@@ -255,7 +255,6 @@ export interface FileRoutesById {
   '/app': typeof AppRouteWithChildren
   '/onboarding': typeof OnboardingRoute
   '/admin/billing': typeof AdminBillingRoute
-  '/admin/content': typeof AdminContentRouteWithChildren
   '/admin/customize': typeof AdminCustomizeRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/patients': typeof AdminPatientsRouteWithChildren
@@ -278,6 +277,7 @@ export interface FileRoutesById {
   '/app/content/feed': typeof AppContentFeedRoute
   '/app/wiki/$slug': typeof AppWikiSlugRoute
   '/app/wiki/search': typeof AppWikiSearchRoute
+  '/admin/content/': typeof AdminContentIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRouteTypes {
@@ -288,7 +288,6 @@ export interface FileRouteTypes {
     | '/app'
     | '/onboarding'
     | '/admin/billing'
-    | '/admin/content'
     | '/admin/customize'
     | '/admin/dashboard'
     | '/admin/patients'
@@ -311,6 +310,7 @@ export interface FileRouteTypes {
     | '/app/content/feed'
     | '/app/wiki/$slug'
     | '/app/wiki/search'
+    | '/admin/content/'
     | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -319,7 +319,6 @@ export interface FileRouteTypes {
     | '/app'
     | '/onboarding'
     | '/admin/billing'
-    | '/admin/content'
     | '/admin/customize'
     | '/admin/dashboard'
     | '/admin/patients'
@@ -342,6 +341,7 @@ export interface FileRouteTypes {
     | '/app/content/feed'
     | '/app/wiki/$slug'
     | '/app/wiki/search'
+    | '/admin/content'
     | '/api/public/payments/webhook'
   id:
     | '__root__'
@@ -350,7 +350,6 @@ export interface FileRouteTypes {
     | '/app'
     | '/onboarding'
     | '/admin/billing'
-    | '/admin/content'
     | '/admin/customize'
     | '/admin/dashboard'
     | '/admin/patients'
@@ -373,6 +372,7 @@ export interface FileRouteTypes {
     | '/app/content/feed'
     | '/app/wiki/$slug'
     | '/app/wiki/search'
+    | '/admin/content/'
     | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
 }
@@ -509,18 +509,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCustomizeRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/content': {
-      id: '/admin/content'
-      path: '/content'
-      fullPath: '/admin/content'
-      preLoaderRoute: typeof AdminContentRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/admin/billing': {
       id: '/admin/billing'
       path: '/billing'
       fullPath: '/admin/billing'
       preLoaderRoute: typeof AdminBillingRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/content/': {
+      id: '/admin/content/'
+      path: '/content'
+      fullPath: '/admin/content/'
+      preLoaderRoute: typeof AdminContentIndexRouteImport
       parentRoute: typeof AdminRoute
     }
     '/app/wiki/search': {
@@ -567,24 +567,24 @@ declare module '@tanstack/react-router' {
     }
     '/admin/content/video-editor': {
       id: '/admin/content/video-editor'
-      path: '/video-editor'
+      path: '/content/video-editor'
       fullPath: '/admin/content/video-editor'
       preLoaderRoute: typeof AdminContentVideoEditorRouteImport
-      parentRoute: typeof AdminContentRoute
+      parentRoute: typeof AdminRoute
     }
     '/admin/content/new': {
       id: '/admin/content/new'
-      path: '/new'
+      path: '/content/new'
       fullPath: '/admin/content/new'
       preLoaderRoute: typeof AdminContentNewRouteImport
-      parentRoute: typeof AdminContentRoute
+      parentRoute: typeof AdminRoute
     }
     '/admin/content/list': {
       id: '/admin/content/list'
-      path: '/list'
+      path: '/content/list'
       fullPath: '/admin/content/list'
       preLoaderRoute: typeof AdminContentListRouteImport
-      parentRoute: typeof AdminContentRoute
+      parentRoute: typeof AdminRoute
     }
     '/api/public/payments/webhook': {
       id: '/api/public/payments/webhook'
@@ -595,22 +595,6 @@ declare module '@tanstack/react-router' {
     }
   }
 }
-
-interface AdminContentRouteChildren {
-  AdminContentListRoute: typeof AdminContentListRoute
-  AdminContentNewRoute: typeof AdminContentNewRoute
-  AdminContentVideoEditorRoute: typeof AdminContentVideoEditorRoute
-}
-
-const AdminContentRouteChildren: AdminContentRouteChildren = {
-  AdminContentListRoute: AdminContentListRoute,
-  AdminContentNewRoute: AdminContentNewRoute,
-  AdminContentVideoEditorRoute: AdminContentVideoEditorRoute,
-}
-
-const AdminContentRouteWithChildren = AdminContentRoute._addFileChildren(
-  AdminContentRouteChildren,
-)
 
 interface AdminPatientsRouteChildren {
   AdminPatientsIdRoute: typeof AdminPatientsIdRoute
@@ -638,22 +622,28 @@ const AdminWikiRouteWithChildren = AdminWikiRoute._addFileChildren(
 
 interface AdminRouteChildren {
   AdminBillingRoute: typeof AdminBillingRoute
-  AdminContentRoute: typeof AdminContentRouteWithChildren
   AdminCustomizeRoute: typeof AdminCustomizeRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminPatientsRoute: typeof AdminPatientsRouteWithChildren
   AdminProfileRoute: typeof AdminProfileRoute
   AdminWikiRoute: typeof AdminWikiRouteWithChildren
+  AdminContentListRoute: typeof AdminContentListRoute
+  AdminContentNewRoute: typeof AdminContentNewRoute
+  AdminContentVideoEditorRoute: typeof AdminContentVideoEditorRoute
+  AdminContentIndexRoute: typeof AdminContentIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminBillingRoute: AdminBillingRoute,
-  AdminContentRoute: AdminContentRouteWithChildren,
   AdminCustomizeRoute: AdminCustomizeRoute,
   AdminDashboardRoute: AdminDashboardRoute,
   AdminPatientsRoute: AdminPatientsRouteWithChildren,
   AdminProfileRoute: AdminProfileRoute,
   AdminWikiRoute: AdminWikiRouteWithChildren,
+  AdminContentListRoute: AdminContentListRoute,
+  AdminContentNewRoute: AdminContentNewRoute,
+  AdminContentVideoEditorRoute: AdminContentVideoEditorRoute,
+  AdminContentIndexRoute: AdminContentIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
