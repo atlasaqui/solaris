@@ -1,10 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { TrendingUp, Loader2, MessageCircle, Image as ImageIcon, BarChart3, Send, Camera as CamIcon, Sun, Calendar, Plus, Check, X, Upload } from "lucide-react";
+import {
+  TrendingUp, Loader2, MessageCircle, Image as ImageIcon, BarChart3, Send,
+  Camera as CamIcon, Sun, Calendar, Plus, Check, X, Upload, Sparkles, Trophy, Lock,
+} from "lucide-react";
+import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import {
+  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
+} from "recharts";
 import { toast } from "sonner";
+import { computeLevel, LEVELS, PROGRESS_LEVEL_META, ACHIEVEMENTS, type AchievementKey, type ProgressLevel } from "@/lib/gamification";
+import { toggleFeedbackStep } from "@/lib/clinical.functions";
+import { useServerFn } from "@tanstack/react-start";
 
 export const Route = createFileRoute("/app/evolution")({
   head: () => ({ meta: [{ title: "Acompanhamento" }] }),
@@ -14,10 +23,17 @@ export const Route = createFileRoute("/app/evolution")({
 type Photo = {
   id: string; week_number: number; angle: string; storage_path: string;
   taken_at: string; doctor_comment: string | null; improvement_score: number | null;
+  ai_analysis: any; ai_visible_to_patient: boolean; doctor_approved_at: string | null;
 };
 
 type Comment = {
   id: string; content: string; created_at: string; doctor_id: string | null; patient_id: string | null;
+};
+
+type Feedback = {
+  id: string; photo_id: string | null; progress_level: ProgressLevel;
+  message: string | null; next_steps: { text: string; done: boolean }[];
+  include_ai_analysis: boolean; sent_at: string | null; week_number: number | null;
 };
 
 function Evolution() {
@@ -36,13 +52,15 @@ function Evolution() {
         </div>
       </header>
 
-      <Tabs defaultValue="photos">
+      <Tabs defaultValue="progress">
         <TabsList className="w-full justify-start gap-1 bg-muted/60 p-1">
-          <TabsTrigger value="photos" className="flex-1 gap-2"><ImageIcon className="h-4 w-4" /> Fotos</TabsTrigger>
-          <TabsTrigger value="chat" className="flex-1 gap-2"><MessageCircle className="h-4 w-4" /> Chat</TabsTrigger>
-          <TabsTrigger value="data" className="flex-1 gap-2"><BarChart3 className="h-4 w-4" /> Dados</TabsTrigger>
+          <TabsTrigger value="progress" className="flex-1 gap-1.5"><Sparkles className="h-4 w-4" /> Progresso</TabsTrigger>
+          <TabsTrigger value="photos" className="flex-1 gap-1.5"><ImageIcon className="h-4 w-4" /> Fotos</TabsTrigger>
+          <TabsTrigger value="chat" className="flex-1 gap-1.5"><MessageCircle className="h-4 w-4" /> Chat</TabsTrigger>
+          <TabsTrigger value="data" className="flex-1 gap-1.5"><BarChart3 className="h-4 w-4" /> Dados</TabsTrigger>
         </TabsList>
 
+        <TabsContent value="progress"><ProgressTab /></TabsContent>
         <TabsContent value="photos"><PhotosTab /></TabsContent>
         <TabsContent value="chat"><ChatTab /></TabsContent>
         <TabsContent value="data"><DataTab /></TabsContent>
@@ -51,7 +69,235 @@ function Evolution() {
   );
 }
 
-/* ------------------ TAB 1: PHOTOS ------------------ */
+/* ============================================================
+   TAB 0 — PROGRESSO (new)
+   ============================================================ */
+function ProgressTab() {
+  const [loading, setLoading] = useState(true);
+  const [patientId, setPatientId] = useState<string | null>(null);
+  const [photos, setPhotos] = useState<Photo[]>([]);
+  const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
+  const [achievements, setAchievements] = useState<AchievementKey[]>([]);
+  const [treatmentTotal, setTreatmentTotal] = useState(0);
+  const [treatmentCurrent, setTreatmentCurrent] = useState(0);
+
+  const toggleStep = useServerFn(toggleFeedbackStep);
+
+  const load = async () => {
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user) { setLoading(false); return; }
+    const { data: pt } = await supabase.from("patients").select("id").eq("user_id", u.user.id).maybeSingle();
+    if (!pt) { setLoading(false); return; }
+    setPatientId(pt.id);
+
+    const [pR, fR, aR, tR] = await Promise.all([
+      supabase.from("evolution_photos").select("id, week_number, improvement_score, ai_analysis, ai_visible_to_patient, doctor_approved_at, taken_at")
+        .eq("patient_id", pt.id).order("week_number", { ascending: true }),
+      supabase.from("doctor_feedback").select("id, photo_id, progress_level, message, next_steps, include_ai_analysis, sent_at, week_number")
+        .eq("patient_id", pt.id).eq("status", "sent").order("sent_at", { ascending: false }),
+      supabase.from("patient_achievements").select("achievement").eq("patient_id", pt.id),
+      supabase.from("treatments").select("total_weeks, current_week").eq("patient_id", pt.id).eq("status", "active").maybeSingle(),
+    ]);
+    setPhotos((pR.data ?? []) as any);
+    setFeedbacks((fR.data ?? []) as any);
+    setAchievements(((aR.data ?? []) as any[]).map((r) => r.achievement as AchievementKey));
+    setTreatmentTotal(tR.data?.total_weeks ?? 0);
+    setTreatmentCurrent(tR.data?.current_week ?? 0);
+    setLoading(false);
+  };
+
+  useEffect(() => { load(); }, []);
+
+  const bestScore = useMemo(() => {
+    const s = Math.max(0, ...photos.map((p) => Number(p.improvement_score ?? 0)));
+    return Math.round(s);
+  }, [photos]);
+
+  const level = computeLevel(bestScore);
+  const nextLevel = LEVELS[level.index] ?? null;
+  const latestFeedback = feedbacks[0];
+
+  if (loading) {
+    return <div className="grid h-48 place-items-center text-muted-foreground"><Loader2 className="h-5 w-5 animate-spin" /></div>;
+  }
+
+  if (photos.length === 0) {
+    return (
+      <div className="rounded-2xl border border-dashed border-border bg-card p-10 text-center">
+        <Sparkles className="mx-auto h-8 w-8" style={{ color: "var(--clinic-primary)" }} />
+        <p className="mt-3 text-sm text-muted-foreground">Envie sua primeira foto para começar a acompanhar seu progresso.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* HERO — Progress + Level */}
+      <motion.section
+        initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
+        className="overflow-hidden rounded-3xl p-5 text-white"
+        style={{ background: `linear-gradient(135deg, ${level.color} 0%, var(--clinic-primary) 100%)` }}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <div className="text-[11px] font-semibold uppercase tracking-wide opacity-80">Seu nível</div>
+            <div className="mt-1 flex items-baseline gap-2">
+              <span className="text-3xl">{level.emoji}</span>
+              <h2 className="font-display text-[22px] font-bold">{level.label}</h2>
+            </div>
+          </div>
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 200, damping: 14 }}
+            className="rounded-2xl bg-white/20 px-3 py-2 text-center backdrop-blur"
+          >
+            <div className="text-[10px] font-semibold uppercase tracking-wide opacity-90">Score</div>
+            <div className="font-display text-2xl font-bold leading-none">{bestScore}</div>
+          </motion.div>
+        </div>
+
+        <div className="mt-4">
+          <div className="mb-1 flex items-center justify-between text-[11px] opacity-90">
+            <span>{level.min}%</span>
+            <span>{nextLevel ? `Próximo: ${nextLevel.emoji} ${nextLevel.label}` : "Nível máximo"}</span>
+            <span>{level.max}%</span>
+          </div>
+          <div className="h-2.5 w-full overflow-hidden rounded-full bg-white/25">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${Math.min(100, ((bestScore - level.min) / Math.max(1, level.max - level.min)) * 100)}%` }}
+              transition={{ duration: 1.2, ease: "easeOut" }}
+              className="h-full rounded-full bg-white"
+            />
+          </div>
+        </div>
+
+        {treatmentTotal > 0 && (
+          <div className="mt-4 flex items-center gap-2 text-[12px] opacity-95">
+            <Calendar className="h-3.5 w-3.5" />
+            Semana <strong className="font-semibold">{treatmentCurrent}</strong> de {treatmentTotal}
+          </div>
+        )}
+      </motion.section>
+
+      {/* Medical evaluation — only when doctor sent */}
+      {latestFeedback ? (
+        <MedicalEvaluationCard fb={latestFeedback} photos={photos} onToggle={async (idx, done) => {
+          await toggleStep({ data: { feedbackId: latestFeedback.id, index: idx, done } });
+          setFeedbacks((arr) => arr.map((f) => f.id === latestFeedback.id ? { ...f, next_steps: f.next_steps.map((s, i) => i === idx ? { ...s, done } : s) } : f));
+        }} />
+      ) : (
+        <section className="rounded-2xl border border-dashed border-border bg-card p-5 text-center text-sm text-muted-foreground">
+          Aguarde — seu médico ainda não enviou a avaliação. Você será notificado.
+        </section>
+      )}
+
+      {/* Achievements */}
+      <section className="rounded-2xl bg-white p-5" style={{ boxShadow: "0 2px 16px rgba(0,0,0,0.06)" }}>
+        <div className="mb-3 flex items-center gap-2">
+          <Trophy className="h-4 w-4" style={{ color: "var(--clinic-primary)" }} />
+          <h3 className="font-display text-[14px] font-semibold">Conquistas</h3>
+          <span className="ml-auto text-[11px] text-muted-foreground">{achievements.length} de {Object.keys(ACHIEVEMENTS).length}</span>
+        </div>
+        <div className="grid grid-cols-3 gap-2.5">
+          {(Object.keys(ACHIEVEMENTS) as AchievementKey[]).map((key, i) => {
+            const a = ACHIEVEMENTS[key];
+            const unlocked = achievements.includes(key);
+            return (
+              <motion.div
+                key={key}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring", stiffness: 200, damping: 14, delay: i * 0.04 }}
+                className={`flex flex-col items-center rounded-xl border p-2.5 text-center ${unlocked ? "border-[var(--clinic-primary)]/40 bg-[var(--clinic-primary-light)]" : "border-border bg-muted/30 opacity-50"}`}
+              >
+                <div className="text-2xl">{unlocked ? a.emoji : <Lock className="h-5 w-5 text-muted-foreground" />}</div>
+                <div className="mt-1 text-[10px] font-semibold leading-tight">{a.label}</div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Weekly reminder */}
+      <section className="flex items-center gap-3 rounded-2xl p-4" style={{ background: "var(--clinic-primary-light)" }}>
+        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-white" style={{ background: "var(--clinic-primary)" }}>
+          <CamIcon className="h-4 w-4" />
+        </div>
+        <div className="text-[13px]">
+          <div className="font-semibold" style={{ color: "var(--clinic-primary-dark)" }}>Lembrete da semana</div>
+          <div className="text-muted-foreground">Não esqueça da sua foto desta semana e da proteção solar diária.</div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function MedicalEvaluationCard({ fb, photos, onToggle }: {
+  fb: Feedback; photos: Photo[];
+  onToggle: (index: number, done: boolean) => Promise<void> | void;
+}) {
+  const meta = PROGRESS_LEVEL_META[fb.progress_level];
+  const photo = photos.find((p) => p.id === fb.photo_id);
+  const showAi = fb.include_ai_analysis && photo?.ai_visible_to_patient && photo?.ai_analysis;
+
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+      className="overflow-hidden rounded-2xl bg-white"
+      style={{ boxShadow: "0 4px 24px rgba(27,138,122,0.15)", borderLeft: `4px solid ${meta.color}` }}
+    >
+      <div className="flex items-center gap-3 border-b border-border px-5 py-3">
+        <div className="grid h-9 w-9 place-items-center rounded-full text-white" style={{ background: meta.color }}>
+          <span className="text-lg">{meta.emoji}</span>
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Avaliação do médico</div>
+          <div className="font-display text-[14px] font-semibold">{meta.label} {fb.week_number ? `· Semana ${fb.week_number}` : ""}</div>
+        </div>
+        {fb.sent_at && (
+          <span className="text-[10px] text-muted-foreground">{new Date(fb.sent_at).toLocaleDateString("pt-BR")}</span>
+        )}
+      </div>
+
+      <div className="space-y-4 p-5">
+        {fb.message && (
+          <p className="whitespace-pre-wrap text-[13.5px] leading-relaxed text-foreground">{fb.message}</p>
+        )}
+
+        {showAi && (
+          <div className="rounded-xl bg-[var(--clinic-primary-light)]/60 p-3">
+            <div className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide" style={{ color: "var(--clinic-primary-dark)" }}>
+              <Sparkles className="h-3 w-3" /> Análise Solaris IA
+            </div>
+            <p className="text-[13px] leading-relaxed">{photo?.ai_analysis?.suggestion}</p>
+          </div>
+        )}
+
+        {fb.next_steps?.length > 0 && (
+          <div>
+            <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Próximos passos</div>
+            <div className="space-y-1.5">
+              {fb.next_steps.map((s, i) => (
+                <button key={i} onClick={() => onToggle(i, !s.done)}
+                  className="flex w-full items-center gap-2.5 rounded-lg border border-border bg-white px-3 py-2 text-left transition hover:border-[var(--clinic-primary)]">
+                  <div className={`grid h-5 w-5 shrink-0 place-items-center rounded-md border-2 transition ${s.done ? "border-[var(--clinic-primary)] bg-[var(--clinic-primary)] text-white" : "border-border"}`}>
+                    {s.done && <Check className="h-3 w-3" />}
+                  </div>
+                  <span className={`text-[13px] ${s.done ? "text-muted-foreground line-through" : ""}`}>{s.text}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </motion.section>
+  );
+}
+
+/* ============================================================
+   TAB 1 — PHOTOS
+   ============================================================ */
 function PhotosTab() {
   const [photos, setPhotos] = useState<(Photo & { url: string })[]>([]);
   const [loading, setLoading] = useState(true);
@@ -110,7 +356,6 @@ function PhotosTab() {
     <div className="space-y-4">
       {photos.length === 0 ? renderEmpty() : (
         <>
-          {/* Week selector + add */}
           <div className="-mx-1 flex items-center gap-2 overflow-x-auto px-1 pb-1">
             {photos.map((p) => (
               <button
@@ -134,7 +379,6 @@ function PhotosTab() {
             </button>
           </div>
 
-          {/* Before / After comparator */}
           <div className="overflow-hidden rounded-2xl bg-white" style={{ boxShadow: "0 2px 16px rgba(0,0,0,0.06)" }}>
             <div className="flex items-center justify-between border-b border-border px-4 py-3">
               <div className="text-[12px] text-muted-foreground">Comparar: <b>Semana {first.week_number}</b> → <b>Semana {current.week_number}</b></div>
@@ -261,7 +505,6 @@ function UploadPhotoSheet({
         </div>
 
         <div className="space-y-4 p-5">
-          {/* Photo picker */}
           <div>
             <input
               ref={fileRef}
@@ -290,7 +533,6 @@ function UploadPhotoSheet({
             )}
           </div>
 
-          {/* Week + angle */}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Semana</label>
@@ -314,7 +556,6 @@ function UploadPhotoSheet({
             </div>
           </div>
 
-          {/* Checklist */}
           <div>
             <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Checklist da foto</div>
             <div className="space-y-2">
@@ -358,12 +599,13 @@ function ChecklistItem({ checked, onChange, label }: { checked: boolean; onChang
   );
 }
 
-/* ------------------ TAB 2: CHAT ------------------ */
+/* ============================================================
+   TAB 2 — CHAT
+   ============================================================ */
 function ChatTab() {
   const [messages, setMessages] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const [patientId, setPatientId] = useState<string | null>(null);
-  const [clinicId, setClinicId] = useState<string | null>(null);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -383,7 +625,6 @@ function ChatTab() {
       const { data: pt } = await supabase.from("patients").select("id, clinic_id").eq("user_id", u.user.id).maybeSingle();
       if (!pt) { setLoading(false); return; }
       setPatientId(pt.id);
-      setClinicId(pt.clinic_id);
       await load(pt.id);
       setLoading(false);
     })();
@@ -455,7 +696,9 @@ function ChatTab() {
   );
 }
 
-/* ------------------ TAB 3: DATA ------------------ */
+/* ============================================================
+   TAB 3 — DATA
+   ============================================================ */
 function DataTab() {
   const [loading, setLoading] = useState(true);
   const [photos, setPhotos] = useState<Photo[]>([]);
@@ -508,13 +751,19 @@ function DataTab() {
         ) : (
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+              <AreaChart data={chartData} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="evoFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="var(--clinic-primary)" stopOpacity={0.35} />
+                    <stop offset="100%" stopColor="var(--clinic-primary)" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
                 <XAxis dataKey="week" tick={{ fontSize: 11, fill: "#64748B" }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 11, fill: "#64748B" }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: "#64748B" }} axisLine={false} tickLine={false} domain={[0, 100]} />
                 <Tooltip />
-                <Line type="monotone" dataKey="score" stroke="var(--clinic-primary)" strokeWidth={2.5} dot={{ r: 4, fill: "var(--clinic-primary)" }} />
-              </LineChart>
+                <Area type="monotone" dataKey="score" stroke="var(--clinic-primary)" strokeWidth={2.5} fill="url(#evoFill)" />
+              </AreaChart>
             </ResponsiveContainer>
           </div>
         )}
