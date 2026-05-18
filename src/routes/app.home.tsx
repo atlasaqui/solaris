@@ -59,22 +59,21 @@ function Feed() {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user) { setLoading(false); return; }
       const { data: pt } = await supabase.from("patients").select("id, clinic_id").eq("user_id", u.user.id).maybeSingle();
-      if (pt) setPatientId(pt.id);
+      if (!pt?.clinic_id) { setLoading(false); return; }
+      setPatientId(pt.id);
 
       const { data } = await supabase.from("content_posts")
         .select("id, slug, title, summary, type, category, cover_image_url, video_thumbnail_url, read_time_minutes, duration_seconds, published_at, created_at, like_count, comment_count, wiki_conditions(name, slug)")
-        .eq("clinic_id", pt?.clinic_id)
+        .eq("clinic_id", pt.clinic_id)
         .eq("is_published", true).order("published_at", { ascending: false }).limit(50);
       setPosts((data ?? []) as Post[]);
 
-      if (pt) {
-        const [{ data: lks }, { data: bms }] = await Promise.all([
-          supabase.from("content_post_likes").select("post_id").eq("patient_id", pt.id),
-          supabase.from("content_bookmarks").select("post_id").eq("patient_id", pt.id),
-        ]);
-        setLikes(new Set((lks ?? []).map((l: any) => l.post_id)));
-        setBookmarks(new Set((bms ?? []).map((b: any) => b.post_id)));
-      }
+      const [{ data: lks }, { data: bms }] = await Promise.all([
+        supabase.from("content_post_likes").select("post_id").eq("patient_id", pt.id),
+        supabase.from("content_bookmarks").select("post_id").eq("patient_id", pt.id),
+      ]);
+      setLikes(new Set((lks ?? []).map((l: any) => l.post_id)));
+      setBookmarks(new Set((bms ?? []).map((b: any) => b.post_id)));
       setLoading(false);
     })();
   }, []);
