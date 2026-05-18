@@ -35,6 +35,7 @@ import { Route as AppContentSlugRouteImport } from './routes/app.content.$slug'
 import { Route as AdminWikiNewRouteImport } from './routes/admin.wiki.new'
 import { Route as AdminPatientsIdRouteImport } from './routes/admin.patients.$id'
 import { Route as AdminContentNewRouteImport } from './routes/admin.content.new'
+import { Route as AdminContentListRouteImport } from './routes/admin.content.list'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -167,6 +168,11 @@ const AdminContentNewRoute = AdminContentNewRouteImport.update({
   path: '/new',
   getParentRoute: () => AdminContentRoute,
 } as any)
+const AdminContentListRoute = AdminContentListRouteImport.update({
+  id: '/list',
+  path: '/list',
+  getParentRoute: () => AdminContentRoute,
+} as any)
 const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
     id: '/api/public/payments/webhook',
@@ -194,6 +200,7 @@ export interface FileRoutesByFullPath {
   '/auth/register-doctor': typeof AuthRegisterDoctorRoute
   '/auth/register-patient': typeof AuthRegisterPatientRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/admin/content/list': typeof AdminContentListRoute
   '/admin/content/new': typeof AdminContentNewRoute
   '/admin/patients/$id': typeof AdminPatientsIdRoute
   '/admin/wiki/new': typeof AdminWikiNewRoute
@@ -223,6 +230,7 @@ export interface FileRoutesByTo {
   '/auth/register-doctor': typeof AuthRegisterDoctorRoute
   '/auth/register-patient': typeof AuthRegisterPatientRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/admin/content/list': typeof AdminContentListRoute
   '/admin/content/new': typeof AdminContentNewRoute
   '/admin/patients/$id': typeof AdminPatientsIdRoute
   '/admin/wiki/new': typeof AdminWikiNewRoute
@@ -253,6 +261,7 @@ export interface FileRoutesById {
   '/auth/register-doctor': typeof AuthRegisterDoctorRoute
   '/auth/register-patient': typeof AuthRegisterPatientRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/admin/content/list': typeof AdminContentListRoute
   '/admin/content/new': typeof AdminContentNewRoute
   '/admin/patients/$id': typeof AdminPatientsIdRoute
   '/admin/wiki/new': typeof AdminWikiNewRoute
@@ -284,6 +293,7 @@ export interface FileRouteTypes {
     | '/auth/register-doctor'
     | '/auth/register-patient'
     | '/checkout/return'
+    | '/admin/content/list'
     | '/admin/content/new'
     | '/admin/patients/$id'
     | '/admin/wiki/new'
@@ -313,6 +323,7 @@ export interface FileRouteTypes {
     | '/auth/register-doctor'
     | '/auth/register-patient'
     | '/checkout/return'
+    | '/admin/content/list'
     | '/admin/content/new'
     | '/admin/patients/$id'
     | '/admin/wiki/new'
@@ -342,6 +353,7 @@ export interface FileRouteTypes {
     | '/auth/register-doctor'
     | '/auth/register-patient'
     | '/checkout/return'
+    | '/admin/content/list'
     | '/admin/content/new'
     | '/admin/patients/$id'
     | '/admin/wiki/new'
@@ -548,6 +560,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminContentNewRouteImport
       parentRoute: typeof AdminContentRoute
     }
+    '/admin/content/list': {
+      id: '/admin/content/list'
+      path: '/list'
+      fullPath: '/admin/content/list'
+      preLoaderRoute: typeof AdminContentListRouteImport
+      parentRoute: typeof AdminContentRoute
+    }
     '/api/public/payments/webhook': {
       id: '/api/public/payments/webhook'
       path: '/api/public/payments/webhook'
@@ -559,10 +578,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminContentRouteChildren {
+  AdminContentListRoute: typeof AdminContentListRoute
   AdminContentNewRoute: typeof AdminContentNewRoute
 }
 
 const AdminContentRouteChildren: AdminContentRouteChildren = {
+  AdminContentListRoute: AdminContentListRoute,
   AdminContentNewRoute: AdminContentNewRoute,
 }
 
