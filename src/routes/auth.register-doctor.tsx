@@ -50,7 +50,7 @@ function RegisterDoctor() {
       if (docErr) throw docErr;
 
       toast.success(`Clínica criada! Código: ${accessCode}`);
-      navigate({ to: "/admin/dashboard" });
+      navigate({ to: "/onboarding" });
     } catch (e: any) {
       toast.error(e.message ?? "Erro ao criar clínica");
     } finally {
