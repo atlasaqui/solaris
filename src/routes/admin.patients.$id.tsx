@@ -3,10 +3,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft, Loader2, Mail, MapPin, Phone, Calendar, Hash, ShieldCheck,
   Camera, LineChart as LineIcon, NotebookPen, User as UserIcon,
-  Eye, EyeOff, Save, Archive, MessageCircle, Check,
+  Eye, EyeOff, Save, Archive, MessageCircle, Check, Sparkles, Send,
+  Plus, Trash2, X,
 } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { analyzePhoto, saveDoctorFeedback } from "@/lib/clinical.functions";
+import { PROGRESS_LEVEL_META, type ProgressLevel } from "@/lib/gamification";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   LineChart, Line, BarChart, Bar, AreaChart, Area,
@@ -27,7 +31,8 @@ type Patient = {
 type Photo = {
   id: string; week_number: number; angle: string; storage_path: string;
   taken_at: string; doctor_comment: string | null; improvement_score: number | null;
-  reviewed_at: string | null;
+  reviewed_at: string | null; patient_id: string | null; treatment_id: string | null;
+  ai_analysis: any;
 };
 type Comment = {
   id: string; content: string; created_at: string;
@@ -293,51 +298,136 @@ function EvolutionTab({ photos, onSaved }: { photos: (Photo & { url: string })[]
   );
 }
 
-function WeekBlock({ week, photos, onSaved }: { week: number; photos: (Photo & { url: string })[]; onSaved: () => void }) {
-  const [open, setOpen] = useState(false);
-  const [note, setNote] = useState("");
-  const [score, setScore] = useState<string>(photos[0]?.improvement_score != null ? String(photos[0].improvement_score) : "");
-  const [saving, setSaving] = useState(false);
+type AIAnalysis = {
+  pigmentation_delta_pct: number;
+  area_delta_pct: number;
+  uniformity_delta_pct: number;
+  improvement_score: number;
+  classification: ProgressLevel;
+  suggestion: string;
+};
 
-  const save = async () => {
-    setSaving(true);
-    const { data: u } = await supabase.auth.getUser();
-    const updates = photos.map((p) =>
-      supabase.from("evolution_photos").update({
-        doctor_comment: note.trim() || p.doctor_comment,
-        improvement_score: score.trim() === "" ? p.improvement_score : Number(score),
-        reviewed_at: new Date().toISOString(),
-        reviewed_by: u.user?.id,
-      }).eq("id", p.id)
-    );
-    await Promise.all(updates);
-    if (note.trim()) {
-      await supabase.from("clinical_comments").insert({
-        patient_id: photos[0].id ? (photos[0] as any).patient_id ?? null : null,
-        photo_id: photos[0].id,
-        content: note.trim(),
-        week_number: week,
-        is_visible_to_patient: true,
-      });
+type FeedbackRow = {
+  id: string; photo_id: string | null; progress_level: ProgressLevel;
+  message: string | null; next_steps: any; include_ai_analysis: boolean;
+  status: string; sent_at: string | null;
+};
+
+const LEVEL_KEYS: ProgressLevel[] = ["none", "mild", "moderate", "great", "excellent"];
+
+function WeekBlock({ week, photos, onSaved }: { week: number; photos: (Photo & { url: string })[]; onSaved: () => void }) {
+  const lead = photos[0];
+  const patientId = (lead as any).patient_id as string;
+  const treatmentId = ((lead as any).treatment_id ?? null) as string | null;
+
+  const runAnalyze = useServerFn(analyzePhoto);
+  const runSaveFeedback = useServerFn(saveDoctorFeedback);
+
+  const [ai, setAi] = useState<AIAnalysis | null>(((lead as any).ai_analysis as AIAnalysis | null) ?? null);
+  const [aiSuggestion, setAiSuggestion] = useState<string>(ai?.suggestion ?? "");
+  const [analyzing, setAnalyzing] = useState(false);
+
+  const [fb, setFb] = useState<FeedbackRow | null>(null);
+  const [level, setLevel] = useState<ProgressLevel>("moderate");
+  const [message, setMessage] = useState("");
+  const [steps, setSteps] = useState<{ text: string; done: boolean }[]>([]);
+  const [newStep, setNewStep] = useState("");
+  const [includeAi, setIncludeAi] = useState(true);
+  const [savingDraft, setSavingDraft] = useState(false);
+  const [sending, setSending] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("doctor_feedback")
+        .select("id, photo_id, progress_level, message, next_steps, include_ai_analysis, status, sent_at")
+        .eq("photo_id", lead.id)
+        .order("updated_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (data) {
+        const r = data as FeedbackRow;
+        setFb(r);
+        setLevel(r.progress_level);
+        setMessage(r.message ?? "");
+        setSteps(Array.isArray(r.next_steps) ? r.next_steps : []);
+        setIncludeAi(r.include_ai_analysis);
+      }
+    })();
+  }, [lead.id]);
+
+  const analyze = async () => {
+    setAnalyzing(true);
+    try {
+      const result = (await runAnalyze({ data: { photoId: lead.id } })) as AIAnalysis;
+      setAi(result);
+      setAiSuggestion(result.suggestion);
+      setLevel(result.classification);
+      toast.success("Análise concluída");
+    } catch (e: any) {
+      toast.error(e?.message ?? "Falha ao analisar");
+    } finally {
+      setAnalyzing(false);
     }
-    setSaving(false);
-    setNote("");
-    setOpen(false);
-    toast.success(`Semana ${week} revisada`);
-    onSaved();
   };
 
+  const persistSuggestion = async () => {
+    if (!ai) return;
+    const next = { ...ai, suggestion: aiSuggestion };
+    await supabase.from("evolution_photos").update({ ai_analysis: next as any }).eq("id", lead.id);
+    setAi(next);
+    toast.success("Sugestão salva");
+  };
+
+  const doSave = async (send: boolean) => {
+    if (send) setSending(true); else setSavingDraft(true);
+    try {
+      const res = await runSaveFeedback({
+        data: {
+          id: fb?.id,
+          photoId: lead.id,
+          patientId,
+          treatmentId,
+          weekNumber: week,
+          progressLevel: level,
+          message,
+          nextSteps: steps,
+          includeAiAnalysis: includeAi,
+          send,
+        },
+      });
+      setFb((prev) => ({ ...(prev ?? {} as FeedbackRow), id: (res as any).id, status: (res as any).status } as FeedbackRow));
+      toast.success(send ? "Avaliação enviada ao paciente" : "Rascunho salvo");
+      if (send) onSaved();
+    } catch (e: any) {
+      toast.error(e?.message ?? "Falha ao salvar");
+    } finally {
+      setSending(false); setSavingDraft(false);
+    }
+  };
+
+  const addStep = () => {
+    const t = newStep.trim(); if (!t) return;
+    setSteps([...steps, { text: t, done: false }]); setNewStep("");
+  };
+
+  const levelMeta = PROGRESS_LEVEL_META[level];
+  const sent = fb?.status === "sent";
+
   return (
-    <section className="overflow-hidden rounded-2xl border border-border bg-card">
+    <section className="overflow-hidden rounded-2xl border border-border bg-card" style={{ borderLeft: `4px solid ${levelMeta.color}` }}>
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
         <div className="flex items-center gap-2 text-sm">
           <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">Semana {week}</span>
           <span className="text-xs text-muted-foreground">{photos.length} foto{photos.length === 1 ? "" : "s"}</span>
+          {sent && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-success-bg px-2 py-0.5 text-[10px] font-semibold text-success">
+              <Check className="h-3 w-3" /> Enviado
+            </span>
+          )}
         </div>
-        <button onClick={() => setOpen((v) => !v)} className="text-xs font-semibold text-primary hover:underline">
-          {open ? "Fechar" : "Adicionar comentário clínico"}
-        </button>
       </div>
+
       <div className="grid grid-cols-2 gap-2 p-3 sm:grid-cols-3">
         {photos.map((p) => (
           <div key={p.id} className="overflow-hidden rounded-lg border border-border bg-[#0F172A]">
@@ -351,28 +441,146 @@ function WeekBlock({ week, photos, onSaved }: { week: number; photos: (Photo & {
           </div>
         ))}
       </div>
-      {open && (
-        <div className="space-y-3 border-t border-border p-4">
-          <textarea
-            value={note} onChange={(e) => setNote(e.target.value)}
-            rows={3} placeholder="Observação clínica desta semana..."
-            className="w-full resize-none rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
-          />
-          <div className="flex items-end gap-3">
-            <div className="flex-1">
-              <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">% melhora</label>
-              <input type="number" min={0} max={100} step="0.1"
-                value={score} onChange={(e) => setScore(e.target.value)} placeholder="0–100"
-                className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary" />
+
+      {/* Solaris IA */}
+      <div className="border-t border-border bg-gradient-to-br from-primary/[0.04] to-transparent p-4">
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <div className="grid h-7 w-7 place-items-center rounded-full bg-primary/15 text-primary">
+              <Sparkles className="h-3.5 w-3.5" />
             </div>
-            <button onClick={save} disabled={saving}
-              className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-60">
-              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Salvar
-            </button>
+            <h4 className="font-display text-sm font-semibold">Análise Solaris IA</h4>
+          </div>
+          <button onClick={analyze} disabled={analyzing}
+            className="inline-flex items-center gap-2 rounded-lg border border-primary/30 bg-background px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary/5 disabled:opacity-60">
+            {analyzing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+            {ai ? "Reanalisar" : "Analisar com IA"}
+          </button>
+        </div>
+
+        {!ai ? (
+          <p className="text-xs text-muted-foreground">A IA compara esta foto com a semana 1 e sugere uma classificação clínica auxiliar.</p>
+        ) : (
+          <div className="space-y-3">
+            <div className="grid gap-2 sm:grid-cols-3">
+              <Metric label="Pigmentação" value={ai.pigmentation_delta_pct} positiveIsBad />
+              <Metric label="Área afetada" value={ai.area_delta_pct} positiveIsBad />
+              <Metric label="Uniformidade" value={ai.uniformity_delta_pct} positiveIsBad={false} />
+            </div>
+            <div className="flex items-center gap-2 text-xs">
+              <span className="text-muted-foreground">Classificação sugerida:</span>
+              <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 font-semibold"
+                style={{ background: `${PROGRESS_LEVEL_META[ai.classification].color}20`, color: PROGRESS_LEVEL_META[ai.classification].color }}>
+                {PROGRESS_LEVEL_META[ai.classification].emoji} {PROGRESS_LEVEL_META[ai.classification].label}
+              </span>
+              <span className="ml-auto text-muted-foreground">Score: <strong className="text-foreground">{Math.round(ai.improvement_score)}</strong></span>
+            </div>
+            <div>
+              <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Sugestão clínica (editável)</label>
+              <textarea value={aiSuggestion} onChange={(e) => setAiSuggestion(e.target.value)} rows={2}
+                className="w-full resize-none rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary" />
+              <button onClick={persistSuggestion}
+                className="mt-1.5 text-[11px] font-semibold text-primary hover:underline">Salvar sugestão</button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Feedback do médico */}
+      <div className="space-y-4 border-t border-border p-4">
+        <div className="flex items-center gap-2">
+          <div className="grid h-7 w-7 place-items-center rounded-full bg-foreground text-background">
+            <NotebookPen className="h-3.5 w-3.5" />
+          </div>
+          <h4 className="font-display text-sm font-semibold">Feedback do médico</h4>
+        </div>
+
+        <div>
+          <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Nível de progresso</label>
+          <div className="flex flex-wrap gap-1.5">
+            {LEVEL_KEYS.map((k) => {
+              const m = PROGRESS_LEVEL_META[k];
+              const active = level === k;
+              return (
+                <button key={k} onClick={() => setLevel(k)}
+                  className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition ${active ? "border-transparent text-white shadow-sm" : "border-border bg-background text-muted-foreground hover:text-foreground"}`}
+                  style={active ? { background: m.color } : {}}>
+                  <span>{m.emoji}</span> {m.label}
+                </button>
+              );
+            })}
           </div>
         </div>
-      )}
+
+        <div>
+          <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Mensagem para o paciente</label>
+          <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={3}
+            placeholder="Ex: A pigmentação reduziu bem. Continue o protocolo e mantenha hidratação..."
+            className="w-full resize-none rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary" />
+        </div>
+
+        <div>
+          <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Próximos passos</label>
+          <div className="space-y-1.5">
+            {steps.map((s, i) => (
+              <div key={i} className="flex items-center gap-2 rounded-lg border border-border bg-background px-2.5 py-1.5">
+                <button onClick={() => { const c = [...steps]; c[i] = { ...c[i], done: !c[i].done }; setSteps(c); }}
+                  className={`grid h-4 w-4 shrink-0 place-items-center rounded border ${s.done ? "border-success bg-success text-white" : "border-border"}`}>
+                  {s.done && <Check className="h-3 w-3" />}
+                </button>
+                <span className={`flex-1 text-sm ${s.done ? "text-muted-foreground line-through" : ""}`}>{s.text}</span>
+                <button onClick={() => setSteps(steps.filter((_, j) => j !== i))} className="text-muted-foreground hover:text-destructive">
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            ))}
+            <div className="flex gap-2">
+              <input value={newStep} onChange={(e) => setNewStep(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addStep(); } }}
+                placeholder="Adicionar passo..."
+                className="flex-1 rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none focus:border-primary" />
+              <button onClick={addStep} className="inline-flex items-center gap-1 rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-semibold hover:bg-muted">
+                <Plus className="h-3.5 w-3.5" /> Add
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button onClick={() => setIncludeAi((v) => !v)}
+          className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold transition ${includeAi ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>
+          {includeAi ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
+          {includeAi ? "Incluir análise da IA para o paciente" : "Ocultar análise da IA do paciente"}
+        </button>
+
+        <div className="flex flex-wrap items-center justify-end gap-2 border-t border-border pt-3">
+          <button onClick={() => doSave(false)} disabled={savingDraft || sending}
+            className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-4 py-2 text-sm font-semibold hover:bg-muted disabled:opacity-60">
+            {savingDraft ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Salvar rascunho
+          </button>
+          <button onClick={() => doSave(true)} disabled={sending || savingDraft}
+            className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm hover:opacity-95 disabled:opacity-60">
+            {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} Enviar para paciente
+          </button>
+        </div>
+      </div>
     </section>
+  );
+}
+
+function Metric({ label, value, positiveIsBad }: { label: string; value: number; positiveIsBad: boolean }) {
+  const improvement = positiveIsBad ? value < 0 : value > 0;
+  const color = value === 0 ? "#94A3B8" : improvement ? "#10B981" : "#EF4444";
+  const pct = Math.min(100, Math.abs(value));
+  return (
+    <div className="rounded-lg border border-border bg-background p-2.5">
+      <div className="mb-1 flex items-center justify-between text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+        <span>{label}</span>
+        <span style={{ color }}>{value > 0 ? "+" : ""}{value.toFixed(1)}%</span>
+      </div>
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+        <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: color }} />
+      </div>
+    </div>
   );
 }
 
