@@ -154,30 +154,45 @@ function ChatTab() {
   const [messages, setMessages] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const [patientId, setPatientId] = useState<string | null>(null);
+  const [clinicId, setClinicId] = useState<string | null>(null);
   const [text, setText] = useState("");
+  const [sending, setSending] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const load = async (ptId: string) => {
+    const { data } = await supabase.from("clinical_comments")
+      .select("id, content, created_at, doctor_id, patient_id")
+      .eq("patient_id", ptId).order("created_at", { ascending: true });
+    setMessages((data ?? []) as Comment[]);
+    setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight }), 50);
+  };
 
   useEffect(() => {
     (async () => {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user) { setLoading(false); return; }
-      const { data: pt } = await supabase.from("patients").select("id").eq("user_id", u.user.id).maybeSingle();
+      const { data: pt } = await supabase.from("patients").select("id, clinic_id").eq("user_id", u.user.id).maybeSingle();
       if (!pt) { setLoading(false); return; }
       setPatientId(pt.id);
-      const { data } = await supabase.from("clinical_comments")
-        .select("id, content, created_at, doctor_id, patient_id")
-        .eq("patient_id", pt.id).order("created_at", { ascending: true });
-      setMessages((data ?? []) as Comment[]);
+      setClinicId(pt.clinic_id);
+      await load(pt.id);
       setLoading(false);
-      setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight }), 50);
     })();
   }, []);
 
   const send = async () => {
-    if (!text.trim() || !patientId) return;
-    // Note: current RLS allows only doctors to insert. Show a friendly notice.
-    toast.info("Envio de mensagens pelo paciente em breve. Seu médico já recebe seus updates de fotos.");
+    const body = text.trim();
+    if (!body || !patientId || sending) return;
+    setSending(true);
+    const { error } = await supabase.from("clinical_comments").insert({
+      patient_id: patientId,
+      content: body,
+      is_visible_to_patient: true,
+    });
+    setSending(false);
+    if (error) { toast.error(error.message); return; }
     setText("");
+    await load(patientId);
   };
 
   if (loading) return <div className="grid h-48 place-items-center text-muted-foreground"><Loader2 className="h-5 w-5 animate-spin" /></div>;
