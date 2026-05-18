@@ -4,7 +4,7 @@ import {
   TrendingUp, Loader2, MessageCircle, Image as ImageIcon, BarChart3, Send,
   Camera as CamIcon, Sun, Calendar, Plus, Check, X, Upload, Sparkles, Trophy, Lock,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
