@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Heart, Bookmark, FileText, Video, Lightbulb, Play, Loader2, Sparkles } from "lucide-react";
+import { Heart, Bookmark, FileText, Video, Lightbulb, Play, Loader2, Sparkles, MessageCircle, Stethoscope } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useWhiteLabel } from "@/components/clinic/WhiteLabelProvider";
 import { toast } from "sonner";
@@ -16,12 +16,15 @@ type Post = {
   read_time_minutes: number | null; duration_seconds: number | null;
   published_at: string | null; created_at: string;
   like_count: number | null;
+  comment_count: number | null;
+  wiki_conditions: { name: string; slug: string } | null;
 };
 
 const TYPE_META: Record<string, { icon: typeof FileText; label: string }> = {
   article: { icon: FileText, label: "Artigo" },
   video: { icon: Video, label: "Vídeo" },
   tip: { icon: Lightbulb, label: "Dica" },
+  protocol: { icon: Stethoscope, label: "Protocolo" },
 };
 
 const FILTERS = [
@@ -29,6 +32,7 @@ const FILTERS = [
   { id: "article", label: "Artigos" },
   { id: "video", label: "Vídeos" },
   { id: "tip", label: "Dicas" },
+    { id: "protocol", label: "Protocolos" },
 ] as const;
 
 function timeAgo(iso: string | null) {
@@ -54,22 +58,22 @@ function Feed() {
     (async () => {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user) { setLoading(false); return; }
-      const { data: pt } = await supabase.from("patients").select("id").eq("user_id", u.user.id).maybeSingle();
-      if (pt) setPatientId(pt.id);
+      const { data: pt } = await supabase.from("patients").select("id, clinic_id").eq("user_id", u.user.id).maybeSingle();
+      if (!pt?.clinic_id) { setLoading(false); return; }
+      setPatientId(pt.id);
 
       const { data } = await supabase.from("content_posts")
-        .select("id, slug, title, summary, type, category, cover_image_url, video_thumbnail_url, read_time_minutes, duration_seconds, published_at, created_at, like_count")
+        .select("id, slug, title, summary, type, category, cover_image_url, video_thumbnail_url, read_time_minutes, duration_seconds, published_at, created_at, like_count, comment_count, wiki_conditions(name, slug)")
+        .eq("clinic_id", pt.clinic_id)
         .eq("is_published", true).order("published_at", { ascending: false }).limit(50);
-      setPosts((data ?? []) as Post[]);
+      setPosts((data ?? []) as unknown as Post[]);
 
-      if (pt) {
-        const [{ data: lks }, { data: bms }] = await Promise.all([
-          supabase.from("content_post_likes").select("post_id").eq("patient_id", pt.id),
-          supabase.from("content_bookmarks").select("post_id").eq("patient_id", pt.id),
-        ]);
-        setLikes(new Set((lks ?? []).map((l: any) => l.post_id)));
-        setBookmarks(new Set((bms ?? []).map((b: any) => b.post_id)));
-      }
+      const [{ data: lks }, { data: bms }] = await Promise.all([
+        supabase.from("content_post_likes").select("post_id").eq("patient_id", pt.id),
+        supabase.from("content_bookmarks").select("post_id").eq("patient_id", pt.id),
+      ]);
+      setLikes(new Set((lks ?? []).map((l: any) => l.post_id)));
+      setBookmarks(new Set((bms ?? []).map((b: any) => b.post_id)));
       setLoading(false);
     })();
   }, []);

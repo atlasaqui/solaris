@@ -7,10 +7,11 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { uploadToStorageWithProgress } from "@/lib/storage-upload";
 
 export const Route = createFileRoute("/admin/content/video-editor")({
   head: () => ({ meta: [{ title: "Editor de vídeo" }] }),
-  component: VideoEditor,
+  component: () => <VideoEditorPanel />,
 });
 
 const FILTERS: { id: string; label: string; css: string }[] = [
@@ -25,7 +26,7 @@ const SPEEDS = [0.5, 1, 1.5];
 
 type Step = "capture" | "edit" | "publish";
 
-function VideoEditor() {
+export function VideoEditorPanel({ embedded = false }: { embedded?: boolean }) {
   const navigate = useNavigate();
   const [step, setStep] = useState<Step>("capture");
   const [videoBlob, setVideoBlob] = useState<Blob | null>(null);
@@ -60,6 +61,7 @@ function VideoEditor() {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [publishing, setPublishing] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   useEffect(() => () => { streamRef.current?.getTracks().forEach((t) => t.stop()); }, []);
 
@@ -168,20 +170,25 @@ function VideoEditor() {
       const { data: doc } = await supabase.from("doctors").select("id, clinic_id").eq("user_id", u.user!.id).maybeSingle();
       if (!doc?.clinic_id) throw new Error("Clínica não encontrada");
 
+      setUploadProgress(1);
       const baseId = crypto.randomUUID();
-      const videoPath = `${doc.clinic_id}/${baseId}.webm`;
-      const { error: vErr } = await supabase.storage.from("content-videos").upload(videoPath, videoBlob, { contentType: videoBlob.type || "video/webm" });
-      if (vErr) throw vErr;
+      const videoExt = videoBlob.type.includes("mp4") ? "mp4" : "webm";
+      const videoPath = `${doc.clinic_id}/${baseId}.${videoExt}`;
+      await uploadToStorageWithProgress({
+        bucket: "content-videos",
+        path: videoPath,
+        file: videoBlob,
+        contentType: videoBlob.type || "video/webm",
+        onProgress: (value) => setUploadProgress(Math.min(value, 88)),
+      });
       const { data: vSigned } = await supabase.storage.from("content-videos").createSignedUrl(videoPath, 60 * 60 * 24 * 365);
 
       let thumbPublicUrl: string | null = null;
       if (thumbBlob) {
         const tPath = `${doc.clinic_id}/${baseId}.jpg`;
-        const { error: tErr } = await supabase.storage.from("content-thumbnails").upload(tPath, thumbBlob, { contentType: "image/jpeg" });
-        if (!tErr) {
-          const { data: pub } = supabase.storage.from("content-thumbnails").getPublicUrl(tPath);
-          thumbPublicUrl = pub.publicUrl;
-        }
+        await uploadToStorageWithProgress({ bucket: "content-thumbnails", path: tPath, file: thumbBlob, contentType: thumbBlob.type || "image/jpeg", onProgress: (value) => setUploadProgress(88 + Math.round(value * 0.07)) });
+        const { data: pub } = supabase.storage.from("content-thumbnails").getPublicUrl(tPath);
+        thumbPublicUrl = pub.publicUrl;
       }
 
       const editorMeta = {
@@ -200,11 +207,12 @@ function VideoEditor() {
       });
       if (pErr) throw pErr;
 
+      setUploadProgress(100);
       toast.success("Vídeo publicado");
       navigate({ to: "/admin/content/list" });
     } catch (e: any) {
       toast.error(e.message ?? "Falha ao publicar");
-    } finally { setPublishing(false); }
+    } finally { setPublishing(false); setTimeout(() => setUploadProgress(0), 900); }
   };
 
   const filterCss = FILTERS.find((f) => f.id === filter)?.css ?? "none";
@@ -212,9 +220,11 @@ function VideoEditor() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-5">
-      <Link to="/admin/content/list" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="h-4 w-4" /> Voltar para biblioteca
-      </Link>
+      {!embedded && (
+        <Link to="/admin/content/list" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+          <ArrowLeft className="h-4 w-4" /> Voltar para biblioteca
+        </Link>
+      )}
 
       <header className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -294,11 +304,11 @@ function VideoEditor() {
             {/* Transport */}
             <div className="flex items-center justify-center gap-2">
               <IconBtn onClick={() => seek(0)}><SkipBack className="h-4 w-4" /></IconBtn>
-              <IconBtn onClick={() => seek(current - 5)}><Rewind className="h-4 w-4" /></IconBtn>
+              <IconBtn onClick={() => seek(current - 10)}><Rewind className="h-4 w-4" /><span className="sr-only">Voltar 10s</span></IconBtn>
               <button onClick={togglePlay} className="grid h-12 w-12 place-items-center rounded-full bg-primary text-primary-foreground">
                 {playing ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 fill-current" />}
               </button>
-              <IconBtn onClick={() => seek(current + 5)}><FastForward className="h-4 w-4" /></IconBtn>
+              <IconBtn onClick={() => seek(current + 10)}><FastForward className="h-4 w-4" /><span className="sr-only">Avançar 10s</span></IconBtn>
               <IconBtn onClick={() => seek(duration)}><SkipForward className="h-4 w-4" /></IconBtn>
             </div>
 
@@ -480,6 +490,14 @@ function VideoEditor() {
               <div>
                 <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Capa selecionada</span>
                 <img src={thumbUrl} alt="" className="aspect-video w-full rounded-lg object-cover" />
+              </div>
+            )}
+            {uploadProgress > 0 && (
+              <div>
+                <div className="mb-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  <span>Upload</span><span>{uploadProgress}%</span>
+                </div>
+                <div className="h-2 overflow-hidden rounded-full bg-secondary"><div className="h-full bg-primary transition-all" style={{ width: `${uploadProgress}%` }} /></div>
               </div>
             )}
             <div className="flex justify-end gap-2 pt-2">

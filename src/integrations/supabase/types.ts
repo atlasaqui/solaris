@@ -384,6 +384,45 @@ export type Database = {
           },
         ]
       }
+      content_post_comments: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          patient_id: string | null
+          post_id: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          patient_id?: string | null
+          post_id?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          patient_id?: string | null
+          post_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_post_comments_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_post_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "content_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       content_post_likes: {
         Row: {
           created_at: string | null
@@ -425,6 +464,7 @@ export type Database = {
           author_id: string | null
           category: string | null
           clinic_id: string | null
+          comment_count: number | null
           content: string | null
           cover_image_url: string | null
           created_at: string | null
@@ -451,6 +491,7 @@ export type Database = {
           author_id?: string | null
           category?: string | null
           clinic_id?: string | null
+          comment_count?: number | null
           content?: string | null
           cover_image_url?: string | null
           created_at?: string | null
@@ -477,6 +518,7 @@ export type Database = {
           author_id?: string | null
           category?: string | null
           clinic_id?: string | null
+          comment_count?: number | null
           content?: string | null
           cover_image_url?: string | null
           created_at?: string | null
