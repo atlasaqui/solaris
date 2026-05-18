@@ -523,6 +523,96 @@ export type Database = {
           },
         ]
       }
+      doctor_feedback: {
+        Row: {
+          clinic_id: string | null
+          created_at: string
+          doctor_id: string | null
+          id: string
+          include_ai_analysis: boolean
+          message: string | null
+          next_steps: Json
+          patient_id: string
+          photo_id: string | null
+          progress_level: string
+          sent_at: string | null
+          status: string
+          treatment_id: string | null
+          updated_at: string
+          week_number: number | null
+        }
+        Insert: {
+          clinic_id?: string | null
+          created_at?: string
+          doctor_id?: string | null
+          id?: string
+          include_ai_analysis?: boolean
+          message?: string | null
+          next_steps?: Json
+          patient_id: string
+          photo_id?: string | null
+          progress_level: string
+          sent_at?: string | null
+          status?: string
+          treatment_id?: string | null
+          updated_at?: string
+          week_number?: number | null
+        }
+        Update: {
+          clinic_id?: string | null
+          created_at?: string
+          doctor_id?: string | null
+          id?: string
+          include_ai_analysis?: boolean
+          message?: string | null
+          next_steps?: Json
+          patient_id?: string
+          photo_id?: string | null
+          progress_level?: string
+          sent_at?: string | null
+          status?: string
+          treatment_id?: string | null
+          updated_at?: string
+          week_number?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_feedback_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "doctor_feedback_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "doctor_feedback_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "doctor_feedback_photo_id_fkey"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "evolution_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "doctor_feedback_treatment_id_fkey"
+            columns: ["treatment_id"]
+            isOneToOne: false
+            referencedRelation: "treatments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       doctors: {
         Row: {
           avatar_url: string | null
@@ -575,12 +665,15 @@ export type Database = {
       }
       evolution_photos: {
         Row: {
+          ai_analysis: Json | null
+          ai_visible_to_patient: boolean
           angle: string | null
           checklist_accessories: boolean | null
           checklist_background: boolean | null
           checklist_light: boolean | null
           clinic_id: string | null
           created_at: string | null
+          doctor_approved_at: string | null
           doctor_comment: string | null
           id: string
           improvement_score: number | null
@@ -594,12 +687,15 @@ export type Database = {
           week_number: number
         }
         Insert: {
+          ai_analysis?: Json | null
+          ai_visible_to_patient?: boolean
           angle?: string | null
           checklist_accessories?: boolean | null
           checklist_background?: boolean | null
           checklist_light?: boolean | null
           clinic_id?: string | null
           created_at?: string | null
+          doctor_approved_at?: string | null
           doctor_comment?: string | null
           id?: string
           improvement_score?: number | null
@@ -613,12 +709,15 @@ export type Database = {
           week_number: number
         }
         Update: {
+          ai_analysis?: Json | null
+          ai_visible_to_patient?: boolean
           angle?: string | null
           checklist_accessories?: boolean | null
           checklist_background?: boolean | null
           checklist_light?: boolean | null
           clinic_id?: string | null
           created_at?: string | null
+          doctor_approved_at?: string | null
           doctor_comment?: string | null
           id?: string
           improvement_score?: number | null
@@ -702,6 +801,45 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      patient_achievements: {
+        Row: {
+          achievement: string
+          clinic_id: string | null
+          id: string
+          patient_id: string
+          unlocked_at: string
+        }
+        Insert: {
+          achievement: string
+          clinic_id?: string | null
+          id?: string
+          patient_id: string
+          unlocked_at?: string
+        }
+        Update: {
+          achievement?: string
+          clinic_id?: string | null
+          id?: string
+          patient_id?: string
+          unlocked_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "patient_achievements_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "patient_achievements_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
             referencedColumns: ["id"]
           },
         ]
