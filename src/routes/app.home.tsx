@@ -68,13 +68,13 @@ function Home() {
 
         <div className="flex items-center justify-between text-[11px] uppercase tracking-wider text-white/70">
           <span>Índice UV agora</span>
-          <span>📍 {UV_CITY}</span>
+          <span>📍 {uvData?.city ?? "—"}</span>
         </div>
 
         <div className="mt-4 flex items-end justify-between">
           <div className="flex items-baseline gap-3">
             <span className="font-display text-[64px] font-bold leading-none tracking-tight">
-              {UV_INDEX}
+              {loadingUv ? <Loader2 className="h-10 w-10 animate-spin" /> : uvData?.uvIndex ?? 0}
             </span>
             <div className="pb-2">
               <span
@@ -83,12 +83,11 @@ function Home() {
               >
                 {uv.label}
               </span>
-              <div className="mt-1 text-sm text-white/75">{UV_TEMP}° agora</div>
+              <div className="mt-1 text-sm text-white/75">{uvData?.temperature ?? 0}° agora</div>
             </div>
           </div>
         </div>
 
-        {/* Risk gradient bar */}
         <div className="mt-6">
           <div className="relative h-2 w-full overflow-hidden rounded-full bg-white/15">
             <div
@@ -110,10 +109,14 @@ function Home() {
           </div>
         </div>
 
+        <p className="mt-4 text-[13px] leading-relaxed text-white/85">{uv.advice}</p>
+
         <button
-          className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-white/15 py-3 text-sm font-semibold backdrop-blur transition hover:bg-white/25"
+          onClick={registerProtection}
+          disabled={registering || loadingUv}
+          className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-white/15 py-3 text-sm font-semibold backdrop-blur transition hover:bg-white/25 disabled:opacity-60"
         >
-          Registrar proteção solar
+          {registering ? <Loader2 className="h-4 w-4 animate-spin" /> : "Registrar proteção solar"}
         </button>
       </section>
 
