@@ -6,14 +6,16 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/auth/register-patient")({
   head: () => ({ meta: [{ title: "Cadastro paciente — Solaris" }] }),
+  validateSearch: (s: Record<string, unknown>) => ({ code: typeof s.code === "string" ? s.code : undefined }),
   component: RegisterPatient,
 });
 
 function RegisterPatient() {
   const navigate = useNavigate();
   const { brand, loadByAccessCode } = useWhiteLabel();
+  const { code: presetCode } = Route.useSearch();
   const [step, setStep] = useState<1 | 2>(1);
-  const [code, setCode] = useState("");
+  const [code, setCode] = useState(presetCode ?? "");
   const [clinicId, setClinicId] = useState<string | null>(null);
   const [form, setForm] = useState({ fullName: "", email: "", password: "" });
   const [loading, setLoading] = useState(false);
