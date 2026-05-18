@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
-export const Route = createFileRoute("/admin/content")({
+export const Route = createFileRoute("/admin/content/")({
   head: () => ({ meta: [{ title: "Biblioteca da Clínica" }] }),
   component: AdminContent,
 });
