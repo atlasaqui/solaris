@@ -153,8 +153,11 @@ function PhotosTab() {
 function ChatTab() {
   const [messages, setMessages] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [patientId, setPatientId] = useState<string | null>(null);
   const [clinicId, setClinicId] = useState<string | null>(null);
+  const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const load = async (ptId: string) => {
     const { data } = await supabase.from("clinical_comments")
