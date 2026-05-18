@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, useRouterState, useNavigate, redirect } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { LayoutDashboard, Building2, Users, BookOpen, Library, Palette, Settings, CreditCard, LogOut } from "lucide-react";
+import { LayoutDashboard, Building2, Users, BookOpen, Library, Palette, Settings, CreditCard, LogOut, FilePlus2, Video } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useWhiteLabel } from "@/components/clinic/WhiteLabelProvider";
 
