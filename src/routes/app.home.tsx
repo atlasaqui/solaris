@@ -1,25 +1,54 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Camera, BookOpen, Building2, TrendingUp, Search, ArrowRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Camera, BookOpen, Building2, TrendingUp, Search, ArrowRight, Loader2 } from "lucide-react";
+import { fetchUV, uvLevel, type UVData } from "@/lib/uv";
+import { supabase } from "@/integrations/supabase/client";
+import { useWhiteLabel } from "@/components/clinic/WhiteLabelProvider";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/app/home")({
   head: () => ({ meta: [{ title: "Início" }] }),
   component: Home,
 });
 
-const UV_INDEX = 8;
-const UV_TEMP = 32;
-const UV_CITY = "Recife";
-
-function uvLevel(idx: number) {
-  if (idx <= 2) return { label: "Baixo", color: "#16A34A", pct: 18 };
-  if (idx <= 5) return { label: "Moderado", color: "#EAB308", pct: 42 };
-  if (idx <= 7) return { label: "Alto", color: "#F97316", pct: 68 };
-  if (idx <= 10) return { label: "Muito alto", color: "#EF4444", pct: 88 };
-  return { label: "Extremo", color: "#7C3AED", pct: 100 };
-}
-
 function Home() {
-  const uv = uvLevel(UV_INDEX);
+  const { brand } = useWhiteLabel();
+  const [uvData, setUvData] = useState<UVData | null>(null);
+  const [loadingUv, setLoadingUv] = useState(true);
+  const [registering, setRegistering] = useState(false);
+
+  useEffect(() => {
+    fetchUV()
+      .then(setUvData)
+      .catch(() => setUvData({ uvIndex: 0, temperature: 0, city: "—", lat: 0, lng: 0 }))
+      .finally(() => setLoadingUv(false));
+  }, []);
+
+  const uv = uvLevel(uvData?.uvIndex ?? 0);
+
+  const registerProtection = async () => {
+    if (!uvData) return;
+    setRegistering(true);
+    const { data: u } = await supabase.auth.getUser();
+    const { data: p } = await supabase
+      .from("patients")
+      .select("id, clinic_id")
+      .eq("user_id", u.user?.id ?? "")
+      .maybeSingle();
+    if (!p) { setRegistering(false); toast.error("Paciente não vinculado"); return; }
+    const { error } = await supabase.from("uv_protection_logs").insert({
+      patient_id: p.id,
+      clinic_id: p.clinic_id,
+      uv_index: uvData.uvIndex,
+      temperature: uvData.temperature,
+      city: uvData.city,
+      lat: uvData.lat,
+      lng: uvData.lng,
+    });
+    setRegistering(false);
+    if (error) toast.error("Erro ao registrar");
+    else toast.success("Proteção registrada ✓");
+  };
 
   return (
     <div className="space-y-6">
