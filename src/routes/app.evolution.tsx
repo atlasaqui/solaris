@@ -902,6 +902,7 @@ function StatCard({ icon: Icon, label, value, hint }: { icon: typeof CamIcon; la
       <Icon className="h-5 w-5" style={{ color: "var(--clinic-primary)" }} />
       <div className="mt-2 font-display text-[22px] font-bold">{value}</div>
       <div className="text-[12px] text-muted-foreground">{label}</div>
+      {hint && <div className="mt-1 text-[10.5px] text-muted-foreground/80 italic">{hint}</div>}
     </div>
   );
 }
