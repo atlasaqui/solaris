@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   TrendingUp, Loader2, MessageCircle, Image as ImageIcon, BarChart3, Send,
   Camera as CamIcon, Sun, Calendar, Plus, Check, X, Upload, Sparkles, Trophy, Lock,
+  Circle,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
@@ -60,10 +61,22 @@ function Evolution() {
           <TabsTrigger value="data" className="flex-1 gap-1.5"><BarChart3 className="h-4 w-4" /> Dados</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="progress"><ProgressTab /></TabsContent>
-        <TabsContent value="photos"><PhotosTab /></TabsContent>
-        <TabsContent value="chat"><ChatTab /></TabsContent>
-        <TabsContent value="data"><DataTab /></TabsContent>
+        <TabsContent value="progress">
+          <p className="mb-3 text-[12px] text-muted-foreground">Veja sua evolução semana a semana</p>
+          <ProgressTab />
+        </TabsContent>
+        <TabsContent value="photos">
+          <p className="mb-3 text-[12px] text-muted-foreground">Registre fotos para acompanhamento</p>
+          <PhotosTab />
+        </TabsContent>
+        <TabsContent value="chat">
+          <p className="mb-3 text-[12px] text-muted-foreground">Converse com seu dermatologista</p>
+          <ChatTab />
+        </TabsContent>
+        <TabsContent value="data">
+          <p className="mb-3 text-[12px] text-muted-foreground">Métricas e estatísticas do tratamento</p>
+          <DataTab />
+        </TabsContent>
       </Tabs>
     </div>
   );
@@ -346,6 +359,16 @@ function PhotosTab() {
       >
         <Plus className="h-4 w-4" /> Enviar primeira foto
       </button>
+      <button
+        type="button"
+        onClick={() => toast("Dicas para uma boa foto", {
+          description: "1) Boa luz natural · 2) Sem maquiagem/óculos · 3) Câmera estável e fundo neutro",
+        })}
+        className="mt-3 block w-full text-[12px] font-medium underline-offset-2 hover:underline"
+        style={{ color: "var(--clinic-primary)" }}
+      >
+        Como tirar uma boa foto?
+      </button>
     </div>
   );
 
@@ -455,10 +478,18 @@ function UploadPhotoSheet({
 
   const pick = (f: File | null) => {
     if (!f) return;
-    if (!f.type.startsWith("image/")) { toast.error("Selecione uma imagem."); return; }
+    const ok = /^image\/(jpe?g|png)$/i.test(f.type);
+    if (!ok) { toast.error("Formato inválido. Use apenas JPG ou PNG."); return; }
     if (f.size > 10 * 1024 * 1024) { toast.error("Imagem acima de 10MB."); return; }
     setFile(f);
     setPreview(URL.createObjectURL(f));
+  };
+
+  const clearFile = () => {
+    setFile(null);
+    if (preview) URL.revokeObjectURL(preview);
+    setPreview("");
+    if (fileRef.current) fileRef.current.value = "";
   };
 
   const submit = async () => {
@@ -509,7 +540,7 @@ function UploadPhotoSheet({
             <input
               ref={fileRef}
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png"
               capture="environment"
               className="hidden"
               onChange={(e) => pick(e.target.files?.[0] ?? null)}
@@ -517,10 +548,16 @@ function UploadPhotoSheet({
             {preview ? (
               <div className="relative aspect-square overflow-hidden rounded-2xl bg-[#0F172A]">
                 <img src={preview} alt="" className="h-full w-full object-cover" />
-                <button
-                  onClick={() => fileRef.current?.click()}
-                  className="absolute bottom-3 right-3 rounded-full bg-white/90 px-3 py-1.5 text-[12px] font-semibold text-[#0F172A]"
-                >Trocar</button>
+                <div className="absolute bottom-3 right-3 flex gap-2">
+                  <button
+                    onClick={clearFile}
+                    className="rounded-full bg-white/90 px-3 py-1.5 text-[12px] font-semibold text-[#0F172A]"
+                  >Remover</button>
+                  <button
+                    onClick={() => fileRef.current?.click()}
+                    className="rounded-full bg-white/90 px-3 py-1.5 text-[12px] font-semibold text-[#0F172A]"
+                  >Trocar</button>
+                </div>
               </div>
             ) : (
               <button
@@ -634,42 +671,80 @@ function ChatTab() {
     const body = text.trim();
     if (!body || !patientId || sending) return;
     setSending(true);
+    // Optimistic UI — show immediately
+    const tempId = `temp-${Date.now()}`;
+    const optimistic: Comment = {
+      id: tempId, content: body, created_at: new Date().toISOString(),
+      doctor_id: null, patient_id: patientId,
+    };
+    setMessages((m) => [...m, optimistic]);
+    setText("");
+    setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight }), 30);
+
     const { error } = await supabase.from("clinical_comments").insert({
       patient_id: patientId,
       content: body,
       is_visible_to_patient: true,
     });
     setSending(false);
-    if (error) { toast.error(error.message); return; }
-    setText("");
+    if (error) {
+      // Rollback + show error
+      setMessages((m) => m.filter((x) => x.id !== tempId));
+      setText(body);
+      toast.error("Falha ao enviar. Verifique sua conexão e tente novamente.");
+      return;
+    }
     await load(patientId);
   };
 
   if (loading) return <div className="grid h-48 place-items-center text-muted-foreground"><Loader2 className="h-5 w-5 animate-spin" /></div>;
 
+  const canSend = text.trim().length > 0 && !sending;
+
   return (
     <div className="flex h-[60vh] flex-col overflow-hidden rounded-2xl bg-white" style={{ boxShadow: "0 2px 16px rgba(0,0,0,0.06)" }}>
+      {/* Online header */}
+      <div className="flex items-center gap-2.5 border-b border-border bg-white px-4 py-2.5">
+        <div className="relative">
+          <div className="grid h-8 w-8 place-items-center rounded-full text-white text-[11px] font-bold" style={{ background: "var(--clinic-primary)" }}>
+            DR
+          </div>
+          <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-emerald-500" />
+        </div>
+        <div className="min-w-0">
+          <div className="truncate text-[13px] font-semibold leading-tight">Dermatologista</div>
+          <div className="text-[10.5px] text-emerald-600">online agora</div>
+        </div>
+      </div>
+
       <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto bg-[#F8FAFC] p-4">
         {messages.length === 0 ? (
           <div className="grid h-full place-items-center text-center text-sm text-muted-foreground">
             <div>
               <MessageCircle className="mx-auto h-8 w-8" />
               <p className="mt-2">Nenhuma mensagem ainda.</p>
+              <p className="mt-1 text-[11px]">Escreva abaixo para iniciar a conversa.</p>
             </div>
           </div>
         ) : messages.map((m) => {
           const fromDoctor = !!m.doctor_id;
+          const isTemp = m.id.startsWith("temp-");
           return (
             <div key={m.id} className={`flex ${fromDoctor ? "justify-start" : "justify-end"}`}>
               <div
                 className="max-w-[80%] rounded-2xl px-3.5 py-2 text-[13px] leading-relaxed"
                 style={fromDoctor
                   ? { background: "#fff", color: "#0F172A", border: "1px solid #E2E8F0" }
-                  : { background: "var(--clinic-primary)", color: "#fff" }}
+                  : { background: "var(--clinic-primary)", color: "#fff", opacity: isTemp ? 0.7 : 1 }}
               >
                 <div>{m.content}</div>
-                <div className={`mt-1 text-[10px] ${fromDoctor ? "text-muted-foreground" : "text-white/70"}`}>
-                  {new Date(m.created_at).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}
+                <div className={`mt-1 flex items-center gap-1 text-[10px] ${fromDoctor ? "text-muted-foreground" : "text-white/80"}`}>
+                  <span>{new Date(m.created_at).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</span>
+                  {!fromDoctor && (
+                    isTemp
+                      ? <Circle className="h-3 w-3" />
+                      : <Check className="h-3 w-3" />
+                  )}
                 </div>
               </div>
             </div>
@@ -677,19 +752,33 @@ function ChatTab() {
         })}
       </div>
       <div className="flex items-center gap-2 border-t border-border bg-white p-3">
-        <input
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && send()}
-          placeholder="Escreva uma mensagem..."
-          className="flex-1 rounded-full border border-border bg-[#F8FAFC] px-4 py-2 text-[13px] outline-none focus:border-[var(--clinic-primary)]"
-        />
+        <div className="relative flex-1">
+          <input
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter" && canSend) send(); }}
+            placeholder="Escreva uma mensagem..."
+            className="w-full rounded-full border border-border bg-[#F8FAFC] px-4 py-2 pr-9 text-[13px] outline-none focus:border-[var(--clinic-primary)]"
+          />
+          {text.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setText("")}
+              className="absolute right-2 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-full bg-muted text-muted-foreground hover:bg-muted/80"
+              aria-label="Limpar mensagem"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          )}
+        </div>
         <button
           onClick={send}
-          className="grid h-10 w-10 place-items-center rounded-full text-white"
+          disabled={!canSend}
+          className="grid h-10 w-10 place-items-center rounded-full text-white transition disabled:cursor-not-allowed disabled:opacity-40"
           style={{ background: "var(--clinic-primary)" }}
+          aria-label="Enviar mensagem"
         >
-          <Send className="h-4 w-4" />
+          {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
         </button>
       </div>
     </div>
@@ -741,13 +830,37 @@ function DataTab() {
 
   return (
     <div className="space-y-4">
+      {/* Period filter (H7 — efficiency) */}
+      <div className="flex items-center justify-end">
+        <label className="sr-only" htmlFor="period">Período</label>
+        <select
+          id="period"
+          defaultValue="all"
+          className="rounded-full border border-border bg-white px-3 py-1.5 text-[12px] font-medium text-foreground outline-none focus:border-[var(--clinic-primary)]"
+        >
+          <option value="week">Esta semana</option>
+          <option value="month">Este mês</option>
+          <option value="all">Todo período</option>
+        </select>
+      </div>
+
       <div className="rounded-2xl bg-white p-4" style={{ boxShadow: "0 2px 16px rgba(0,0,0,0.06)" }}>
         <div className="mb-2 flex items-center justify-between">
           <h3 className="font-display text-[14px] font-semibold">Evolução de melhora</h3>
           <span className="text-[11px] text-muted-foreground">% por semana</span>
         </div>
         {chartData.length === 0 ? (
-          <p className="py-8 text-center text-sm text-muted-foreground">Sem dados ainda.</p>
+          <div className="space-y-3 py-2" aria-label="Aguardando dados de evolução">
+            <div className="h-32 w-full animate-pulse rounded-xl bg-[var(--clinic-primary-light)]/70" />
+            <div className="flex items-center justify-between">
+              <div className="h-2 w-12 animate-pulse rounded bg-[var(--clinic-primary-light)]" />
+              <div className="h-2 w-16 animate-pulse rounded bg-[var(--clinic-primary-light)]" />
+              <div className="h-2 w-10 animate-pulse rounded bg-[var(--clinic-primary-light)]" />
+            </div>
+            <p className="pt-1 text-center text-[11px] text-muted-foreground">
+              O gráfico aparece aqui assim que houver fotos avaliadas pelo seu médico.
+            </p>
+          </div>
         ) : (
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
@@ -770,21 +883,26 @@ function DataTab() {
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <StatCard icon={CamIcon} label="Fotos enviadas" value={String(totalPhotos)} />
-        <StatCard icon={TrendingUp} label="Adesão" value={`${adherence}%`} />
-        <StatCard icon={Sun} label="UV médio" value={String(uvAvg)} />
-        <StatCard icon={Calendar} label="Semanas restantes" value={String(remaining)} />
+        <StatCard icon={CamIcon} label="Fotos enviadas" value={String(totalPhotos)}
+          hint={totalPhotos === 0 ? "Nenhuma foto enviada ainda" : undefined} />
+        <StatCard icon={TrendingUp} label="Adesão" value={`${adherence}%`}
+          hint={treatmentCurrent === 0 ? "Tratamento ainda não iniciado" : undefined} />
+        <StatCard icon={Sun} label="UV médio" value={String(uvAvg)}
+          hint={uvAvg === 0 ? "Sem registros de exposição" : undefined} />
+        <StatCard icon={Calendar} label="Semanas restantes" value={String(remaining)}
+          hint={treatmentTotal === 0 ? "Sem tratamento ativo" : undefined} />
       </div>
     </div>
   );
 }
 
-function StatCard({ icon: Icon, label, value }: { icon: typeof CamIcon; label: string; value: string }) {
+function StatCard({ icon: Icon, label, value, hint }: { icon: typeof CamIcon; label: string; value: string; hint?: string }) {
   return (
     <div className="rounded-2xl bg-white p-4" style={{ boxShadow: "0 2px 16px rgba(0,0,0,0.06)" }}>
       <Icon className="h-5 w-5" style={{ color: "var(--clinic-primary)" }} />
       <div className="mt-2 font-display text-[22px] font-bold">{value}</div>
       <div className="text-[12px] text-muted-foreground">{label}</div>
+      {hint && <div className="mt-1 text-[10.5px] text-muted-foreground/80 italic">{hint}</div>}
     </div>
   );
 }
