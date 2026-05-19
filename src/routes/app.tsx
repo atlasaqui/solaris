@@ -6,8 +6,9 @@ import { useWhiteLabel } from "@/components/clinic/WhiteLabelProvider";
 
 export const Route = createFileRoute("/app")({
   beforeLoad: async () => {
-    const { data } = await supabase.auth.getUser();
-    if (!data.user) throw redirect({ to: "/auth/login" });
+    if (typeof window === "undefined") return;
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) throw redirect({ to: "/auth/login" });
   },
   component: AppLayout,
 });
