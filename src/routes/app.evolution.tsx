@@ -830,13 +830,37 @@ function DataTab() {
 
   return (
     <div className="space-y-4">
+      {/* Period filter (H7 — efficiency) */}
+      <div className="flex items-center justify-end">
+        <label className="sr-only" htmlFor="period">Período</label>
+        <select
+          id="period"
+          defaultValue="all"
+          className="rounded-full border border-border bg-white px-3 py-1.5 text-[12px] font-medium text-foreground outline-none focus:border-[var(--clinic-primary)]"
+        >
+          <option value="week">Esta semana</option>
+          <option value="month">Este mês</option>
+          <option value="all">Todo período</option>
+        </select>
+      </div>
+
       <div className="rounded-2xl bg-white p-4" style={{ boxShadow: "0 2px 16px rgba(0,0,0,0.06)" }}>
         <div className="mb-2 flex items-center justify-between">
           <h3 className="font-display text-[14px] font-semibold">Evolução de melhora</h3>
           <span className="text-[11px] text-muted-foreground">% por semana</span>
         </div>
         {chartData.length === 0 ? (
-          <p className="py-8 text-center text-sm text-muted-foreground">Sem dados ainda.</p>
+          <div className="space-y-3 py-2" aria-label="Aguardando dados de evolução">
+            <div className="h-32 w-full animate-pulse rounded-xl bg-[var(--clinic-primary-light)]/70" />
+            <div className="flex items-center justify-between">
+              <div className="h-2 w-12 animate-pulse rounded bg-[var(--clinic-primary-light)]" />
+              <div className="h-2 w-16 animate-pulse rounded bg-[var(--clinic-primary-light)]" />
+              <div className="h-2 w-10 animate-pulse rounded bg-[var(--clinic-primary-light)]" />
+            </div>
+            <p className="pt-1 text-center text-[11px] text-muted-foreground">
+              O gráfico aparece aqui assim que houver fotos avaliadas pelo seu médico.
+            </p>
+          </div>
         ) : (
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
@@ -859,16 +883,20 @@ function DataTab() {
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <StatCard icon={CamIcon} label="Fotos enviadas" value={String(totalPhotos)} />
-        <StatCard icon={TrendingUp} label="Adesão" value={`${adherence}%`} />
-        <StatCard icon={Sun} label="UV médio" value={String(uvAvg)} />
-        <StatCard icon={Calendar} label="Semanas restantes" value={String(remaining)} />
+        <StatCard icon={CamIcon} label="Fotos enviadas" value={String(totalPhotos)}
+          hint={totalPhotos === 0 ? "Nenhuma foto enviada ainda" : undefined} />
+        <StatCard icon={TrendingUp} label="Adesão" value={`${adherence}%`}
+          hint={treatmentCurrent === 0 ? "Tratamento ainda não iniciado" : undefined} />
+        <StatCard icon={Sun} label="UV médio" value={String(uvAvg)}
+          hint={uvAvg === 0 ? "Sem registros de exposição" : undefined} />
+        <StatCard icon={Calendar} label="Semanas restantes" value={String(remaining)}
+          hint={treatmentTotal === 0 ? "Sem tratamento ativo" : undefined} />
       </div>
     </div>
   );
 }
 
-function StatCard({ icon: Icon, label, value }: { icon: typeof CamIcon; label: string; value: string }) {
+function StatCard({ icon: Icon, label, value, hint }: { icon: typeof CamIcon; label: string; value: string; hint?: string }) {
   return (
     <div className="rounded-2xl bg-white p-4" style={{ boxShadow: "0 2px 16px rgba(0,0,0,0.06)" }}>
       <Icon className="h-5 w-5" style={{ color: "var(--clinic-primary)" }} />
