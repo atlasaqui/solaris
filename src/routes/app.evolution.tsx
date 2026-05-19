@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   TrendingUp, Loader2, MessageCircle, Image as ImageIcon, BarChart3, Send,
   Camera as CamIcon, Sun, Calendar, Plus, Check, X, Upload, Sparkles, Trophy, Lock,
-  HelpCircle, Circle,
+  Circle,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
