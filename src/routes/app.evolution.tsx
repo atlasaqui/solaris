@@ -359,6 +359,16 @@ function PhotosTab() {
       >
         <Plus className="h-4 w-4" /> Enviar primeira foto
       </button>
+      <button
+        type="button"
+        onClick={() => toast("Dicas para uma boa foto", {
+          description: "1) Boa luz natural · 2) Sem maquiagem/óculos · 3) Câmera estável e fundo neutro",
+        })}
+        className="mt-3 block w-full text-[12px] font-medium underline-offset-2 hover:underline"
+        style={{ color: "var(--clinic-primary)" }}
+      >
+        Como tirar uma boa foto?
+      </button>
     </div>
   );
 
