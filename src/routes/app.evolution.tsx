@@ -647,42 +647,80 @@ function ChatTab() {
     const body = text.trim();
     if (!body || !patientId || sending) return;
     setSending(true);
+    // Optimistic UI — show immediately
+    const tempId = `temp-${Date.now()}`;
+    const optimistic: Comment = {
+      id: tempId, content: body, created_at: new Date().toISOString(),
+      doctor_id: null, patient_id: patientId,
+    };
+    setMessages((m) => [...m, optimistic]);
+    setText("");
+    setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight }), 30);
+
     const { error } = await supabase.from("clinical_comments").insert({
       patient_id: patientId,
       content: body,
       is_visible_to_patient: true,
     });
     setSending(false);
-    if (error) { toast.error(error.message); return; }
-    setText("");
+    if (error) {
+      // Rollback + show error
+      setMessages((m) => m.filter((x) => x.id !== tempId));
+      setText(body);
+      toast.error("Falha ao enviar. Verifique sua conexão e tente novamente.");
+      return;
+    }
     await load(patientId);
   };
 
   if (loading) return <div className="grid h-48 place-items-center text-muted-foreground"><Loader2 className="h-5 w-5 animate-spin" /></div>;
 
+  const canSend = text.trim().length > 0 && !sending;
+
   return (
     <div className="flex h-[60vh] flex-col overflow-hidden rounded-2xl bg-white" style={{ boxShadow: "0 2px 16px rgba(0,0,0,0.06)" }}>
+      {/* Online header */}
+      <div className="flex items-center gap-2.5 border-b border-border bg-white px-4 py-2.5">
+        <div className="relative">
+          <div className="grid h-8 w-8 place-items-center rounded-full text-white text-[11px] font-bold" style={{ background: "var(--clinic-primary)" }}>
+            DR
+          </div>
+          <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-emerald-500" />
+        </div>
+        <div className="min-w-0">
+          <div className="truncate text-[13px] font-semibold leading-tight">Dermatologista</div>
+          <div className="text-[10.5px] text-emerald-600">online agora</div>
+        </div>
+      </div>
+
       <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto bg-[#F8FAFC] p-4">
         {messages.length === 0 ? (
           <div className="grid h-full place-items-center text-center text-sm text-muted-foreground">
             <div>
               <MessageCircle className="mx-auto h-8 w-8" />
               <p className="mt-2">Nenhuma mensagem ainda.</p>
+              <p className="mt-1 text-[11px]">Escreva abaixo para iniciar a conversa.</p>
             </div>
           </div>
         ) : messages.map((m) => {
           const fromDoctor = !!m.doctor_id;
+          const isTemp = m.id.startsWith("temp-");
           return (
             <div key={m.id} className={`flex ${fromDoctor ? "justify-start" : "justify-end"}`}>
               <div
                 className="max-w-[80%] rounded-2xl px-3.5 py-2 text-[13px] leading-relaxed"
                 style={fromDoctor
                   ? { background: "#fff", color: "#0F172A", border: "1px solid #E2E8F0" }
-                  : { background: "var(--clinic-primary)", color: "#fff" }}
+                  : { background: "var(--clinic-primary)", color: "#fff", opacity: isTemp ? 0.7 : 1 }}
               >
                 <div>{m.content}</div>
-                <div className={`mt-1 text-[10px] ${fromDoctor ? "text-muted-foreground" : "text-white/70"}`}>
-                  {new Date(m.created_at).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}
+                <div className={`mt-1 flex items-center gap-1 text-[10px] ${fromDoctor ? "text-muted-foreground" : "text-white/80"}`}>
+                  <span>{new Date(m.created_at).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</span>
+                  {!fromDoctor && (
+                    isTemp
+                      ? <Circle className="h-3 w-3" />
+                      : <Check className="h-3 w-3" />
+                  )}
                 </div>
               </div>
             </div>
@@ -690,19 +728,33 @@ function ChatTab() {
         })}
       </div>
       <div className="flex items-center gap-2 border-t border-border bg-white p-3">
-        <input
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && send()}
-          placeholder="Escreva uma mensagem..."
-          className="flex-1 rounded-full border border-border bg-[#F8FAFC] px-4 py-2 text-[13px] outline-none focus:border-[var(--clinic-primary)]"
-        />
+        <div className="relative flex-1">
+          <input
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter" && canSend) send(); }}
+            placeholder="Escreva uma mensagem..."
+            className="w-full rounded-full border border-border bg-[#F8FAFC] px-4 py-2 pr-9 text-[13px] outline-none focus:border-[var(--clinic-primary)]"
+          />
+          {text.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setText("")}
+              className="absolute right-2 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-full bg-muted text-muted-foreground hover:bg-muted/80"
+              aria-label="Limpar mensagem"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          )}
+        </div>
         <button
           onClick={send}
-          className="grid h-10 w-10 place-items-center rounded-full text-white"
+          disabled={!canSend}
+          className="grid h-10 w-10 place-items-center rounded-full text-white transition disabled:cursor-not-allowed disabled:opacity-40"
           style={{ background: "var(--clinic-primary)" }}
+          aria-label="Enviar mensagem"
         >
-          <Send className="h-4 w-4" />
+          {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
         </button>
       </div>
     </div>
