@@ -61,10 +61,22 @@ function Evolution() {
           <TabsTrigger value="data" className="flex-1 gap-1.5"><BarChart3 className="h-4 w-4" /> Dados</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="progress"><ProgressTab /></TabsContent>
-        <TabsContent value="photos"><PhotosTab /></TabsContent>
-        <TabsContent value="chat"><ChatTab /></TabsContent>
-        <TabsContent value="data"><DataTab /></TabsContent>
+        <TabsContent value="progress">
+          <p className="mb-3 text-[12px] text-muted-foreground">Veja sua evolução semana a semana</p>
+          <ProgressTab />
+        </TabsContent>
+        <TabsContent value="photos">
+          <p className="mb-3 text-[12px] text-muted-foreground">Registre fotos para acompanhamento</p>
+          <PhotosTab />
+        </TabsContent>
+        <TabsContent value="chat">
+          <p className="mb-3 text-[12px] text-muted-foreground">Converse com seu dermatologista</p>
+          <ChatTab />
+        </TabsContent>
+        <TabsContent value="data">
+          <p className="mb-3 text-[12px] text-muted-foreground">Métricas e estatísticas do tratamento</p>
+          <DataTab />
+        </TabsContent>
       </Tabs>
     </div>
   );
