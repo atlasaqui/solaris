@@ -540,7 +540,7 @@ function UploadPhotoSheet({
             <input
               ref={fileRef}
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png"
               capture="environment"
               className="hidden"
               onChange={(e) => pick(e.target.files?.[0] ?? null)}
@@ -548,10 +548,16 @@ function UploadPhotoSheet({
             {preview ? (
               <div className="relative aspect-square overflow-hidden rounded-2xl bg-[#0F172A]">
                 <img src={preview} alt="" className="h-full w-full object-cover" />
-                <button
-                  onClick={() => fileRef.current?.click()}
-                  className="absolute bottom-3 right-3 rounded-full bg-white/90 px-3 py-1.5 text-[12px] font-semibold text-[#0F172A]"
-                >Trocar</button>
+                <div className="absolute bottom-3 right-3 flex gap-2">
+                  <button
+                    onClick={clearFile}
+                    className="rounded-full bg-white/90 px-3 py-1.5 text-[12px] font-semibold text-[#0F172A]"
+                  >Remover</button>
+                  <button
+                    onClick={() => fileRef.current?.click()}
+                    className="rounded-full bg-white/90 px-3 py-1.5 text-[12px] font-semibold text-[#0F172A]"
+                  >Trocar</button>
+                </div>
               </div>
             ) : (
               <button
