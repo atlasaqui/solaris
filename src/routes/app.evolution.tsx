@@ -478,10 +478,18 @@ function UploadPhotoSheet({
 
   const pick = (f: File | null) => {
     if (!f) return;
-    if (!f.type.startsWith("image/")) { toast.error("Selecione uma imagem."); return; }
+    const ok = /^image\/(jpe?g|png)$/i.test(f.type);
+    if (!ok) { toast.error("Formato inválido. Use apenas JPG ou PNG."); return; }
     if (f.size > 10 * 1024 * 1024) { toast.error("Imagem acima de 10MB."); return; }
     setFile(f);
     setPreview(URL.createObjectURL(f));
+  };
+
+  const clearFile = () => {
+    setFile(null);
+    if (preview) URL.revokeObjectURL(preview);
+    setPreview("");
+    if (fileRef.current) fileRef.current.value = "";
   };
 
   const submit = async () => {
