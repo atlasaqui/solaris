@@ -22,6 +22,7 @@ import { Route as AppSymptomCheckerRouteImport } from './routes/app.symptom-chec
 import { Route as AppLesionResultsRouteImport } from './routes/app.lesion-results'
 import { Route as AppLesionCameraRouteImport } from './routes/app.lesion-camera'
 import { Route as AppHomeRouteImport } from './routes/app.home'
+import { Route as AppHistoryRouteImport } from './routes/app.history'
 import { Route as AppEvolutionRouteImport } from './routes/app.evolution'
 import { Route as AppClinicProfileRouteImport } from './routes/app.clinic-profile'
 import { Route as AppCameraRouteImport } from './routes/app.camera'
@@ -106,6 +107,11 @@ const AppLesionCameraRoute = AppLesionCameraRouteImport.update({
 const AppHomeRoute = AppHomeRouteImport.update({
   id: '/home',
   path: '/home',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHistoryRoute = AppHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
   getParentRoute: () => AppRoute,
 } as any)
 const AppEvolutionRoute = AppEvolutionRouteImport.update({
@@ -224,6 +230,7 @@ export interface FileRoutesByFullPath {
   '/app/camera': typeof AppCameraRoute
   '/app/clinic-profile': typeof AppClinicProfileRoute
   '/app/evolution': typeof AppEvolutionRoute
+  '/app/history': typeof AppHistoryRoute
   '/app/home': typeof AppHomeRoute
   '/app/lesion-camera': typeof AppLesionCameraRoute
   '/app/lesion-results': typeof AppLesionResultsRoute
@@ -259,6 +266,7 @@ export interface FileRoutesByTo {
   '/app/camera': typeof AppCameraRoute
   '/app/clinic-profile': typeof AppClinicProfileRoute
   '/app/evolution': typeof AppEvolutionRoute
+  '/app/history': typeof AppHistoryRoute
   '/app/home': typeof AppHomeRoute
   '/app/lesion-camera': typeof AppLesionCameraRoute
   '/app/lesion-results': typeof AppLesionResultsRoute
@@ -295,6 +303,7 @@ export interface FileRoutesById {
   '/app/camera': typeof AppCameraRoute
   '/app/clinic-profile': typeof AppClinicProfileRoute
   '/app/evolution': typeof AppEvolutionRoute
+  '/app/history': typeof AppHistoryRoute
   '/app/home': typeof AppHomeRoute
   '/app/lesion-camera': typeof AppLesionCameraRoute
   '/app/lesion-results': typeof AppLesionResultsRoute
@@ -332,6 +341,7 @@ export interface FileRouteTypes {
     | '/app/camera'
     | '/app/clinic-profile'
     | '/app/evolution'
+    | '/app/history'
     | '/app/home'
     | '/app/lesion-camera'
     | '/app/lesion-results'
@@ -367,6 +377,7 @@ export interface FileRouteTypes {
     | '/app/camera'
     | '/app/clinic-profile'
     | '/app/evolution'
+    | '/app/history'
     | '/app/home'
     | '/app/lesion-camera'
     | '/app/lesion-results'
@@ -402,6 +413,7 @@ export interface FileRouteTypes {
     | '/app/camera'
     | '/app/clinic-profile'
     | '/app/evolution'
+    | '/app/history'
     | '/app/home'
     | '/app/lesion-camera'
     | '/app/lesion-results'
@@ -527,6 +539,13 @@ declare module '@tanstack/react-router' {
       path: '/home'
       fullPath: '/app/home'
       preLoaderRoute: typeof AppHomeRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/history': {
+      id: '/app/history'
+      path: '/history'
+      fullPath: '/app/history'
+      preLoaderRoute: typeof AppHistoryRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/evolution': {
@@ -728,6 +747,7 @@ interface AppRouteChildren {
   AppCameraRoute: typeof AppCameraRoute
   AppClinicProfileRoute: typeof AppClinicProfileRoute
   AppEvolutionRoute: typeof AppEvolutionRoute
+  AppHistoryRoute: typeof AppHistoryRoute
   AppHomeRoute: typeof AppHomeRoute
   AppLesionCameraRoute: typeof AppLesionCameraRoute
   AppLesionResultsRoute: typeof AppLesionResultsRoute
@@ -743,6 +763,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppCameraRoute: AppCameraRoute,
   AppClinicProfileRoute: AppClinicProfileRoute,
   AppEvolutionRoute: AppEvolutionRoute,
+  AppHistoryRoute: AppHistoryRoute,
   AppHomeRoute: AppHomeRoute,
   AppLesionCameraRoute: AppLesionCameraRoute,
   AppLesionResultsRoute: AppLesionResultsRoute,
