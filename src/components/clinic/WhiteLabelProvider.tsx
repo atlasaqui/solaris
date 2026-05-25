@@ -19,19 +19,23 @@ const defaultBrand: ClinicBrand = {
   doctorName: "Dr. Especialista",
   logoUrl: null,
   bannerUrl: null,
-  primary: "#1B8A7A",
-  primaryDark: "#0D4F47",
-  primaryLight: "#E1F5F2",
+  primary: "#29B6E8",
+  primaryDark: "#1E9FD4",
+  primaryLight: "#E8F7FD",
   accent: "#0A1628",
 };
 
+const WARM_ACCENTS = new Set(["#3d1f0f", "#6b3a2a", "#4a2010", "#5c2e18"]);
+
 const Ctx = createContext<{
   brand: ClinicBrand;
+  isWarm: boolean;
   setBrand: (b: Partial<ClinicBrand>) => void;
   loadByClinicId: (id: string) => Promise<void>;
   loadByAccessCode: (code: string) => Promise<ClinicBrand | null>;
 }>({
   brand: defaultBrand,
+  isWarm: false,
   setBrand: () => {},
   loadByClinicId: async () => {},
   loadByAccessCode: async () => null,
@@ -65,21 +69,21 @@ export function WhiteLabelProvider({ children }: { children: ReactNode }) {
   const setBrand = (patch: Partial<ClinicBrand>) =>
     setBrandState((prev) => ({ ...prev, ...patch }));
 
+  const mapRow = (data: any): ClinicBrand => ({
+    id: data.id,
+    name: data.name,
+    doctorName: data.doctor_name,
+    logoUrl: data.logo_url,
+    bannerUrl: data.profile_banner_url,
+    primary: data.brand_color_primary ?? "#29B6E8",
+    primaryDark: data.brand_color_dark ?? "#1E9FD4",
+    primaryLight: data.brand_color_light ?? "#E8F7FD",
+    accent: data.brand_color_accent ?? "#0A1628",
+  });
+
   const loadByClinicId = async (id: string) => {
     const { data } = await supabase.from("clinics").select("*").eq("id", id).single();
-    if (data) {
-      setBrandState({
-        id: data.id,
-        name: data.name,
-        doctorName: data.doctor_name,
-        logoUrl: data.logo_url,
-        bannerUrl: data.profile_banner_url,
-        primary: data.brand_color_primary ?? "#1B8A7A",
-        primaryDark: data.brand_color_dark ?? "#0D4F47",
-        primaryLight: data.brand_color_light ?? "#E1F5F2",
-        accent: data.brand_color_accent ?? "#0A1628",
-      });
-    }
+    if (data) setBrandState(mapRow(data));
   };
 
   const loadByAccessCode = async (code: string) => {
@@ -89,23 +93,15 @@ export function WhiteLabelProvider({ children }: { children: ReactNode }) {
       .eq("access_code", code.toUpperCase())
       .maybeSingle();
     if (!data) return null;
-    const next: ClinicBrand = {
-      id: data.id,
-      name: data.name,
-      doctorName: data.doctor_name,
-      logoUrl: data.logo_url,
-      bannerUrl: data.profile_banner_url,
-      primary: data.brand_color_primary ?? "#1B8A7A",
-      primaryDark: data.brand_color_dark ?? "#0D4F47",
-      primaryLight: data.brand_color_light ?? "#E1F5F2",
-      accent: data.brand_color_accent ?? "#0A1628",
-    };
+    const next = mapRow(data);
     setBrandState(next);
     return next;
   };
 
+  const isWarm = WARM_ACCENTS.has((brand.accent || "").toLowerCase());
+
   return (
-    <Ctx.Provider value={{ brand, setBrand, loadByClinicId, loadByAccessCode }}>
+    <Ctx.Provider value={{ brand, isWarm, setBrand, loadByClinicId, loadByAccessCode }}>
       {children}
     </Ctx.Provider>
   );
