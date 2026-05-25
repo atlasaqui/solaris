@@ -1,7 +1,7 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 import { nitro } from "nitro/vite";
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   cloudflare: false,
-  plugins: [nitro({ preset: "vercel" })],
-});
+  plugins: command === "build" ? [nitro({ preset: "vercel" })] : [],
+}));
