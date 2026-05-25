@@ -21,6 +21,7 @@ import { Route as AppUvRouteImport } from './routes/app.uv'
 import { Route as AppSymptomResultsRouteImport } from './routes/app.symptom-results'
 import { Route as AppSymptomCheckerRouteImport } from './routes/app.symptom-checker'
 import { Route as AppSupportRouteImport } from './routes/app.support'
+import { Route as AppSplashRouteImport } from './routes/app.splash'
 import { Route as AppScheduleRouteImport } from './routes/app.schedule'
 import { Route as AppProfileRouteImport } from './routes/app.profile'
 import { Route as AppLesionResultsRouteImport } from './routes/app.lesion-results'
@@ -109,6 +110,11 @@ const AppSymptomCheckerRoute = AppSymptomCheckerRouteImport.update({
 const AppSupportRoute = AppSupportRouteImport.update({
   id: '/support',
   path: '/support',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSplashRoute = AppSplashRouteImport.update({
+  id: '/splash',
+  path: '/splash',
   getParentRoute: () => AppRoute,
 } as any)
 const AppScheduleRoute = AppScheduleRouteImport.update({
@@ -279,6 +285,7 @@ export interface FileRoutesByFullPath {
   '/app/lesion-results': typeof AppLesionResultsRoute
   '/app/profile': typeof AppProfileRoute
   '/app/schedule': typeof AppScheduleRouteWithChildren
+  '/app/splash': typeof AppSplashRoute
   '/app/support': typeof AppSupportRoute
   '/app/symptom-checker': typeof AppSymptomCheckerRoute
   '/app/symptom-results': typeof AppSymptomResultsRoute
@@ -322,6 +329,7 @@ export interface FileRoutesByTo {
   '/app/lesion-results': typeof AppLesionResultsRoute
   '/app/profile': typeof AppProfileRoute
   '/app/schedule': typeof AppScheduleRouteWithChildren
+  '/app/splash': typeof AppSplashRoute
   '/app/support': typeof AppSupportRoute
   '/app/symptom-checker': typeof AppSymptomCheckerRoute
   '/app/symptom-results': typeof AppSymptomResultsRoute
@@ -366,6 +374,7 @@ export interface FileRoutesById {
   '/app/lesion-results': typeof AppLesionResultsRoute
   '/app/profile': typeof AppProfileRoute
   '/app/schedule': typeof AppScheduleRouteWithChildren
+  '/app/splash': typeof AppSplashRoute
   '/app/support': typeof AppSupportRoute
   '/app/symptom-checker': typeof AppSymptomCheckerRoute
   '/app/symptom-results': typeof AppSymptomResultsRoute
@@ -411,6 +420,7 @@ export interface FileRouteTypes {
     | '/app/lesion-results'
     | '/app/profile'
     | '/app/schedule'
+    | '/app/splash'
     | '/app/support'
     | '/app/symptom-checker'
     | '/app/symptom-results'
@@ -454,6 +464,7 @@ export interface FileRouteTypes {
     | '/app/lesion-results'
     | '/app/profile'
     | '/app/schedule'
+    | '/app/splash'
     | '/app/support'
     | '/app/symptom-checker'
     | '/app/symptom-results'
@@ -497,6 +508,7 @@ export interface FileRouteTypes {
     | '/app/lesion-results'
     | '/app/profile'
     | '/app/schedule'
+    | '/app/splash'
     | '/app/support'
     | '/app/symptom-checker'
     | '/app/symptom-results'
@@ -616,6 +628,13 @@ declare module '@tanstack/react-router' {
       path: '/support'
       fullPath: '/app/support'
       preLoaderRoute: typeof AppSupportRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/splash': {
+      id: '/app/splash'
+      path: '/splash'
+      fullPath: '/app/splash'
+      preLoaderRoute: typeof AppSplashRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/schedule': {
@@ -913,6 +932,7 @@ interface AppRouteChildren {
   AppLesionResultsRoute: typeof AppLesionResultsRoute
   AppProfileRoute: typeof AppProfileRoute
   AppScheduleRoute: typeof AppScheduleRouteWithChildren
+  AppSplashRoute: typeof AppSplashRoute
   AppSupportRoute: typeof AppSupportRoute
   AppSymptomCheckerRoute: typeof AppSymptomCheckerRoute
   AppSymptomResultsRoute: typeof AppSymptomResultsRoute
@@ -933,6 +953,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppLesionResultsRoute: AppLesionResultsRoute,
   AppProfileRoute: AppProfileRoute,
   AppScheduleRoute: AppScheduleRouteWithChildren,
+  AppSplashRoute: AppSplashRoute,
   AppSupportRoute: AppSupportRoute,
   AppSymptomCheckerRoute: AppSymptomCheckerRoute,
   AppSymptomResultsRoute: AppSymptomResultsRoute,
