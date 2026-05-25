@@ -17,6 +17,8 @@ import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as AuthRegisterPatientRouteImport } from './routes/auth.register-patient'
 import { Route as AuthRegisterDoctorRouteImport } from './routes/auth.register-doctor'
 import { Route as AuthLoginRouteImport } from './routes/auth.login'
+import { Route as AppSymptomResultsRouteImport } from './routes/app.symptom-results'
+import { Route as AppSymptomCheckerRouteImport } from './routes/app.symptom-checker'
 import { Route as AppHomeRouteImport } from './routes/app.home'
 import { Route as AppEvolutionRouteImport } from './routes/app.evolution'
 import { Route as AppClinicProfileRouteImport } from './routes/app.clinic-profile'
@@ -78,6 +80,16 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   id: '/auth/login',
   path: '/auth/login',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AppSymptomResultsRoute = AppSymptomResultsRouteImport.update({
+  id: '/symptom-results',
+  path: '/symptom-results',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSymptomCheckerRoute = AppSymptomCheckerRouteImport.update({
+  id: '/symptom-checker',
+  path: '/symptom-checker',
+  getParentRoute: () => AppRoute,
 } as any)
 const AppHomeRoute = AppHomeRouteImport.update({
   id: '/home',
@@ -201,6 +213,8 @@ export interface FileRoutesByFullPath {
   '/app/clinic-profile': typeof AppClinicProfileRoute
   '/app/evolution': typeof AppEvolutionRoute
   '/app/home': typeof AppHomeRoute
+  '/app/symptom-checker': typeof AppSymptomCheckerRoute
+  '/app/symptom-results': typeof AppSymptomResultsRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register-doctor': typeof AuthRegisterDoctorRoute
   '/auth/register-patient': typeof AuthRegisterPatientRoute
@@ -232,6 +246,8 @@ export interface FileRoutesByTo {
   '/app/clinic-profile': typeof AppClinicProfileRoute
   '/app/evolution': typeof AppEvolutionRoute
   '/app/home': typeof AppHomeRoute
+  '/app/symptom-checker': typeof AppSymptomCheckerRoute
+  '/app/symptom-results': typeof AppSymptomResultsRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register-doctor': typeof AuthRegisterDoctorRoute
   '/auth/register-patient': typeof AuthRegisterPatientRoute
@@ -264,6 +280,8 @@ export interface FileRoutesById {
   '/app/clinic-profile': typeof AppClinicProfileRoute
   '/app/evolution': typeof AppEvolutionRoute
   '/app/home': typeof AppHomeRoute
+  '/app/symptom-checker': typeof AppSymptomCheckerRoute
+  '/app/symptom-results': typeof AppSymptomResultsRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register-doctor': typeof AuthRegisterDoctorRoute
   '/auth/register-patient': typeof AuthRegisterPatientRoute
@@ -297,6 +315,8 @@ export interface FileRouteTypes {
     | '/app/clinic-profile'
     | '/app/evolution'
     | '/app/home'
+    | '/app/symptom-checker'
+    | '/app/symptom-results'
     | '/auth/login'
     | '/auth/register-doctor'
     | '/auth/register-patient'
@@ -328,6 +348,8 @@ export interface FileRouteTypes {
     | '/app/clinic-profile'
     | '/app/evolution'
     | '/app/home'
+    | '/app/symptom-checker'
+    | '/app/symptom-results'
     | '/auth/login'
     | '/auth/register-doctor'
     | '/auth/register-patient'
@@ -359,6 +381,8 @@ export interface FileRouteTypes {
     | '/app/clinic-profile'
     | '/app/evolution'
     | '/app/home'
+    | '/app/symptom-checker'
+    | '/app/symptom-results'
     | '/auth/login'
     | '/auth/register-doctor'
     | '/auth/register-patient'
@@ -445,6 +469,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth/login'
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/app/symptom-results': {
+      id: '/app/symptom-results'
+      path: '/symptom-results'
+      fullPath: '/app/symptom-results'
+      preLoaderRoute: typeof AppSymptomResultsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/symptom-checker': {
+      id: '/app/symptom-checker'
+      path: '/symptom-checker'
+      fullPath: '/app/symptom-checker'
+      preLoaderRoute: typeof AppSymptomCheckerRouteImport
+      parentRoute: typeof AppRoute
     }
     '/app/home': {
       id: '/app/home'
@@ -653,6 +691,8 @@ interface AppRouteChildren {
   AppClinicProfileRoute: typeof AppClinicProfileRoute
   AppEvolutionRoute: typeof AppEvolutionRoute
   AppHomeRoute: typeof AppHomeRoute
+  AppSymptomCheckerRoute: typeof AppSymptomCheckerRoute
+  AppSymptomResultsRoute: typeof AppSymptomResultsRoute
   AppContentSlugRoute: typeof AppContentSlugRoute
   AppContentFeedRoute: typeof AppContentFeedRoute
   AppWikiSlugRoute: typeof AppWikiSlugRoute
@@ -664,6 +704,8 @@ const AppRouteChildren: AppRouteChildren = {
   AppClinicProfileRoute: AppClinicProfileRoute,
   AppEvolutionRoute: AppEvolutionRoute,
   AppHomeRoute: AppHomeRoute,
+  AppSymptomCheckerRoute: AppSymptomCheckerRoute,
+  AppSymptomResultsRoute: AppSymptomResultsRoute,
   AppContentSlugRoute: AppContentSlugRoute,
   AppContentFeedRoute: AppContentFeedRoute,
   AppWikiSlugRoute: AppWikiSlugRoute,
@@ -686,3 +728,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
