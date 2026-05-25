@@ -17,6 +17,7 @@ import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as AuthRegisterPatientRouteImport } from './routes/auth.register-patient'
 import { Route as AuthRegisterDoctorRouteImport } from './routes/auth.register-doctor'
 import { Route as AuthLoginRouteImport } from './routes/auth.login'
+import { Route as AppUvRouteImport } from './routes/app.uv'
 import { Route as AppSymptomResultsRouteImport } from './routes/app.symptom-results'
 import { Route as AppSymptomCheckerRouteImport } from './routes/app.symptom-checker'
 import { Route as AppSupportRouteImport } from './routes/app.support'
@@ -89,6 +90,11 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   id: '/auth/login',
   path: '/auth/login',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AppUvRoute = AppUvRouteImport.update({
+  id: '/uv',
+  path: '/uv',
+  getParentRoute: () => AppRoute,
 } as any)
 const AppSymptomResultsRoute = AppSymptomResultsRouteImport.update({
   id: '/symptom-results',
@@ -276,6 +282,7 @@ export interface FileRoutesByFullPath {
   '/app/support': typeof AppSupportRoute
   '/app/symptom-checker': typeof AppSymptomCheckerRoute
   '/app/symptom-results': typeof AppSymptomResultsRoute
+  '/app/uv': typeof AppUvRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register-doctor': typeof AuthRegisterDoctorRoute
   '/auth/register-patient': typeof AuthRegisterPatientRoute
@@ -318,6 +325,7 @@ export interface FileRoutesByTo {
   '/app/support': typeof AppSupportRoute
   '/app/symptom-checker': typeof AppSymptomCheckerRoute
   '/app/symptom-results': typeof AppSymptomResultsRoute
+  '/app/uv': typeof AppUvRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register-doctor': typeof AuthRegisterDoctorRoute
   '/auth/register-patient': typeof AuthRegisterPatientRoute
@@ -361,6 +369,7 @@ export interface FileRoutesById {
   '/app/support': typeof AppSupportRoute
   '/app/symptom-checker': typeof AppSymptomCheckerRoute
   '/app/symptom-results': typeof AppSymptomResultsRoute
+  '/app/uv': typeof AppUvRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register-doctor': typeof AuthRegisterDoctorRoute
   '/auth/register-patient': typeof AuthRegisterPatientRoute
@@ -405,6 +414,7 @@ export interface FileRouteTypes {
     | '/app/support'
     | '/app/symptom-checker'
     | '/app/symptom-results'
+    | '/app/uv'
     | '/auth/login'
     | '/auth/register-doctor'
     | '/auth/register-patient'
@@ -447,6 +457,7 @@ export interface FileRouteTypes {
     | '/app/support'
     | '/app/symptom-checker'
     | '/app/symptom-results'
+    | '/app/uv'
     | '/auth/login'
     | '/auth/register-doctor'
     | '/auth/register-patient'
@@ -489,6 +500,7 @@ export interface FileRouteTypes {
     | '/app/support'
     | '/app/symptom-checker'
     | '/app/symptom-results'
+    | '/app/uv'
     | '/auth/login'
     | '/auth/register-doctor'
     | '/auth/register-patient'
@@ -577,6 +589,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth/login'
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/app/uv': {
+      id: '/app/uv'
+      path: '/uv'
+      fullPath: '/app/uv'
+      preLoaderRoute: typeof AppUvRouteImport
+      parentRoute: typeof AppRoute
     }
     '/app/symptom-results': {
       id: '/app/symptom-results'
@@ -897,6 +916,7 @@ interface AppRouteChildren {
   AppSupportRoute: typeof AppSupportRoute
   AppSymptomCheckerRoute: typeof AppSymptomCheckerRoute
   AppSymptomResultsRoute: typeof AppSymptomResultsRoute
+  AppUvRoute: typeof AppUvRoute
   AppConditionSlugRoute: typeof AppConditionSlugRoute
   AppWikiSlugRoute: typeof AppWikiSlugRoute
   AppWikiSearchRoute: typeof AppWikiSearchRoute
@@ -916,6 +936,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppSupportRoute: AppSupportRoute,
   AppSymptomCheckerRoute: AppSymptomCheckerRoute,
   AppSymptomResultsRoute: AppSymptomResultsRoute,
+  AppUvRoute: AppUvRoute,
   AppConditionSlugRoute: AppConditionSlugRoute,
   AppWikiSlugRoute: AppWikiSlugRoute,
   AppWikiSearchRoute: AppWikiSearchRoute,
