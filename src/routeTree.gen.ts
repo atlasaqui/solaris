@@ -42,6 +42,7 @@ import { Route as AppWikiSlugRouteImport } from './routes/app.wiki.$slug'
 import { Route as AppScheduleDoctorIdRouteImport } from './routes/app.schedule.$doctorId'
 import { Route as AppContentFeedRouteImport } from './routes/app.content.feed'
 import { Route as AppContentSlugRouteImport } from './routes/app.content.$slug'
+import { Route as AppConditionSlugRouteImport } from './routes/app.condition.$slug'
 import { Route as AdminWikiNewRouteImport } from './routes/admin.wiki.new'
 import { Route as AdminPatientsIdRouteImport } from './routes/admin.patients.$id'
 import { Route as AdminContentVideoEditorRouteImport } from './routes/admin.content.video-editor'
@@ -214,6 +215,11 @@ const AppContentSlugRoute = AppContentSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => AppContentRoute,
 } as any)
+const AppConditionSlugRoute = AppConditionSlugRouteImport.update({
+  id: '/condition/$slug',
+  path: '/condition/$slug',
+  getParentRoute: () => AppRoute,
+} as any)
 const AdminWikiNewRoute = AdminWikiNewRouteImport.update({
   id: '/new',
   path: '/new',
@@ -279,6 +285,7 @@ export interface FileRoutesByFullPath {
   '/admin/content/video-editor': typeof AdminContentVideoEditorRoute
   '/admin/patients/$id': typeof AdminPatientsIdRoute
   '/admin/wiki/new': typeof AdminWikiNewRoute
+  '/app/condition/$slug': typeof AppConditionSlugRoute
   '/app/content/$slug': typeof AppContentSlugRoute
   '/app/content/feed': typeof AppContentFeedRoute
   '/app/schedule/$doctorId': typeof AppScheduleDoctorIdRoute
@@ -320,6 +327,7 @@ export interface FileRoutesByTo {
   '/admin/content/video-editor': typeof AdminContentVideoEditorRoute
   '/admin/patients/$id': typeof AdminPatientsIdRoute
   '/admin/wiki/new': typeof AdminWikiNewRoute
+  '/app/condition/$slug': typeof AppConditionSlugRoute
   '/app/content/$slug': typeof AppContentSlugRoute
   '/app/content/feed': typeof AppContentFeedRoute
   '/app/schedule/$doctorId': typeof AppScheduleDoctorIdRoute
@@ -362,6 +370,7 @@ export interface FileRoutesById {
   '/admin/content/video-editor': typeof AdminContentVideoEditorRoute
   '/admin/patients/$id': typeof AdminPatientsIdRoute
   '/admin/wiki/new': typeof AdminWikiNewRoute
+  '/app/condition/$slug': typeof AppConditionSlugRoute
   '/app/content/$slug': typeof AppContentSlugRoute
   '/app/content/feed': typeof AppContentFeedRoute
   '/app/schedule/$doctorId': typeof AppScheduleDoctorIdRoute
@@ -405,6 +414,7 @@ export interface FileRouteTypes {
     | '/admin/content/video-editor'
     | '/admin/patients/$id'
     | '/admin/wiki/new'
+    | '/app/condition/$slug'
     | '/app/content/$slug'
     | '/app/content/feed'
     | '/app/schedule/$doctorId'
@@ -446,6 +456,7 @@ export interface FileRouteTypes {
     | '/admin/content/video-editor'
     | '/admin/patients/$id'
     | '/admin/wiki/new'
+    | '/app/condition/$slug'
     | '/app/content/$slug'
     | '/app/content/feed'
     | '/app/schedule/$doctorId'
@@ -487,6 +498,7 @@ export interface FileRouteTypes {
     | '/admin/content/video-editor'
     | '/admin/patients/$id'
     | '/admin/wiki/new'
+    | '/app/condition/$slug'
     | '/app/content/$slug'
     | '/app/content/feed'
     | '/app/schedule/$doctorId'
@@ -741,6 +753,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppContentSlugRouteImport
       parentRoute: typeof AppContentRoute
     }
+    '/app/condition/$slug': {
+      id: '/app/condition/$slug'
+      path: '/condition/$slug'
+      fullPath: '/app/condition/$slug'
+      preLoaderRoute: typeof AppConditionSlugRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/admin/wiki/new': {
       id: '/admin/wiki/new'
       path: '/new'
@@ -878,6 +897,7 @@ interface AppRouteChildren {
   AppSupportRoute: typeof AppSupportRoute
   AppSymptomCheckerRoute: typeof AppSymptomCheckerRoute
   AppSymptomResultsRoute: typeof AppSymptomResultsRoute
+  AppConditionSlugRoute: typeof AppConditionSlugRoute
   AppWikiSlugRoute: typeof AppWikiSlugRoute
   AppWikiSearchRoute: typeof AppWikiSearchRoute
 }
@@ -896,6 +916,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppSupportRoute: AppSupportRoute,
   AppSymptomCheckerRoute: AppSymptomCheckerRoute,
   AppSymptomResultsRoute: AppSymptomResultsRoute,
+  AppConditionSlugRoute: AppConditionSlugRoute,
   AppWikiSlugRoute: AppWikiSlugRoute,
   AppWikiSearchRoute: AppWikiSearchRoute,
 }
