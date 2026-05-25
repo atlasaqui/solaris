@@ -24,6 +24,7 @@ import { Route as AppSupportRouteImport } from './routes/app.support'
 import { Route as AppSplashRouteImport } from './routes/app.splash'
 import { Route as AppScheduleRouteImport } from './routes/app.schedule'
 import { Route as AppProfileRouteImport } from './routes/app.profile'
+import { Route as AppOnboardingRouteImport } from './routes/app.onboarding'
 import { Route as AppLesionResultsRouteImport } from './routes/app.lesion-results'
 import { Route as AppLesionCameraRouteImport } from './routes/app.lesion-camera'
 import { Route as AppHomeRouteImport } from './routes/app.home'
@@ -125,6 +126,11 @@ const AppScheduleRoute = AppScheduleRouteImport.update({
 const AppProfileRoute = AppProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOnboardingRoute = AppOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => AppRoute,
 } as any)
 const AppLesionResultsRoute = AppLesionResultsRouteImport.update({
@@ -283,6 +289,7 @@ export interface FileRoutesByFullPath {
   '/app/home': typeof AppHomeRoute
   '/app/lesion-camera': typeof AppLesionCameraRoute
   '/app/lesion-results': typeof AppLesionResultsRoute
+  '/app/onboarding': typeof AppOnboardingRoute
   '/app/profile': typeof AppProfileRoute
   '/app/schedule': typeof AppScheduleRouteWithChildren
   '/app/splash': typeof AppSplashRoute
@@ -327,6 +334,7 @@ export interface FileRoutesByTo {
   '/app/home': typeof AppHomeRoute
   '/app/lesion-camera': typeof AppLesionCameraRoute
   '/app/lesion-results': typeof AppLesionResultsRoute
+  '/app/onboarding': typeof AppOnboardingRoute
   '/app/profile': typeof AppProfileRoute
   '/app/schedule': typeof AppScheduleRouteWithChildren
   '/app/splash': typeof AppSplashRoute
@@ -372,6 +380,7 @@ export interface FileRoutesById {
   '/app/home': typeof AppHomeRoute
   '/app/lesion-camera': typeof AppLesionCameraRoute
   '/app/lesion-results': typeof AppLesionResultsRoute
+  '/app/onboarding': typeof AppOnboardingRoute
   '/app/profile': typeof AppProfileRoute
   '/app/schedule': typeof AppScheduleRouteWithChildren
   '/app/splash': typeof AppSplashRoute
@@ -418,6 +427,7 @@ export interface FileRouteTypes {
     | '/app/home'
     | '/app/lesion-camera'
     | '/app/lesion-results'
+    | '/app/onboarding'
     | '/app/profile'
     | '/app/schedule'
     | '/app/splash'
@@ -462,6 +472,7 @@ export interface FileRouteTypes {
     | '/app/home'
     | '/app/lesion-camera'
     | '/app/lesion-results'
+    | '/app/onboarding'
     | '/app/profile'
     | '/app/schedule'
     | '/app/splash'
@@ -506,6 +517,7 @@ export interface FileRouteTypes {
     | '/app/home'
     | '/app/lesion-camera'
     | '/app/lesion-results'
+    | '/app/onboarding'
     | '/app/profile'
     | '/app/schedule'
     | '/app/splash'
@@ -649,6 +661,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/app/profile'
       preLoaderRoute: typeof AppProfileRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/onboarding': {
+      id: '/app/onboarding'
+      path: '/onboarding'
+      fullPath: '/app/onboarding'
+      preLoaderRoute: typeof AppOnboardingRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/lesion-results': {
@@ -930,6 +949,7 @@ interface AppRouteChildren {
   AppHomeRoute: typeof AppHomeRoute
   AppLesionCameraRoute: typeof AppLesionCameraRoute
   AppLesionResultsRoute: typeof AppLesionResultsRoute
+  AppOnboardingRoute: typeof AppOnboardingRoute
   AppProfileRoute: typeof AppProfileRoute
   AppScheduleRoute: typeof AppScheduleRouteWithChildren
   AppSplashRoute: typeof AppSplashRoute
@@ -951,6 +971,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppHomeRoute: AppHomeRoute,
   AppLesionCameraRoute: AppLesionCameraRoute,
   AppLesionResultsRoute: AppLesionResultsRoute,
+  AppOnboardingRoute: AppOnboardingRoute,
   AppProfileRoute: AppProfileRoute,
   AppScheduleRoute: AppScheduleRouteWithChildren,
   AppSplashRoute: AppSplashRoute,
