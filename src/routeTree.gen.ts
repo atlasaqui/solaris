@@ -17,8 +17,20 @@ import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as AuthRegisterPatientRouteImport } from './routes/auth.register-patient'
 import { Route as AuthRegisterDoctorRouteImport } from './routes/auth.register-doctor'
 import { Route as AuthLoginRouteImport } from './routes/auth.login'
+import { Route as AppUvRouteImport } from './routes/app.uv'
+import { Route as AppSymptomResultsRouteImport } from './routes/app.symptom-results'
+import { Route as AppSymptomCheckerRouteImport } from './routes/app.symptom-checker'
+import { Route as AppSupportRouteImport } from './routes/app.support'
+import { Route as AppSplashRouteImport } from './routes/app.splash'
+import { Route as AppScheduleRouteImport } from './routes/app.schedule'
+import { Route as AppProfileRouteImport } from './routes/app.profile'
+import { Route as AppOnboardingRouteImport } from './routes/app.onboarding'
+import { Route as AppLesionResultsRouteImport } from './routes/app.lesion-results'
+import { Route as AppLesionCameraRouteImport } from './routes/app.lesion-camera'
 import { Route as AppHomeRouteImport } from './routes/app.home'
+import { Route as AppHistoryRouteImport } from './routes/app.history'
 import { Route as AppEvolutionRouteImport } from './routes/app.evolution'
+import { Route as AppContentRouteImport } from './routes/app.content'
 import { Route as AppClinicProfileRouteImport } from './routes/app.clinic-profile'
 import { Route as AppCameraRouteImport } from './routes/app.camera'
 import { Route as AdminWikiRouteImport } from './routes/admin.wiki'
@@ -30,8 +42,10 @@ import { Route as AdminBillingRouteImport } from './routes/admin.billing'
 import { Route as AdminContentIndexRouteImport } from './routes/admin.content.index'
 import { Route as AppWikiSearchRouteImport } from './routes/app.wiki.search'
 import { Route as AppWikiSlugRouteImport } from './routes/app.wiki.$slug'
+import { Route as AppScheduleDoctorIdRouteImport } from './routes/app.schedule.$doctorId'
 import { Route as AppContentFeedRouteImport } from './routes/app.content.feed'
 import { Route as AppContentSlugRouteImport } from './routes/app.content.$slug'
+import { Route as AppConditionSlugRouteImport } from './routes/app.condition.$slug'
 import { Route as AdminWikiNewRouteImport } from './routes/admin.wiki.new'
 import { Route as AdminPatientsIdRouteImport } from './routes/admin.patients.$id'
 import { Route as AdminContentVideoEditorRouteImport } from './routes/admin.content.video-editor'
@@ -79,14 +93,74 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppUvRoute = AppUvRouteImport.update({
+  id: '/uv',
+  path: '/uv',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSymptomResultsRoute = AppSymptomResultsRouteImport.update({
+  id: '/symptom-results',
+  path: '/symptom-results',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSymptomCheckerRoute = AppSymptomCheckerRouteImport.update({
+  id: '/symptom-checker',
+  path: '/symptom-checker',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSupportRoute = AppSupportRouteImport.update({
+  id: '/support',
+  path: '/support',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSplashRoute = AppSplashRouteImport.update({
+  id: '/splash',
+  path: '/splash',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppScheduleRoute = AppScheduleRouteImport.update({
+  id: '/schedule',
+  path: '/schedule',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppProfileRoute = AppProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOnboardingRoute = AppOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLesionResultsRoute = AppLesionResultsRouteImport.update({
+  id: '/lesion-results',
+  path: '/lesion-results',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLesionCameraRoute = AppLesionCameraRouteImport.update({
+  id: '/lesion-camera',
+  path: '/lesion-camera',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppHomeRoute = AppHomeRouteImport.update({
   id: '/home',
   path: '/home',
   getParentRoute: () => AppRoute,
 } as any)
+const AppHistoryRoute = AppHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppEvolutionRoute = AppEvolutionRouteImport.update({
   id: '/evolution',
   path: '/evolution',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppContentRoute = AppContentRouteImport.update({
+  id: '/content',
+  path: '/content',
   getParentRoute: () => AppRoute,
 } as any)
 const AppClinicProfileRoute = AppClinicProfileRouteImport.update({
@@ -144,14 +218,24 @@ const AppWikiSlugRoute = AppWikiSlugRouteImport.update({
   path: '/wiki/$slug',
   getParentRoute: () => AppRoute,
 } as any)
+const AppScheduleDoctorIdRoute = AppScheduleDoctorIdRouteImport.update({
+  id: '/$doctorId',
+  path: '/$doctorId',
+  getParentRoute: () => AppScheduleRoute,
+} as any)
 const AppContentFeedRoute = AppContentFeedRouteImport.update({
-  id: '/content/feed',
-  path: '/content/feed',
-  getParentRoute: () => AppRoute,
+  id: '/feed',
+  path: '/feed',
+  getParentRoute: () => AppContentRoute,
 } as any)
 const AppContentSlugRoute = AppContentSlugRouteImport.update({
-  id: '/content/$slug',
-  path: '/content/$slug',
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => AppContentRoute,
+} as any)
+const AppConditionSlugRoute = AppConditionSlugRouteImport.update({
+  id: '/condition/$slug',
+  path: '/condition/$slug',
   getParentRoute: () => AppRoute,
 } as any)
 const AdminWikiNewRoute = AdminWikiNewRouteImport.update({
@@ -199,8 +283,20 @@ export interface FileRoutesByFullPath {
   '/admin/wiki': typeof AdminWikiRouteWithChildren
   '/app/camera': typeof AppCameraRoute
   '/app/clinic-profile': typeof AppClinicProfileRoute
+  '/app/content': typeof AppContentRouteWithChildren
   '/app/evolution': typeof AppEvolutionRoute
+  '/app/history': typeof AppHistoryRoute
   '/app/home': typeof AppHomeRoute
+  '/app/lesion-camera': typeof AppLesionCameraRoute
+  '/app/lesion-results': typeof AppLesionResultsRoute
+  '/app/onboarding': typeof AppOnboardingRoute
+  '/app/profile': typeof AppProfileRoute
+  '/app/schedule': typeof AppScheduleRouteWithChildren
+  '/app/splash': typeof AppSplashRoute
+  '/app/support': typeof AppSupportRoute
+  '/app/symptom-checker': typeof AppSymptomCheckerRoute
+  '/app/symptom-results': typeof AppSymptomResultsRoute
+  '/app/uv': typeof AppUvRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register-doctor': typeof AuthRegisterDoctorRoute
   '/auth/register-patient': typeof AuthRegisterPatientRoute
@@ -210,8 +306,10 @@ export interface FileRoutesByFullPath {
   '/admin/content/video-editor': typeof AdminContentVideoEditorRoute
   '/admin/patients/$id': typeof AdminPatientsIdRoute
   '/admin/wiki/new': typeof AdminWikiNewRoute
+  '/app/condition/$slug': typeof AppConditionSlugRoute
   '/app/content/$slug': typeof AppContentSlugRoute
   '/app/content/feed': typeof AppContentFeedRoute
+  '/app/schedule/$doctorId': typeof AppScheduleDoctorIdRoute
   '/app/wiki/$slug': typeof AppWikiSlugRoute
   '/app/wiki/search': typeof AppWikiSearchRoute
   '/admin/content/': typeof AdminContentIndexRoute
@@ -230,8 +328,20 @@ export interface FileRoutesByTo {
   '/admin/wiki': typeof AdminWikiRouteWithChildren
   '/app/camera': typeof AppCameraRoute
   '/app/clinic-profile': typeof AppClinicProfileRoute
+  '/app/content': typeof AppContentRouteWithChildren
   '/app/evolution': typeof AppEvolutionRoute
+  '/app/history': typeof AppHistoryRoute
   '/app/home': typeof AppHomeRoute
+  '/app/lesion-camera': typeof AppLesionCameraRoute
+  '/app/lesion-results': typeof AppLesionResultsRoute
+  '/app/onboarding': typeof AppOnboardingRoute
+  '/app/profile': typeof AppProfileRoute
+  '/app/schedule': typeof AppScheduleRouteWithChildren
+  '/app/splash': typeof AppSplashRoute
+  '/app/support': typeof AppSupportRoute
+  '/app/symptom-checker': typeof AppSymptomCheckerRoute
+  '/app/symptom-results': typeof AppSymptomResultsRoute
+  '/app/uv': typeof AppUvRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register-doctor': typeof AuthRegisterDoctorRoute
   '/auth/register-patient': typeof AuthRegisterPatientRoute
@@ -241,8 +351,10 @@ export interface FileRoutesByTo {
   '/admin/content/video-editor': typeof AdminContentVideoEditorRoute
   '/admin/patients/$id': typeof AdminPatientsIdRoute
   '/admin/wiki/new': typeof AdminWikiNewRoute
+  '/app/condition/$slug': typeof AppConditionSlugRoute
   '/app/content/$slug': typeof AppContentSlugRoute
   '/app/content/feed': typeof AppContentFeedRoute
+  '/app/schedule/$doctorId': typeof AppScheduleDoctorIdRoute
   '/app/wiki/$slug': typeof AppWikiSlugRoute
   '/app/wiki/search': typeof AppWikiSearchRoute
   '/admin/content': typeof AdminContentIndexRoute
@@ -262,8 +374,20 @@ export interface FileRoutesById {
   '/admin/wiki': typeof AdminWikiRouteWithChildren
   '/app/camera': typeof AppCameraRoute
   '/app/clinic-profile': typeof AppClinicProfileRoute
+  '/app/content': typeof AppContentRouteWithChildren
   '/app/evolution': typeof AppEvolutionRoute
+  '/app/history': typeof AppHistoryRoute
   '/app/home': typeof AppHomeRoute
+  '/app/lesion-camera': typeof AppLesionCameraRoute
+  '/app/lesion-results': typeof AppLesionResultsRoute
+  '/app/onboarding': typeof AppOnboardingRoute
+  '/app/profile': typeof AppProfileRoute
+  '/app/schedule': typeof AppScheduleRouteWithChildren
+  '/app/splash': typeof AppSplashRoute
+  '/app/support': typeof AppSupportRoute
+  '/app/symptom-checker': typeof AppSymptomCheckerRoute
+  '/app/symptom-results': typeof AppSymptomResultsRoute
+  '/app/uv': typeof AppUvRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register-doctor': typeof AuthRegisterDoctorRoute
   '/auth/register-patient': typeof AuthRegisterPatientRoute
@@ -273,8 +397,10 @@ export interface FileRoutesById {
   '/admin/content/video-editor': typeof AdminContentVideoEditorRoute
   '/admin/patients/$id': typeof AdminPatientsIdRoute
   '/admin/wiki/new': typeof AdminWikiNewRoute
+  '/app/condition/$slug': typeof AppConditionSlugRoute
   '/app/content/$slug': typeof AppContentSlugRoute
   '/app/content/feed': typeof AppContentFeedRoute
+  '/app/schedule/$doctorId': typeof AppScheduleDoctorIdRoute
   '/app/wiki/$slug': typeof AppWikiSlugRoute
   '/app/wiki/search': typeof AppWikiSearchRoute
   '/admin/content/': typeof AdminContentIndexRoute
@@ -295,8 +421,20 @@ export interface FileRouteTypes {
     | '/admin/wiki'
     | '/app/camera'
     | '/app/clinic-profile'
+    | '/app/content'
     | '/app/evolution'
+    | '/app/history'
     | '/app/home'
+    | '/app/lesion-camera'
+    | '/app/lesion-results'
+    | '/app/onboarding'
+    | '/app/profile'
+    | '/app/schedule'
+    | '/app/splash'
+    | '/app/support'
+    | '/app/symptom-checker'
+    | '/app/symptom-results'
+    | '/app/uv'
     | '/auth/login'
     | '/auth/register-doctor'
     | '/auth/register-patient'
@@ -306,8 +444,10 @@ export interface FileRouteTypes {
     | '/admin/content/video-editor'
     | '/admin/patients/$id'
     | '/admin/wiki/new'
+    | '/app/condition/$slug'
     | '/app/content/$slug'
     | '/app/content/feed'
+    | '/app/schedule/$doctorId'
     | '/app/wiki/$slug'
     | '/app/wiki/search'
     | '/admin/content/'
@@ -326,8 +466,20 @@ export interface FileRouteTypes {
     | '/admin/wiki'
     | '/app/camera'
     | '/app/clinic-profile'
+    | '/app/content'
     | '/app/evolution'
+    | '/app/history'
     | '/app/home'
+    | '/app/lesion-camera'
+    | '/app/lesion-results'
+    | '/app/onboarding'
+    | '/app/profile'
+    | '/app/schedule'
+    | '/app/splash'
+    | '/app/support'
+    | '/app/symptom-checker'
+    | '/app/symptom-results'
+    | '/app/uv'
     | '/auth/login'
     | '/auth/register-doctor'
     | '/auth/register-patient'
@@ -337,8 +489,10 @@ export interface FileRouteTypes {
     | '/admin/content/video-editor'
     | '/admin/patients/$id'
     | '/admin/wiki/new'
+    | '/app/condition/$slug'
     | '/app/content/$slug'
     | '/app/content/feed'
+    | '/app/schedule/$doctorId'
     | '/app/wiki/$slug'
     | '/app/wiki/search'
     | '/admin/content'
@@ -357,8 +511,20 @@ export interface FileRouteTypes {
     | '/admin/wiki'
     | '/app/camera'
     | '/app/clinic-profile'
+    | '/app/content'
     | '/app/evolution'
+    | '/app/history'
     | '/app/home'
+    | '/app/lesion-camera'
+    | '/app/lesion-results'
+    | '/app/onboarding'
+    | '/app/profile'
+    | '/app/schedule'
+    | '/app/splash'
+    | '/app/support'
+    | '/app/symptom-checker'
+    | '/app/symptom-results'
+    | '/app/uv'
     | '/auth/login'
     | '/auth/register-doctor'
     | '/auth/register-patient'
@@ -368,8 +534,10 @@ export interface FileRouteTypes {
     | '/admin/content/video-editor'
     | '/admin/patients/$id'
     | '/admin/wiki/new'
+    | '/app/condition/$slug'
     | '/app/content/$slug'
     | '/app/content/feed'
+    | '/app/schedule/$doctorId'
     | '/app/wiki/$slug'
     | '/app/wiki/search'
     | '/admin/content/'
@@ -446,6 +614,76 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/uv': {
+      id: '/app/uv'
+      path: '/uv'
+      fullPath: '/app/uv'
+      preLoaderRoute: typeof AppUvRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/symptom-results': {
+      id: '/app/symptom-results'
+      path: '/symptom-results'
+      fullPath: '/app/symptom-results'
+      preLoaderRoute: typeof AppSymptomResultsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/symptom-checker': {
+      id: '/app/symptom-checker'
+      path: '/symptom-checker'
+      fullPath: '/app/symptom-checker'
+      preLoaderRoute: typeof AppSymptomCheckerRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/support': {
+      id: '/app/support'
+      path: '/support'
+      fullPath: '/app/support'
+      preLoaderRoute: typeof AppSupportRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/splash': {
+      id: '/app/splash'
+      path: '/splash'
+      fullPath: '/app/splash'
+      preLoaderRoute: typeof AppSplashRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/schedule': {
+      id: '/app/schedule'
+      path: '/schedule'
+      fullPath: '/app/schedule'
+      preLoaderRoute: typeof AppScheduleRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/profile': {
+      id: '/app/profile'
+      path: '/profile'
+      fullPath: '/app/profile'
+      preLoaderRoute: typeof AppProfileRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/onboarding': {
+      id: '/app/onboarding'
+      path: '/onboarding'
+      fullPath: '/app/onboarding'
+      preLoaderRoute: typeof AppOnboardingRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/lesion-results': {
+      id: '/app/lesion-results'
+      path: '/lesion-results'
+      fullPath: '/app/lesion-results'
+      preLoaderRoute: typeof AppLesionResultsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/lesion-camera': {
+      id: '/app/lesion-camera'
+      path: '/lesion-camera'
+      fullPath: '/app/lesion-camera'
+      preLoaderRoute: typeof AppLesionCameraRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/home': {
       id: '/app/home'
       path: '/home'
@@ -453,11 +691,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppHomeRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/history': {
+      id: '/app/history'
+      path: '/history'
+      fullPath: '/app/history'
+      preLoaderRoute: typeof AppHistoryRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/evolution': {
       id: '/app/evolution'
       path: '/evolution'
       fullPath: '/app/evolution'
       preLoaderRoute: typeof AppEvolutionRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/content': {
+      id: '/app/content'
+      path: '/content'
+      fullPath: '/app/content'
+      preLoaderRoute: typeof AppContentRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/clinic-profile': {
@@ -537,18 +789,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppWikiSlugRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/schedule/$doctorId': {
+      id: '/app/schedule/$doctorId'
+      path: '/$doctorId'
+      fullPath: '/app/schedule/$doctorId'
+      preLoaderRoute: typeof AppScheduleDoctorIdRouteImport
+      parentRoute: typeof AppScheduleRoute
+    }
     '/app/content/feed': {
       id: '/app/content/feed'
-      path: '/content/feed'
+      path: '/feed'
       fullPath: '/app/content/feed'
       preLoaderRoute: typeof AppContentFeedRouteImport
-      parentRoute: typeof AppRoute
+      parentRoute: typeof AppContentRoute
     }
     '/app/content/$slug': {
       id: '/app/content/$slug'
-      path: '/content/$slug'
+      path: '/$slug'
       fullPath: '/app/content/$slug'
       preLoaderRoute: typeof AppContentSlugRouteImport
+      parentRoute: typeof AppContentRoute
+    }
+    '/app/condition/$slug': {
+      id: '/app/condition/$slug'
+      path: '/condition/$slug'
+      fullPath: '/app/condition/$slug'
+      preLoaderRoute: typeof AppConditionSlugRouteImport
       parentRoute: typeof AppRoute
     }
     '/admin/wiki/new': {
@@ -648,13 +914,50 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface AppContentRouteChildren {
+  AppContentSlugRoute: typeof AppContentSlugRoute
+  AppContentFeedRoute: typeof AppContentFeedRoute
+}
+
+const AppContentRouteChildren: AppContentRouteChildren = {
+  AppContentSlugRoute: AppContentSlugRoute,
+  AppContentFeedRoute: AppContentFeedRoute,
+}
+
+const AppContentRouteWithChildren = AppContentRoute._addFileChildren(
+  AppContentRouteChildren,
+)
+
+interface AppScheduleRouteChildren {
+  AppScheduleDoctorIdRoute: typeof AppScheduleDoctorIdRoute
+}
+
+const AppScheduleRouteChildren: AppScheduleRouteChildren = {
+  AppScheduleDoctorIdRoute: AppScheduleDoctorIdRoute,
+}
+
+const AppScheduleRouteWithChildren = AppScheduleRoute._addFileChildren(
+  AppScheduleRouteChildren,
+)
+
 interface AppRouteChildren {
   AppCameraRoute: typeof AppCameraRoute
   AppClinicProfileRoute: typeof AppClinicProfileRoute
+  AppContentRoute: typeof AppContentRouteWithChildren
   AppEvolutionRoute: typeof AppEvolutionRoute
+  AppHistoryRoute: typeof AppHistoryRoute
   AppHomeRoute: typeof AppHomeRoute
-  AppContentSlugRoute: typeof AppContentSlugRoute
-  AppContentFeedRoute: typeof AppContentFeedRoute
+  AppLesionCameraRoute: typeof AppLesionCameraRoute
+  AppLesionResultsRoute: typeof AppLesionResultsRoute
+  AppOnboardingRoute: typeof AppOnboardingRoute
+  AppProfileRoute: typeof AppProfileRoute
+  AppScheduleRoute: typeof AppScheduleRouteWithChildren
+  AppSplashRoute: typeof AppSplashRoute
+  AppSupportRoute: typeof AppSupportRoute
+  AppSymptomCheckerRoute: typeof AppSymptomCheckerRoute
+  AppSymptomResultsRoute: typeof AppSymptomResultsRoute
+  AppUvRoute: typeof AppUvRoute
+  AppConditionSlugRoute: typeof AppConditionSlugRoute
   AppWikiSlugRoute: typeof AppWikiSlugRoute
   AppWikiSearchRoute: typeof AppWikiSearchRoute
 }
@@ -662,10 +965,21 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppCameraRoute: AppCameraRoute,
   AppClinicProfileRoute: AppClinicProfileRoute,
+  AppContentRoute: AppContentRouteWithChildren,
   AppEvolutionRoute: AppEvolutionRoute,
+  AppHistoryRoute: AppHistoryRoute,
   AppHomeRoute: AppHomeRoute,
-  AppContentSlugRoute: AppContentSlugRoute,
-  AppContentFeedRoute: AppContentFeedRoute,
+  AppLesionCameraRoute: AppLesionCameraRoute,
+  AppLesionResultsRoute: AppLesionResultsRoute,
+  AppOnboardingRoute: AppOnboardingRoute,
+  AppProfileRoute: AppProfileRoute,
+  AppScheduleRoute: AppScheduleRouteWithChildren,
+  AppSplashRoute: AppSplashRoute,
+  AppSupportRoute: AppSupportRoute,
+  AppSymptomCheckerRoute: AppSymptomCheckerRoute,
+  AppSymptomResultsRoute: AppSymptomResultsRoute,
+  AppUvRoute: AppUvRoute,
+  AppConditionSlugRoute: AppConditionSlugRoute,
   AppWikiSlugRoute: AppWikiSlugRoute,
   AppWikiSearchRoute: AppWikiSearchRoute,
 }
@@ -686,13 +1000,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
