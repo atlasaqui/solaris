@@ -19,6 +19,7 @@ import { Route as AuthRegisterDoctorRouteImport } from './routes/auth.register-d
 import { Route as AuthLoginRouteImport } from './routes/auth.login'
 import { Route as AppSymptomResultsRouteImport } from './routes/app.symptom-results'
 import { Route as AppSymptomCheckerRouteImport } from './routes/app.symptom-checker'
+import { Route as AppLesionCameraRouteImport } from './routes/app.lesion-camera'
 import { Route as AppHomeRouteImport } from './routes/app.home'
 import { Route as AppEvolutionRouteImport } from './routes/app.evolution'
 import { Route as AppClinicProfileRouteImport } from './routes/app.clinic-profile'
@@ -89,6 +90,11 @@ const AppSymptomResultsRoute = AppSymptomResultsRouteImport.update({
 const AppSymptomCheckerRoute = AppSymptomCheckerRouteImport.update({
   id: '/symptom-checker',
   path: '/symptom-checker',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLesionCameraRoute = AppLesionCameraRouteImport.update({
+  id: '/lesion-camera',
+  path: '/lesion-camera',
   getParentRoute: () => AppRoute,
 } as any)
 const AppHomeRoute = AppHomeRouteImport.update({
@@ -213,6 +219,7 @@ export interface FileRoutesByFullPath {
   '/app/clinic-profile': typeof AppClinicProfileRoute
   '/app/evolution': typeof AppEvolutionRoute
   '/app/home': typeof AppHomeRoute
+  '/app/lesion-camera': typeof AppLesionCameraRoute
   '/app/symptom-checker': typeof AppSymptomCheckerRoute
   '/app/symptom-results': typeof AppSymptomResultsRoute
   '/auth/login': typeof AuthLoginRoute
@@ -246,6 +253,7 @@ export interface FileRoutesByTo {
   '/app/clinic-profile': typeof AppClinicProfileRoute
   '/app/evolution': typeof AppEvolutionRoute
   '/app/home': typeof AppHomeRoute
+  '/app/lesion-camera': typeof AppLesionCameraRoute
   '/app/symptom-checker': typeof AppSymptomCheckerRoute
   '/app/symptom-results': typeof AppSymptomResultsRoute
   '/auth/login': typeof AuthLoginRoute
@@ -280,6 +288,7 @@ export interface FileRoutesById {
   '/app/clinic-profile': typeof AppClinicProfileRoute
   '/app/evolution': typeof AppEvolutionRoute
   '/app/home': typeof AppHomeRoute
+  '/app/lesion-camera': typeof AppLesionCameraRoute
   '/app/symptom-checker': typeof AppSymptomCheckerRoute
   '/app/symptom-results': typeof AppSymptomResultsRoute
   '/auth/login': typeof AuthLoginRoute
@@ -315,6 +324,7 @@ export interface FileRouteTypes {
     | '/app/clinic-profile'
     | '/app/evolution'
     | '/app/home'
+    | '/app/lesion-camera'
     | '/app/symptom-checker'
     | '/app/symptom-results'
     | '/auth/login'
@@ -348,6 +358,7 @@ export interface FileRouteTypes {
     | '/app/clinic-profile'
     | '/app/evolution'
     | '/app/home'
+    | '/app/lesion-camera'
     | '/app/symptom-checker'
     | '/app/symptom-results'
     | '/auth/login'
@@ -381,6 +392,7 @@ export interface FileRouteTypes {
     | '/app/clinic-profile'
     | '/app/evolution'
     | '/app/home'
+    | '/app/lesion-camera'
     | '/app/symptom-checker'
     | '/app/symptom-results'
     | '/auth/login'
@@ -482,6 +494,13 @@ declare module '@tanstack/react-router' {
       path: '/symptom-checker'
       fullPath: '/app/symptom-checker'
       preLoaderRoute: typeof AppSymptomCheckerRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/lesion-camera': {
+      id: '/app/lesion-camera'
+      path: '/lesion-camera'
+      fullPath: '/app/lesion-camera'
+      preLoaderRoute: typeof AppLesionCameraRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/home': {
@@ -691,6 +710,7 @@ interface AppRouteChildren {
   AppClinicProfileRoute: typeof AppClinicProfileRoute
   AppEvolutionRoute: typeof AppEvolutionRoute
   AppHomeRoute: typeof AppHomeRoute
+  AppLesionCameraRoute: typeof AppLesionCameraRoute
   AppSymptomCheckerRoute: typeof AppSymptomCheckerRoute
   AppSymptomResultsRoute: typeof AppSymptomResultsRoute
   AppContentSlugRoute: typeof AppContentSlugRoute
@@ -704,6 +724,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppClinicProfileRoute: AppClinicProfileRoute,
   AppEvolutionRoute: AppEvolutionRoute,
   AppHomeRoute: AppHomeRoute,
+  AppLesionCameraRoute: AppLesionCameraRoute,
   AppSymptomCheckerRoute: AppSymptomCheckerRoute,
   AppSymptomResultsRoute: AppSymptomResultsRoute,
   AppContentSlugRoute: AppContentSlugRoute,
