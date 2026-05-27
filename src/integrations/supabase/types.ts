@@ -928,6 +928,7 @@ export type Database = {
           birth_date: string | null
           city: string | null
           clinic_id: string | null
+          cpf: string | null
           created_at: string | null
           email: string
           full_name: string
@@ -945,6 +946,7 @@ export type Database = {
           birth_date?: string | null
           city?: string | null
           clinic_id?: string | null
+          cpf?: string | null
           created_at?: string | null
           email: string
           full_name: string
@@ -962,6 +964,7 @@ export type Database = {
           birth_date?: string | null
           city?: string | null
           clinic_id?: string | null
+          cpf?: string | null
           created_at?: string | null
           email?: string
           full_name?: string

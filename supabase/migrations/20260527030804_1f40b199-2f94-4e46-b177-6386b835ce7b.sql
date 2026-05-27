@@ -1,0 +1,1 @@
+ALTER TABLE public.patients ADD COLUMN IF NOT EXISTS cpf TEXT; CREATE UNIQUE INDEX IF NOT EXISTS patients_cpf_unique ON public.patients (cpf) WHERE cpf IS NOT NULL;
