@@ -1,23 +1,24 @@
-import { Sun } from "lucide-react";
+import { Sun, MapPin } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { useUV } from "@/hooks/patient/useUV";
+import { uvLevel } from "@/lib/uv";
 
-function levelMeta(uv: number) {
-  if (uv <= 2) return { label: "Baixo", color: "#22C55E", advice: "Protetor FPS 15+" };
-  if (uv <= 5) return { label: "Moderado", color: "#EAB308", advice: "Protetor FPS 30+" };
-  if (uv <= 7) return { label: "Alto", color: "#F97316", advice: "Protetor FPS 50+ e chapéu" };
-  if (uv <= 10) return { label: "Muito alto", color: "#EF4444", advice: "Evite exposição 10h-16h" };
-  return { label: "Extremo", color: "#7C2D12", advice: "Não se exponha ao sol" };
-}
-
-export function UVWidget({ uv = 4 }: { uv?: number }) {
-  const meta = levelMeta(uv);
+export function UVWidget({ uv: uvProp }: { uv?: number }) {
+  const { data, isLoading } = useUV();
+  const uv = uvProp ?? data?.uvIndex ?? 0;
+  const meta = uvLevel(uv);
   const pos = Math.min(Math.max((uv / 12) * 100, 2), 98);
+
   return (
     <Link to="/app/uv" className="block">
       <div className="mx-4 -mt-6 rounded-3xl bg-white p-5" style={{ boxShadow: "0 8px 24px rgba(0,0,0,0.10)" }}>
         <div className="flex items-start justify-between">
           <div>
-            <div className="text-[13px] font-semibold" style={{ color: "var(--text-medium)" }}>Índice UV atual</div>
+            <div className="flex items-center gap-1 text-[12px] font-semibold" style={{ color: "var(--text-medium)" }}>
+              <MapPin className="h-3 w-3" />
+              {isLoading ? "Localizando..." : data?.city ?? "Sua região"}
+              {data?.temperature != null && <span className="ml-1">· {data.temperature}°C</span>}
+            </div>
             <div className="mt-1 text-[36px] font-extrabold leading-none" style={{ color: "var(--text-dark)" }}>NV. {uv}</div>
             <div className="mt-1 text-[16px] font-bold" style={{ color: "var(--text-dark)" }}>{meta.label}</div>
           </div>
