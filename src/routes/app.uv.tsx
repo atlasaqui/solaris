@@ -8,7 +8,7 @@ export const Route = createFileRoute("/app/uv")({
     <>
       <PatientHeader title="Índice UV" showBack />
       <div className="pt-2">
-        <UVWidget uv={4} />
+        <UVWidget />
         <div className="space-y-3 px-4 py-5">
           <Card color="#22C55E" range="0-2" label="Baixo" advice="Pouca proteção necessária." />
           <Card color="#EAB308" range="3-5" label="Moderado" advice="Use FPS 30+, óculos de sol e chapéu." />
