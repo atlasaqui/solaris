@@ -13,7 +13,6 @@ export const Route = createFileRoute("/app/home")({
 
 function Home() {
   const [featured, setFeatured] = useState<{ slug: string; title: string; cover_image_url: string | null } | null>(null);
-  const [uv] = useState<number>(4);
 
   useEffect(() => {
     (async () => {
@@ -36,7 +35,7 @@ function Home() {
   return (
     <>
       <PatientHeader />
-      <UVWidget uv={uv} />
+      <UVWidget />
       <div className="px-4 pt-5">
         <QuickActionsGrid />
         {featured && (
