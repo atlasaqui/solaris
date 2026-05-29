@@ -1,5 +1,4 @@
 import { useNavigate } from "@tanstack/react-router";
-import { HeartPulse } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
@@ -7,20 +6,6 @@ import { toast } from "sonner";
 import doctorImg from "@/assets/solaris-doctor.png";
 import logoImg from "@/assets/solaris-logo.png";
 import { ClinicCodeInput } from "./ClinicCodeInput";
-
-function Dots({ active }: { active: 0 | 1 | 2 }) {
-  return (
-    <div className="flex items-center justify-center gap-2 py-6">
-      {[0, 1, 2].map((i) => (
-        <span
-          key={i}
-          className="h-4 w-4 rounded-full transition-all"
-          style={{ background: i === active ? "var(--clinic-primary)" : "#D9D9D9" }}
-        />
-      ))}
-    </div>
-  );
-}
 
 function GoogleIcon({ size = 38 }: { size?: number }) {
   return (
@@ -44,9 +29,11 @@ function FacebookIcon({ size = 38 }: { size?: number }) {
   );
 }
 
+type Step = "welcome" | "clinic-code";
+
 export function OnboardingCarousel() {
   const navigate = useNavigate();
-  const [slide, setSlide] = useState(0);
+  const [step, setStep] = useState<Step>("welcome");
 
   const signInOAuth = async (provider: "google" | "facebook") => {
     try {
@@ -64,7 +51,7 @@ export function OnboardingCarousel() {
     }
   };
 
-  if (slide === 0) {
+  if (step === "welcome") {
     return (
       <div className="patient-app min-h-screen bg-white flex flex-col" style={{ fontFamily: "Nunito, sans-serif" }}>
         <div className="relative h-[55vh] w-full overflow-hidden">
@@ -87,7 +74,7 @@ export function OnboardingCarousel() {
           </div>
           <div className="flex w-full max-w-sm gap-4">
             <button
-              onClick={() => setSlide(1)}
+              onClick={() => setStep("clinic-code")}
               className="flex-1 py-4 text-white text-[18px] font-bold"
               style={{ background: "var(--clinic-primary)", borderRadius: 15, boxShadow: "0px 4px 4px rgba(0,0,0,0.25)" }}
             >
@@ -106,55 +93,25 @@ export function OnboardingCarousel() {
     );
   }
 
-  // Slides 1, 2, 3 (apresentação, exames, código)
   return (
     <div
       className="patient-app min-h-screen bg-white flex flex-col items-center px-8 pt-16"
       style={{ fontFamily: "Nunito, sans-serif" }}
     >
       <img src={logoImg} alt="Solaris" className="w-[236px]" />
-
-      {slide === 1 && (
-        <>
-          <div className="flex-1 flex flex-col items-center justify-center gap-10 text-center">
-            <HeartPulse size={148} color="#14C7BB" strokeWidth={2} />
-            <p className="text-black font-semibold text-[24px] leading-snug">
-              Somos a Soláris, sua plataforma de saúde digital.
-            </p>
-          </div>
-          <Dots active={0} />
-          <button onClick={() => setSlide(2)} className="text-sm font-semibold mb-4" style={{ color: "var(--clinic-primary)" }}>
-            Continuar →
-          </button>
-        </>
-      )}
-
-      {slide === 2 && (
-        <>
-          <div className="flex-1 flex flex-col items-center justify-center gap-10 text-center">
-            <HeartPulse size={148} color="#43C7EB" strokeWidth={2} />
-            <p className="text-black font-semibold text-[24px] leading-snug">
-              Exames em um ambiente digital customizado e exclusivo para a clínica que você já confia.
-            </p>
-          </div>
-          <Dots active={1} />
-          <button onClick={() => setSlide(3)} className="text-sm font-semibold mb-4" style={{ color: "var(--clinic-primary)" }}>
-            Continuar →
-          </button>
-        </>
-      )}
-
-      {slide === 3 && (
-        <>
-          <div className="flex-1 flex flex-col items-center justify-center gap-6 text-center w-full">
-            <ClinicCodeInput onValid={() => navigate({ to: "/auth/register-patient" })} />
-            <p className="text-black font-semibold text-[24px] leading-snug max-w-xs">
-              Para começar, insira o código fornecido pela sua clínica.
-            </p>
-          </div>
-          <Dots active={2} />
-        </>
-      )}
+      <div className="flex-1 flex flex-col items-center justify-center gap-6 text-center w-full">
+        <p className="text-black font-semibold text-[22px] leading-snug max-w-xs">
+          Para começar, insira o código fornecido pela sua clínica.
+        </p>
+        <ClinicCodeInput onValid={() => navigate({ to: "/auth/register-patient" })} />
+        <button
+          onClick={() => setStep("welcome")}
+          className="text-sm font-semibold mt-2"
+          style={{ color: "var(--clinic-primary)" }}
+        >
+          ← Voltar
+        </button>
+      </div>
     </div>
   );
 }
