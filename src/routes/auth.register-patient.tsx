@@ -11,27 +11,32 @@ export const Route = createFileRoute("/auth/register-patient")({
 function RegisterPage() {
   const navigate = useNavigate();
   return (
-    <div className="patient-app min-h-screen bg-white" style={{ fontFamily: "Poppins, sans-serif" }}>
-      <div className="relative flex items-center justify-center px-4 pt-4 pb-2">
+    <div
+      className="patient-app flex h-screen flex-col overflow-hidden bg-white"
+      style={{ fontFamily: "Poppins, sans-serif" }}
+    >
+      <div className="relative flex items-center justify-center px-4 pt-3 pb-1 shrink-0">
         <button
           type="button"
           onClick={() => navigate({ to: "/app/onboarding" })}
-          className="absolute left-3 top-3 grid h-10 w-10 place-items-center"
+          className="absolute left-3 top-2 grid h-9 w-9 place-items-center"
           aria-label="Voltar"
         >
           <img src={backIcon} alt="" className="h-full w-full object-contain" draggable={false} />
         </button>
-        <img src={clinicIcon} alt="Solaris" className="h-14 w-14 object-contain" />
+        <img src={clinicIcon} alt="Solaris" className="h-12 w-12 object-contain" />
       </div>
-      <div className="px-6 pb-2">
-        <h1 className="text-center text-[22px] font-bold" style={{ color: "var(--clinic-primary)" }}>
+      <div className="px-6 pb-1 shrink-0">
+        <h1 className="text-center text-[20px] font-bold" style={{ color: "var(--clinic-primary)" }}>
           Crie sua conta
         </h1>
-        <p className="mt-1 text-center text-[13px] text-gray-500">
+        <p className="mt-0.5 text-center text-[12px] text-gray-500">
           Preencha seus dados para começar
         </p>
       </div>
-      <RegisterForm />
+      <div className="flex-1 overflow-hidden">
+        <RegisterForm />
+      </div>
     </div>
   );
 }
