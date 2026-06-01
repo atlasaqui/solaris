@@ -282,7 +282,10 @@ function Page() {
 
 function Stat({ icon: Icon, label, value }: { icon: typeof Award; label: string; value: string }) {
   return (
-    <div className="flex items-center gap-2 rounded-2xl p-3" style={{ background: "var(--bg-page)" }}>
+    <div
+      className="flex items-center gap-2 rounded-xl bg-white p-3"
+      style={{ border: "1px solid #E2E8F0" }}
+    >
       <Icon className="h-5 w-5" style={{ color: "var(--clinic-primary)" }} />
       <div className="min-w-0">
         <div className="text-[10px] font-bold uppercase tracking-wide" style={{ color: "var(--text-soft)" }}>
