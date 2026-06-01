@@ -1,9 +1,16 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { CalendarCheck, Loader2, Award, GraduationCap } from "lucide-react";
+import { Loader2, Award, GraduationCap } from "lucide-react";
 import { PatientHeader } from "@/components/patient/PatientHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+
+import slotOn from "@/assets/solaris/screen-17-schedule-doctor/selected_hour_time_btn_schedule.png";
+import slotOff from "@/assets/solaris/screen-17-schedule-doctor/unselected_hour_time_btn_schedule.png";
+import btnSchedule from "@/assets/solaris/screen-17-schedule-doctor/btn-primary-schedule.png";
+import arrowLeft from "@/assets/solaris/screen-17-schedule-doctor/arrow_left_schedue.png";
+import arrowRight from "@/assets/solaris/screen-17-schedule-doctor/arrow_right_schedue.png";
+import chatBtn from "@/assets/solaris/screen-17-schedule-doctor/doctor_chat_btn.png";
 
 export const Route = createFileRoute("/app/schedule/$doctorId")({
   head: () => ({ meta: [{ title: "Perfil do médico" }] }),
