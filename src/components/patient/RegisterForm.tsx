@@ -156,7 +156,7 @@ export function RegisterForm() {
           </button>
         </div>
         <div className="mt-2 flex items-center gap-1.5 text-[14px] font-normal" style={{ color: "var(--clinic-primary)" }}>
-          <AlertCircle size={16} />
+          <img src={exclamationIcon} alt="" className="h-4 w-4 object-contain" />
           <span>Mínimo 8 caracteres</span>
         </div>
       </Field>
