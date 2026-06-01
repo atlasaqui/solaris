@@ -46,31 +46,24 @@ export function RegisterForm() {
   const onSubmit = async (data: FormData) => {
     setSubmitting(true);
     try {
-      const clinicId = typeof window !== "undefined" ? localStorage.getItem("solaris.clinic_id") : null;
-      if (!clinicId) {
-        toast.error("Código da clínica não encontrado. Volte ao início.");
-        navigate({ to: "/app/onboarding" });
-        return;
-      }
       const { data: auth, error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
-        options: { emailRedirectTo: window.location.origin + "/app/home" },
+        options: { emailRedirectTo: window.location.origin + "/app/clinic-code" },
       });
       if (error) throw error;
       const userId = auth.user?.id;
       if (!userId) throw new Error("Usuário não criado");
       const { error: pErr } = await supabase.from("patients").insert({
         user_id: userId,
-        clinic_id: clinicId,
         full_name: data.fullName,
         email: data.email,
         birth_date: data.birthDate,
         cpf: data.cpf.replace(/\D/g, ""),
       } as any);
       if (pErr) throw pErr;
-      toast.success("Conta criada!");
-      navigate({ to: "/app/home" });
+      toast.success("Conta criada! Agora informe o código da clínica.");
+      navigate({ to: "/app/clinic-code" });
     } catch (e: any) {
       toast.error(e.message ?? "Erro ao cadastrar");
     } finally {
