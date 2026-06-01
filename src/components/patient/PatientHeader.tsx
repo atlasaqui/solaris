@@ -10,12 +10,16 @@ export function PatientHeader({
   showBack = false,
   notifications = 0,
   rounded = true,
+  greeting,
+  dateLabel,
 }: {
   title?: string;
   subtitle?: string;
   showBack?: boolean;
   notifications?: number;
   rounded?: boolean;
+  greeting?: string;
+  dateLabel?: string;
 }) {
   const { brand, isWarm } = useWhiteLabel();
   const navigate = useNavigate();
