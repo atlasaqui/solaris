@@ -1,7 +1,7 @@
 import { createFileRoute, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AlertTriangle, CalendarPlus, CircleAlert } from "lucide-react";
-import lesionPlaceholder from "@/assets/solaris/skin-lesion-placeholder.jpg";
+
 import { loadAnalysis, type Condition } from "@/lib/gemini";
 
 export const Route = createFileRoute("/app/library/conditions/$id")({
@@ -71,9 +71,11 @@ function Page() {
         </h1>
       </header>
 
-      <div className="relative w-full overflow-hidden" style={{ height: 200 }}>
-        <img src={lesionPlaceholder} alt={condition.name} className="h-full w-full object-cover" />
-        <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.5))" }} />
+      <div className="relative w-full overflow-hidden" style={{ height: 160, background: "linear-gradient(135deg, #E0EDFB 0%, #C3DCFF 50%, #94BDF0 100%)" }}>
+        <div className="absolute inset-0 grid place-items-center text-white/80" style={{ fontSize: 13, fontWeight: 600, letterSpacing: "0.05em" }}>
+          IMAGEM ILUSTRATIVA
+        </div>
+        <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.25))" }} />
         <span
           className="absolute right-3 top-3 text-white"
           style={{
