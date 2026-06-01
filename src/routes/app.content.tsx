@@ -4,6 +4,7 @@ import { Heart, MessageSquare, BarChart2, Loader2 } from "lucide-react";
 import { PatientHeader } from "@/components/patient/PatientHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useWhiteLabel } from "@/components/clinic/WhiteLabelProvider";
+import infoBaloon from "@/assets/solaris/screen-16-content-library/Info_Baloon.png";
 
 export const Route = createFileRoute("/app/content")({
   head: () => ({ meta: [{ title: "Biblioteca" }] }),
