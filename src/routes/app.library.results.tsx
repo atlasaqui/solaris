@@ -1,7 +1,6 @@
 import { createFileRoute, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, CalendarPlus, Info } from "lucide-react";
-import { BottomNav } from "@/components/patient/BottomNav";
 import { loadAnalysis, type AnalysisResult, type Condition } from "@/lib/gemini";
 
 export const Route = createFileRoute("/app/library/results")({
@@ -221,7 +220,6 @@ function Page() {
         <CalendarPlus className="h-5 w-5" /> Agendar consulta
       </button>
 
-      <BottomNav />
     </div>
   );
 }
