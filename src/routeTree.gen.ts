@@ -33,6 +33,7 @@ import { Route as AppHistoryRouteImport } from './routes/app.history'
 import { Route as AppEvolutionRouteImport } from './routes/app.evolution'
 import { Route as AppContentRouteImport } from './routes/app.content'
 import { Route as AppClinicProfileRouteImport } from './routes/app.clinic-profile'
+import { Route as AppClinicCodeRouteImport } from './routes/app.clinic-code'
 import { Route as AppCameraRouteImport } from './routes/app.camera'
 import { Route as AdminWikiRouteImport } from './routes/admin.wiki'
 import { Route as AdminProfileRouteImport } from './routes/admin.profile'
@@ -177,6 +178,11 @@ const AppClinicProfileRoute = AppClinicProfileRouteImport.update({
   path: '/clinic-profile',
   getParentRoute: () => AppRoute,
 } as any)
+const AppClinicCodeRoute = AppClinicCodeRouteImport.update({
+  id: '/clinic-code',
+  path: '/clinic-code',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppCameraRoute = AppCameraRouteImport.update({
   id: '/camera',
   path: '/camera',
@@ -306,6 +312,7 @@ export interface FileRoutesByFullPath {
   '/admin/profile': typeof AdminProfileRoute
   '/admin/wiki': typeof AdminWikiRouteWithChildren
   '/app/camera': typeof AppCameraRoute
+  '/app/clinic-code': typeof AppClinicCodeRoute
   '/app/clinic-profile': typeof AppClinicProfileRoute
   '/app/content': typeof AppContentRouteWithChildren
   '/app/evolution': typeof AppEvolutionRoute
@@ -355,6 +362,7 @@ export interface FileRoutesByTo {
   '/admin/profile': typeof AdminProfileRoute
   '/admin/wiki': typeof AdminWikiRouteWithChildren
   '/app/camera': typeof AppCameraRoute
+  '/app/clinic-code': typeof AppClinicCodeRoute
   '/app/clinic-profile': typeof AppClinicProfileRoute
   '/app/content': typeof AppContentRouteWithChildren
   '/app/evolution': typeof AppEvolutionRoute
@@ -405,6 +413,7 @@ export interface FileRoutesById {
   '/admin/profile': typeof AdminProfileRoute
   '/admin/wiki': typeof AdminWikiRouteWithChildren
   '/app/camera': typeof AppCameraRoute
+  '/app/clinic-code': typeof AppClinicCodeRoute
   '/app/clinic-profile': typeof AppClinicProfileRoute
   '/app/content': typeof AppContentRouteWithChildren
   '/app/evolution': typeof AppEvolutionRoute
@@ -456,6 +465,7 @@ export interface FileRouteTypes {
     | '/admin/profile'
     | '/admin/wiki'
     | '/app/camera'
+    | '/app/clinic-code'
     | '/app/clinic-profile'
     | '/app/content'
     | '/app/evolution'
@@ -505,6 +515,7 @@ export interface FileRouteTypes {
     | '/admin/profile'
     | '/admin/wiki'
     | '/app/camera'
+    | '/app/clinic-code'
     | '/app/clinic-profile'
     | '/app/content'
     | '/app/evolution'
@@ -554,6 +565,7 @@ export interface FileRouteTypes {
     | '/admin/profile'
     | '/admin/wiki'
     | '/app/camera'
+    | '/app/clinic-code'
     | '/app/clinic-profile'
     | '/app/content'
     | '/app/evolution'
@@ -772,6 +784,13 @@ declare module '@tanstack/react-router' {
       path: '/clinic-profile'
       fullPath: '/app/clinic-profile'
       preLoaderRoute: typeof AppClinicProfileRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/clinic-code': {
+      id: '/app/clinic-code'
+      path: '/clinic-code'
+      fullPath: '/app/clinic-code'
+      preLoaderRoute: typeof AppClinicCodeRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/camera': {
@@ -1034,6 +1053,7 @@ const AppScheduleRouteWithChildren = AppScheduleRoute._addFileChildren(
 
 interface AppRouteChildren {
   AppCameraRoute: typeof AppCameraRoute
+  AppClinicCodeRoute: typeof AppClinicCodeRoute
   AppClinicProfileRoute: typeof AppClinicProfileRoute
   AppContentRoute: typeof AppContentRouteWithChildren
   AppEvolutionRoute: typeof AppEvolutionRoute
@@ -1057,6 +1077,7 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppCameraRoute: AppCameraRoute,
+  AppClinicCodeRoute: AppClinicCodeRoute,
   AppClinicProfileRoute: AppClinicProfileRoute,
   AppContentRoute: AppContentRouteWithChildren,
   AppEvolutionRoute: AppEvolutionRoute,
