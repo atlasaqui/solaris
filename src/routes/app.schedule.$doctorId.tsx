@@ -10,7 +10,7 @@ import slotOff from "@/assets/solaris/screen-17-schedule-doctor/unselected_hour_
 import btnSchedule from "@/assets/solaris/screen-17-schedule-doctor/btn-primary-schedule.png";
 import arrowLeft from "@/assets/solaris/screen-17-schedule-doctor/arrow_left_schedue.png";
 import arrowRight from "@/assets/solaris/screen-17-schedule-doctor/arrow_right_schedue.png";
-import chatBtn from "@/assets/solaris/screen-17-schedule-doctor/doctor_chat_btn.png";
+
 
 export const Route = createFileRoute("/app/schedule/$doctorId")({
   head: () => ({ meta: [{ title: "Perfil do médico" }] }),
