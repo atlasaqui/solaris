@@ -193,16 +193,23 @@ function Page() {
                 key={t}
                 disabled={booked}
                 onClick={() => setTime(t)}
-                className="rounded-xl py-2 text-[13px] font-bold transition disabled:cursor-not-allowed disabled:opacity-40"
-                style={
-                  sel
-                    ? { background: "var(--clinic-primary)", color: "#fff" }
-                    : booked
-                      ? { background: "#F3F4F6", color: "var(--text-soft)", textDecoration: "line-through" }
-                      : { background: "var(--clinic-primary-light)", color: "var(--clinic-primary-dark)" }
-                }
+                className="relative h-12 transition disabled:cursor-not-allowed disabled:opacity-40"
+                style={{ fontFamily: "Poppins, sans-serif" }}
               >
-                {t}
+                <img
+                  src={sel ? slotOn : slotOff}
+                  alt=""
+                  className="absolute inset-0 h-full w-full"
+                />
+                <span
+                  className="relative text-[13px] font-bold"
+                  style={{
+                    color: sel ? "#FFFFFF" : booked ? "#94A3B8" : "#1472D0",
+                    textDecoration: booked ? "line-through" : "none",
+                  }}
+                >
+                  {t}
+                </span>
               </button>
             );
           })}
@@ -211,11 +218,10 @@ function Page() {
         <button
           onClick={() => setConfirmOpen(true)}
           disabled={!time || submitting}
-          className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 text-[16px] font-bold text-white transition active:scale-[0.98] disabled:opacity-40"
-          style={{ background: "var(--clinic-primary)" }}
+          className="mt-5 block w-full transition active:scale-[0.98] disabled:opacity-40"
+          aria-label="Agendar consulta"
         >
-          <CalendarCheck className="h-5 w-5" />
-          Agendar consulta
+          <img src={btnSchedule} alt="Agendar consulta" className="w-full" />
         </button>
       </div>
 
