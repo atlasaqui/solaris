@@ -2,11 +2,13 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Eye, EyeOff, AlertCircle, Calendar } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "@tanstack/react-router";
 import { maskCPF, isValidCPF } from "@/lib/cpf";
+import exclamationIcon from "@/assets/solaris/screen-05-register/exclamation_icon.png";
+import scheduleIcon from "@/assets/solaris/screen-05-register/schedule_icon.png";
 
 const schema = z.object({
   fullName: z.string().trim().min(3, "Nome muito curto").max(120),
