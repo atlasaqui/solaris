@@ -45,7 +45,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   return (
     <div className="rounded-2xl bg-white p-4 shadow-sm">
       <div className="mb-2 text-[16px] font-bold" style={{ color: "var(--text-dark)" }}>{title}</div>
-      <div className="text-[14px] leading-relaxed" style={{ color: "var(--text-medium)" }}>{children}</div>
+      <div className="text-[13px]" style={{ color: "var(--text-medium)", lineHeight: 1.6 }}>{children}</div>
     </div>
   );
 }
