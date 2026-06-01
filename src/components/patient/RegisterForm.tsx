@@ -111,10 +111,10 @@ export function RegisterForm() {
 
       <Field label="Data de nascimento" error={errors.birthDate?.message}>
         <div className="relative">
-          <Calendar
-            className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
-            size={20}
-            color="var(--clinic-primary)"
+          <img
+            src={scheduleIcon}
+            alt=""
+            className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none h-5 w-5 object-contain"
           />
           <input
             {...register("birthDate")}
