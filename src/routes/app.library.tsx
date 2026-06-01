@@ -2,7 +2,6 @@ import { createFileRoute, Outlet, useNavigate, useRouterState } from "@tanstack/
 import { useMemo, useState } from "react";
 import { Search, Sparkles, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { BottomNav } from "@/components/patient/BottomNav";
 import { analyzeSymptoms, FALLBACK_ANALYSIS, saveAnalysis } from "@/lib/gemini";
 
 export const Route = createFileRoute("/app/library")({
@@ -198,7 +197,6 @@ function Page() {
         </div>
       )}
 
-      <BottomNav />
     </div>
   );
 }
