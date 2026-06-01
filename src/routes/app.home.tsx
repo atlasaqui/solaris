@@ -34,6 +34,16 @@ function Home() {
   const [featured, setFeatured] = useState<Featured | null>(null);
   const [appt, setAppt] = useState<Appt | null>(null);
   const [analyses, setAnalyses] = useState<Analysis[]>([]);
+  const [greet, setGreet] = useState<string>("");
+  const [today, setToday] = useState<string>("");
+
+  useEffect(() => {
+    const h = new Date().getHours();
+    setGreet(h < 12 ? "Bom dia 👋" : h < 18 ? "Boa tarde 👋" : "Boa noite 👋");
+    const s = new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long" });
+    setToday(s.charAt(0).toUpperCase() + s.slice(1));
+  }, []);
+
 
   useEffect(() => {
     (async () => {
@@ -85,8 +95,9 @@ function Home() {
     <>
       <PatientHeader
         title={firstName ? `Olá, ${firstName}` : "Olá"}
-        greeting={greeting()}
-        dateLabel={todayLabel()}
+        greeting={greet}
+        dateLabel={today}
+
       />
       <UVWidget />
       <div className="space-y-5 px-4 pt-5" style={{ fontFamily: "Poppins, sans-serif" }}>
