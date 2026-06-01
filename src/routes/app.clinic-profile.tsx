@@ -2,6 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { MapPin, Phone, Globe, Instagram, MessageCircle, Award, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import bannerPlaceholder from "@/assets/solaris/screen-10-clinic-home/clinic-banner-placeholder.png";
+import dotOn from "@/assets/solaris/screen-10-clinic-home/pagination-dots-on.png";
+import dotOff from "@/assets/solaris/screen-10-clinic-home/pagination-dots-off.png";
 
 export const Route = createFileRoute("/app/clinic-profile")({
   head: () => ({ meta: [{ title: "Sua clínica" }] }),
@@ -36,9 +39,18 @@ function ClinicProfile() {
   if (!clinic) return <div className="text-muted-foreground">Clínica não encontrada.</div>;
 
   return (
-    <article className="-mx-5 -mt-5 space-y-5 pb-6">
-      <div className="relative h-44 w-full overflow-hidden" style={{ background: clinic.profile_banner_url ? undefined : "linear-gradient(135deg, var(--clinic-primary), var(--clinic-primary-dark))" }}>
-        {clinic.profile_banner_url && <img src={clinic.profile_banner_url} alt="" className="h-full w-full object-cover" />}
+    <article className="-mx-5 -mt-5 space-y-5 pb-6" style={{ fontFamily: "Poppins, sans-serif" }}>
+      <div className="relative w-full overflow-hidden">
+        <img
+          src={clinic.profile_banner_url ?? bannerPlaceholder}
+          alt=""
+          className="h-44 w-full object-cover"
+        />
+        <div className="absolute inset-x-0 bottom-2 flex items-center justify-center gap-1.5">
+          <img src={dotOn} alt="" className="h-2" />
+          <img src={dotOff} alt="" className="h-2" />
+          <img src={dotOff} alt="" className="h-2" />
+        </div>
         <div className="absolute -bottom-8 left-5">
           <div className="grid h-20 w-20 place-items-center rounded-2xl bg-white shadow-lg ring-4 ring-white">
             {clinic.logo_url

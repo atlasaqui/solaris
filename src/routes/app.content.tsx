@@ -4,6 +4,7 @@ import { Heart, MessageSquare, BarChart2, Loader2 } from "lucide-react";
 import { PatientHeader } from "@/components/patient/PatientHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useWhiteLabel } from "@/components/clinic/WhiteLabelProvider";
+import infoBaloon from "@/assets/solaris/screen-16-content-library/Info_Baloon.png";
 
 export const Route = createFileRoute("/app/content")({
   head: () => ({ meta: [{ title: "Biblioteca" }] }),
@@ -48,7 +49,7 @@ function Page() {
   [tab, posts]);
 
   return (
-    <>
+    <div style={{ fontFamily: "Poppins, sans-serif" }}>
       <PatientHeader />
       <div className="sticky top-[72px] z-10 flex gap-6 border-b bg-white px-5">
         {TABS.map((t) => {
@@ -61,6 +62,7 @@ function Page() {
         })}
       </div>
       <div className="space-y-4 p-4">
+        <img src={infoBaloon} alt="Aviso importante" className="w-full" />
         {loading ? (
           <div className="grid h-40 place-items-center"><Loader2 className="h-5 w-5 animate-spin" /></div>
         ) : filtered.length === 0 ? (
@@ -86,6 +88,6 @@ function Page() {
           </Link>
         ))}
       </div>
-    </>
+    </div>
   );
 }

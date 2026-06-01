@@ -1,9 +1,16 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { CalendarCheck, Loader2, Award, GraduationCap } from "lucide-react";
+import { Loader2, Award, GraduationCap } from "lucide-react";
 import { PatientHeader } from "@/components/patient/PatientHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+
+import slotOn from "@/assets/solaris/screen-17-schedule-doctor/selected_hour_time_btn_schedule.png";
+import slotOff from "@/assets/solaris/screen-17-schedule-doctor/unselected_hour_time_btn_schedule.png";
+import btnSchedule from "@/assets/solaris/screen-17-schedule-doctor/btn-primary-schedule.png";
+import arrowLeft from "@/assets/solaris/screen-17-schedule-doctor/arrow_left_schedue.png";
+import arrowRight from "@/assets/solaris/screen-17-schedule-doctor/arrow_right_schedue.png";
+import chatBtn from "@/assets/solaris/screen-17-schedule-doctor/doctor_chat_btn.png";
 
 export const Route = createFileRoute("/app/schedule/$doctorId")({
   head: () => ({ meta: [{ title: "Perfil do médico" }] }),
@@ -128,6 +135,9 @@ function Page() {
                 {doctor.crm ? ` · CRM ${doctor.crm}` : ""}
               </div>
             </div>
+            <button aria-label="Conversar com o médico" className="absolute right-3 top-3 transition active:scale-95">
+              <img src={chatBtn} alt="" className="h-11" />
+            </button>
           </div>
           <div className="grid grid-cols-2 gap-3 p-4">
             <Stat icon={GraduationCap} label="Especialidade" value={doctor.specialty ?? "Dermatologia"} />
@@ -148,8 +158,12 @@ function Page() {
 
       {/* Date / time picker */}
       <div className="m-4 rounded-3xl bg-white p-4" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-        <div className="mb-3 text-[16px] font-bold" style={{ color: "var(--text-dark)" }}>
-          Selecione a data
+        <div className="mb-3 flex items-center justify-between">
+          <div className="text-[16px] font-bold" style={{ color: "var(--text-dark)" }}>Selecione a data</div>
+          <div className="flex items-center gap-2">
+            <button onClick={() => setDateIdx(Math.max(0, dateIdx - 1))} aria-label="Anterior"><img src={arrowLeft} alt="" className="h-8" /></button>
+            <button onClick={() => setDateIdx(Math.min(days.length - 1, dateIdx + 1))} aria-label="Próximo"><img src={arrowRight} alt="" className="h-8" /></button>
+          </div>
         </div>
         <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
           {days.map((d, i) => {
@@ -186,16 +200,23 @@ function Page() {
                 key={t}
                 disabled={booked}
                 onClick={() => setTime(t)}
-                className="rounded-xl py-2 text-[13px] font-bold transition disabled:cursor-not-allowed disabled:opacity-40"
-                style={
-                  sel
-                    ? { background: "var(--clinic-primary)", color: "#fff" }
-                    : booked
-                      ? { background: "#F3F4F6", color: "var(--text-soft)", textDecoration: "line-through" }
-                      : { background: "var(--clinic-primary-light)", color: "var(--clinic-primary-dark)" }
-                }
+                className="relative h-12 transition disabled:cursor-not-allowed disabled:opacity-40"
+                style={{ fontFamily: "Poppins, sans-serif" }}
               >
-                {t}
+                <img
+                  src={sel ? slotOn : slotOff}
+                  alt=""
+                  className="absolute inset-0 h-full w-full"
+                />
+                <span
+                  className="relative text-[13px] font-bold"
+                  style={{
+                    color: sel ? "#FFFFFF" : booked ? "#94A3B8" : "#1472D0",
+                    textDecoration: booked ? "line-through" : "none",
+                  }}
+                >
+                  {t}
+                </span>
               </button>
             );
           })}
@@ -204,11 +225,10 @@ function Page() {
         <button
           onClick={() => setConfirmOpen(true)}
           disabled={!time || submitting}
-          className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 text-[16px] font-bold text-white transition active:scale-[0.98] disabled:opacity-40"
-          style={{ background: "var(--clinic-primary)" }}
+          className="mt-5 block w-full transition active:scale-[0.98] disabled:opacity-40"
+          aria-label="Agendar consulta"
         >
-          <CalendarCheck className="h-5 w-5" />
-          Agendar consulta
+          <img src={btnSchedule} alt="Agendar consulta" className="w-full" />
         </button>
       </div>
 
