@@ -62,6 +62,7 @@ function Page() {
         })}
       </div>
       <div className="space-y-4 p-4">
+        <img src={infoBaloon} alt="Aviso importante" className="w-full" />
         {loading ? (
           <div className="grid h-40 place-items-center"><Loader2 className="h-5 w-5 animate-spin" /></div>
         ) : filtered.length === 0 ? (
@@ -87,6 +88,6 @@ function Page() {
           </Link>
         ))}
       </div>
-    </>
+    </div>
   );
 }
