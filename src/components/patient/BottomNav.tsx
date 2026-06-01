@@ -16,7 +16,7 @@ const tabs: Tab[] = [
   { to: "/app/profile", label: "Perfil", Icon: User, isActive: (p) => p.startsWith("/app/profile") },
 ];
 
-export function BottomNav({ forceInactive = false }: { forceInactive?: boolean }) {
+export function BottomNav() {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const primary = "#1472D0";
@@ -38,7 +38,7 @@ export function BottomNav({ forceInactive = false }: { forceInactive?: boolean }
 
         <div className="relative grid h-full grid-cols-5 items-center">
           {tabs.slice(0, 2).map((t) => {
-            const active = !forceInactive && t.isActive(path);
+            const active = t.isActive(path);
             const Icon = t.Icon;
             return (
               <Link key={t.to} to={t.to} className="flex flex-col items-center justify-center gap-1 py-2 transition active:scale-95">
@@ -72,7 +72,7 @@ export function BottomNav({ forceInactive = false }: { forceInactive?: boolean }
           </div>
 
           {tabs.slice(2).map((t) => {
-            const active = !forceInactive && t.isActive(path);
+            const active = t.isActive(path);
             const Icon = t.Icon;
             return (
               <Link key={t.to} to={t.to} className="flex flex-col items-center justify-center gap-1 py-2 transition active:scale-95">
