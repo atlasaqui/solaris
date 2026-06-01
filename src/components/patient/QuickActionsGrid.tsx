@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Search, CalendarDays, Camera, Clock } from "lucide-react";
+import { useWhiteLabel } from "@/components/clinic/WhiteLabelProvider";
 
 const items = [
   { to: "/app/library", Icon: Search, label: "Pesquisar lesão" },
@@ -9,6 +10,10 @@ const items = [
 ] as const;
 
 export function QuickActionsGrid() {
+  const { isWarm } = useWhiteLabel();
+  const tint = isWarm ? "var(--warm-beige-card)" : "var(--clinic-primary-light)";
+  const accent = isWarm ? "var(--warm-brown-mid)" : "var(--clinic-primary)";
+
   return (
     <div className="grid grid-cols-2 gap-3" style={{ fontFamily: "Poppins, sans-serif" }}>
       {items.map((it) => {
@@ -23,13 +28,13 @@ export function QuickActionsGrid() {
           >
             <div
               className="grid h-12 w-12 place-items-center rounded-2xl"
-              style={{ background: "#E8F2FC", color: "#1472D0" }}
+              style={{ background: tint, color: accent }}
             >
               <Icon className="h-6 w-6" strokeWidth={2.2} />
             </div>
             <div
               className="text-center text-[13px] font-semibold leading-tight"
-              style={{ color: "#1472D0" }}
+              style={{ color: accent }}
             >
               {it.label}
             </div>
