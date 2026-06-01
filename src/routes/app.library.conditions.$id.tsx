@@ -1,7 +1,7 @@
 import { createFileRoute, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AlertTriangle, CalendarPlus, CircleAlert } from "lucide-react";
-import lesionPlaceholder from "@/assets/solaris/skin-lesion-placeholder.jpg";
+
 import { loadAnalysis, type Condition } from "@/lib/gemini";
 
 export const Route = createFileRoute("/app/library/conditions/$id")({
