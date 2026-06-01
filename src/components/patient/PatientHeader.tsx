@@ -1,6 +1,8 @@
-import { Bell } from "lucide-react";
 import { useWhiteLabel } from "@/components/clinic/WhiteLabelProvider";
 import { useNavigate } from "@tanstack/react-router";
+import bgShape from "@/assets/solaris/screen-07-dashboard-home/bg-shape-header-main-dashboard-bg.png";
+import btnProfile from "@/assets/solaris/screen-07-dashboard-home/btn-card-profile.png";
+import btnNotif from "@/assets/solaris/screen-07-dashboard-home/btn-icon-notifications.png";
 
 export function PatientHeader({
   title,
@@ -24,15 +26,25 @@ export function PatientHeader({
 
   return (
     <header
-      className="sticky top-0 z-20 px-5 pb-10 pt-5 text-white"
+      className="relative sticky top-0 z-20 overflow-hidden px-5 pb-10 pt-5 text-white"
       style={{
         background: gradient,
         backgroundColor: bg,
         borderBottomLeftRadius: rounded ? 28 : 0,
         borderBottomRightRadius: rounded ? 28 : 0,
+        fontFamily: "Poppins, sans-serif",
       }}
     >
-      <div className="flex items-center justify-between">
+      {!isWarm && (
+        <img
+          src={bgShape}
+          alt=""
+          aria-hidden
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-90"
+          draggable={false}
+        />
+      )}
+      <div className="relative flex items-center justify-between">
         <div className="flex min-w-0 items-center gap-3">
           {showBack ? (
             <button
@@ -43,27 +55,32 @@ export function PatientHeader({
               <span className="text-xl">←</span>
             </button>
           ) : (
-            <div className="grid h-11 w-11 place-items-center overflow-hidden rounded-xl bg-white/15 font-bold backdrop-blur">
+            <button
+              type="button"
+              onClick={() => navigate({ to: "/app/profile" })}
+              className="grid h-11 w-11 place-items-center overflow-hidden rounded-xl"
+              aria-label="Perfil"
+            >
               {brand.logoUrl ? (
-                <img src={brand.logoUrl} alt="" className="h-full w-full object-cover" />
+                <img src={brand.logoUrl} alt="" className="h-full w-full rounded-xl object-cover" />
               ) : (
-                <span className="text-[14px]">{brand.name.slice(0, 2).toUpperCase()}</span>
+                <img src={btnProfile} alt="" className="h-full w-full object-contain" draggable={false} />
               )}
-            </div>
+            </button>
           )}
           <div className="min-w-0">
-            <div className="truncate text-[16px] font-bold leading-tight">{title ?? brand.name}</div>
-            <div className="truncate text-[12px] font-normal text-white/80">
+            <div className="truncate text-[16px] font-semibold leading-tight">{title ?? brand.name}</div>
+            <div className="truncate text-[12px] font-normal text-white/85">
               {subtitle ?? brand.doctorName}
             </div>
           </div>
         </div>
         <button
           type="button"
-          className="relative grid h-10 w-10 place-items-center rounded-xl bg-white/15 backdrop-blur"
+          className="relative grid h-11 w-11 place-items-center"
           aria-label="Notificações"
         >
-          <Bell className="h-5 w-5" strokeWidth={2} />
+          <img src={btnNotif} alt="" className="h-full w-full object-contain" draggable={false} />
           {notifications > 0 && (
             <span className="absolute -right-0.5 -top-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-[#EF4444] px-1 text-[10px] font-bold text-white shadow-md ring-2 ring-white/40">
               {notifications}

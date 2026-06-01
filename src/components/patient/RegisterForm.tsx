@@ -2,11 +2,13 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Eye, EyeOff, AlertCircle, Calendar } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "@tanstack/react-router";
 import { maskCPF, isValidCPF } from "@/lib/cpf";
+import exclamationIcon from "@/assets/solaris/screen-05-register/exclamation_icon.png";
+import scheduleIcon from "@/assets/solaris/screen-05-register/schedule_icon.png";
 
 const schema = z.object({
   fullName: z.string().trim().min(3, "Nome muito curto").max(120),
@@ -86,7 +88,7 @@ export function RegisterForm() {
     <form
       onSubmit={handleSubmit(onSubmit)}
       className="px-4 pb-10 space-y-4 w-full max-w-md mx-auto"
-      style={{ fontFamily: "Nunito, sans-serif" }}
+      style={{ fontFamily: "Poppins, sans-serif" }}
     >
       <Field label="Nome completo" error={errors.fullName?.message}>
         <input
@@ -109,10 +111,10 @@ export function RegisterForm() {
 
       <Field label="Data de nascimento" error={errors.birthDate?.message}>
         <div className="relative">
-          <Calendar
-            className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
-            size={20}
-            color="var(--clinic-primary)"
+          <img
+            src={scheduleIcon}
+            alt=""
+            className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none h-5 w-5 object-contain"
           />
           <input
             {...register("birthDate")}
@@ -154,7 +156,7 @@ export function RegisterForm() {
           </button>
         </div>
         <div className="mt-2 flex items-center gap-1.5 text-[14px] font-normal" style={{ color: "var(--clinic-primary)" }}>
-          <AlertCircle size={16} />
+          <img src={exclamationIcon} alt="" className="h-4 w-4 object-contain" />
           <span>Mínimo 8 caracteres</span>
         </div>
       </Field>
