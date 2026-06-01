@@ -34,6 +34,16 @@ function Home() {
   const [featured, setFeatured] = useState<Featured | null>(null);
   const [appt, setAppt] = useState<Appt | null>(null);
   const [analyses, setAnalyses] = useState<Analysis[]>([]);
+  const [greet, setGreet] = useState<string>("");
+  const [today, setToday] = useState<string>("");
+
+  useEffect(() => {
+    const h = new Date().getHours();
+    setGreet(h < 12 ? "Bom dia 👋" : h < 18 ? "Boa tarde 👋" : "Boa noite 👋");
+    const s = new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long" });
+    setToday(s.charAt(0).toUpperCase() + s.slice(1));
+  }, []);
+
 
   useEffect(() => {
     (async () => {
