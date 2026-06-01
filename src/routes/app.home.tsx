@@ -95,8 +95,9 @@ function Home() {
     <>
       <PatientHeader
         title={firstName ? `Olá, ${firstName}` : "Olá"}
-        greeting={greeting()}
-        dateLabel={todayLabel()}
+        greeting={greet}
+        dateLabel={today}
+
       />
       <UVWidget />
       <div className="space-y-5 px-4 pt-5" style={{ fontFamily: "Poppins, sans-serif" }}>
