@@ -158,8 +158,12 @@ function Page() {
 
       {/* Date / time picker */}
       <div className="m-4 rounded-3xl bg-white p-4" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-        <div className="mb-3 text-[16px] font-bold" style={{ color: "var(--text-dark)" }}>
-          Selecione a data
+        <div className="mb-3 flex items-center justify-between">
+          <div className="text-[16px] font-bold" style={{ color: "var(--text-dark)" }}>Selecione a data</div>
+          <div className="flex items-center gap-2">
+            <button onClick={() => setDateIdx(Math.max(0, dateIdx - 1))} aria-label="Anterior"><img src={arrowLeft} alt="" className="h-8" /></button>
+            <button onClick={() => setDateIdx(Math.min(days.length - 1, dateIdx + 1))} aria-label="Próximo"><img src={arrowRight} alt="" className="h-8" /></button>
+          </div>
         </div>
         <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
           {days.map((d, i) => {
