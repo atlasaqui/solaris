@@ -1,9 +1,8 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Search, Sparkles, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { BottomNav } from "@/components/patient/BottomNav";
-import { analyzeSymptoms, saveAnalysis } from "@/lib/gemini";
+import { analyzeSymptoms, FALLBACK_ANALYSIS, saveAnalysis } from "@/lib/gemini";
 
 export const Route = createFileRoute("/app/library")({
   head: () => ({ meta: [{ title: "Pesquisa de sintomas e doenças" }] }),
@@ -41,6 +40,7 @@ const GROUPS: Group[] = [
 
 function Page() {
   const navigate = useNavigate();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
@@ -67,16 +67,25 @@ function Page() {
       return;
     }
     setLoading(true);
+    let result = FALLBACK_ANALYSIS;
     try {
-      const result = await analyzeSymptoms(arr, search.trim());
-      saveAnalysis(result, arr, search.trim());
-      navigate({ to: "/app/library/results" });
+      result = await analyzeSymptoms(arr, search.trim());
     } catch {
       toast("Sem conexão. Usando análise local.");
     } finally {
       setLoading(false);
     }
+    saveAnalysis(result, arr, search.trim());
+    navigate({
+      to: "/app/library/results",
+      state: (prev) => ({
+        ...prev,
+        libraryAnalysis: { result, selectedSymptoms: arr, searchText: search.trim() },
+      }),
+    });
   };
+
+  if (pathname !== "/app/library") return <Outlet />;
 
   return (
     <div style={{ fontFamily: "Poppins, sans-serif", background: "#F8FAFC", minHeight: "100vh", paddingBottom: 120 }}>
@@ -188,7 +197,6 @@ function Page() {
         </div>
       )}
 
-      <BottomNav />
     </div>
   );
 }

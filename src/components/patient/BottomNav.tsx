@@ -11,7 +11,7 @@ type Tab = {
 
 const tabs: Tab[] = [
   { to: "/app/home", label: "Início", Icon: Home, isActive: (p) => p === "/app/home" || p.startsWith("/app/home/") },
-  { to: "/app/library", label: "Biblioteca", Icon: BookOpen, isActive: (p) => p.startsWith("/app/library") || p.startsWith("/app/content") },
+  { to: "/app/library", label: "Biblioteca", Icon: BookOpen, isActive: (p) => (p.startsWith("/app/library") && !p.startsWith("/app/library/conditions")) || p.startsWith("/app/content") },
   { to: "/app/history", label: "Agenda", Icon: CalendarDays, isActive: (p) => p.startsWith("/app/history") || p.startsWith("/app/schedule") },
   { to: "/app/profile", label: "Perfil", Icon: User, isActive: (p) => p.startsWith("/app/profile") },
 ];
