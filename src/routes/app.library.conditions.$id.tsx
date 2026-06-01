@@ -2,7 +2,6 @@ import { createFileRoute, useLocation, useNavigate } from "@tanstack/react-route
 import { useEffect, useState } from "react";
 import { AlertTriangle, CalendarPlus, CircleAlert } from "lucide-react";
 import lesionPlaceholder from "@/assets/solaris/skin-lesion-placeholder.jpg";
-import { BottomNav } from "@/components/patient/BottomNav";
 import { loadAnalysis, type Condition } from "@/lib/gemini";
 
 export const Route = createFileRoute("/app/library/conditions/$id")({
@@ -128,7 +127,6 @@ function Page() {
         <CalendarPlus className="h-5 w-5" /> Agendar consulta
       </button>
 
-      <BottomNav forceInactive />
     </div>
   );
 }
