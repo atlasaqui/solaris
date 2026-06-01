@@ -58,9 +58,10 @@ const MOCK_RESULTS: AnalysisResult = {
 export const analyzeSymptomsFn = createServerFn({ method: "POST" })
   .inputValidator((input: { symptoms: string[]; searchText: string }) => input)
   .handler(async ({ data }): Promise<AnalysisResult> => {
-    const apiKey = process.env.GEMINI_API_KEY;
+    const lovableKey = process.env.LOVABLE_API_KEY;
+    const geminiKey = process.env.GEMINI_API_KEY;
     const list = data.symptoms.length > 0 ? data.symptoms.join(", ") : data.searchText;
-    if (!apiKey || !list.trim()) return MOCK_RESULTS;
+    if (!list.trim()) return MOCK_RESULTS;
 
     const prompt = `Você é um assistente médico especializado em dermatologia clínica.
 O paciente relatou os seguintes sintomas: "${list}".
@@ -85,43 +86,95 @@ Formato exato:
 }
 
 Regras:
-- 2 a 4 condições, ordenadas por probabilidade decrescente
+- 2 a 4 condições DIRETAMENTE relacionadas aos sintomas: ${list}
+- Ordenadas por probabilidade decrescente
 - level: exatamente "alta" (>60), "media" (30-60) ou "baixa" (<30)
 - probability: inteiro 0-100
 - tags: 1 a 3 itens curtos
 - Português brasileiro
-- APENAS o JSON puro`;
+- APENAS o JSON puro, sem nenhum texto adicional`;
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000);
+    const timeout = setTimeout(() => controller.abort(), 20000);
 
-    try {
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-        {
+    const parseText = (text: string): AnalysisResult | null => {
+      const clean = text.replace(/```json/gi, "").replace(/```/g, "").trim();
+      try {
+        const parsed = JSON.parse(clean) as AnalysisResult;
+        return parsed?.conditions?.length ? parsed : null;
+      } catch {
+        return null;
+      }
+    };
+
+    // Try 1: Lovable AI Gateway (preferred — no rate limits, no Google key needed)
+    if (lovableKey) {
+      try {
+        const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${lovableKey}`,
+          },
           body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: { temperature: 0.2, maxOutputTokens: 1200, topP: 0.8, topK: 40 },
+            model: "google/gemini-2.5-flash",
+            messages: [{ role: "user", content: prompt }],
+            temperature: 0.3,
           }),
           signal: controller.signal,
-        },
-      );
-      clearTimeout(timeout);
-      if (!res.ok) {
-        console.error("[Solaris] Gemini HTTP", res.status);
-        return MOCK_RESULTS;
+        });
+        if (res.ok) {
+          const json = await res.json();
+          const text: string = json?.choices?.[0]?.message?.content ?? "";
+          const parsed = parseText(text);
+          if (parsed) {
+            clearTimeout(timeout);
+            console.log("[Solaris] Lovable AI OK", parsed.conditions.length, "condições");
+            return parsed;
+          }
+          console.error("[Solaris] Lovable AI parse falhou:", text.substring(0, 200));
+        } else {
+          const body = await res.text();
+          console.error("[Solaris] Lovable AI HTTP", res.status, body.substring(0, 200));
+        }
+      } catch (e) {
+        console.error("[Solaris] Lovable AI error", e);
       }
-      const json = await res.json();
-      const text: string = json?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
-      const clean = text.replace(/```json/gi, "").replace(/```/g, "").trim();
-      const parsed = JSON.parse(clean) as AnalysisResult;
-      if (!parsed?.conditions?.length) return MOCK_RESULTS;
-      return parsed;
-    } catch (e) {
-      clearTimeout(timeout);
-      console.error("[Solaris] Gemini error", e);
-      return MOCK_RESULTS;
     }
+
+    // Try 2: Direct Gemini API (fallback)
+    if (geminiKey) {
+      try {
+        const res = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${geminiKey}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompt }] }],
+              generationConfig: { temperature: 0.3, maxOutputTokens: 1500 },
+            }),
+            signal: controller.signal,
+          },
+        );
+        if (res.ok) {
+          const json = await res.json();
+          const text: string = json?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+          const parsed = parseText(text);
+          if (parsed) {
+            clearTimeout(timeout);
+            console.log("[Solaris] Gemini direct OK", parsed.conditions.length, "condições");
+            return parsed;
+          }
+        } else {
+          console.error("[Solaris] Gemini HTTP", res.status);
+        }
+      } catch (e) {
+        console.error("[Solaris] Gemini error", e);
+      }
+    }
+
+    clearTimeout(timeout);
+    console.warn("[Solaris] Todas as tentativas falharam, retornando MOCK");
+    return MOCK_RESULTS;
   });
