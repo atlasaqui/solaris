@@ -73,10 +73,17 @@ export function PatientHeader({
             </button>
           )}
           <div className="min-w-0">
-            <div className="truncate text-[16px] font-semibold leading-tight">{title ?? brand.name}</div>
-            <div className="truncate text-[12px] font-normal text-white/85">
-              {subtitle ?? brand.doctorName}
-            </div>
+            {greeting && (
+              <div className="text-[12px] font-medium text-white/85 leading-tight">{greeting}</div>
+            )}
+            <div className="truncate text-[18px] font-bold leading-tight">{title ?? brand.name}</div>
+            {dateLabel ? (
+              <div className="truncate text-[12px] font-medium text-white/85">{dateLabel}</div>
+            ) : (
+              <div className="truncate text-[12px] font-normal text-white/85">
+                {subtitle ?? brand.doctorName}
+              </div>
+            )}
           </div>
         </div>
         <button
