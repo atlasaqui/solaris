@@ -53,10 +53,15 @@ export function PatientHeader({
           {showBack ? (
             <button
               onClick={() => navigate({ to: ".." as any })}
-              className="grid h-10 w-10 place-items-center rounded-xl bg-white/15 backdrop-blur"
+              className="grid h-10 w-10 place-items-center rounded-full"
+              style={{
+                background: "rgba(255,255,255,0.2)",
+                border: "1px solid rgba(255,255,255,0.3)",
+                backdropFilter: "blur(8px)",
+              }}
               aria-label="Voltar"
             >
-              <span className="text-xl">←</span>
+              <span className="text-xl leading-none">←</span>
             </button>
           ) : (
             <button
