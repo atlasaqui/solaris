@@ -2,6 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { MapPin, Phone, Globe, Instagram, MessageCircle, Award, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import bannerPlaceholder from "@/assets/solaris/screen-10-clinic-home/clinic-banner-placeholder.png";
+import dotOn from "@/assets/solaris/screen-10-clinic-home/pagination-dots-on.png";
+import dotOff from "@/assets/solaris/screen-10-clinic-home/pagination-dots-off.png";
 
 export const Route = createFileRoute("/app/clinic-profile")({
   head: () => ({ meta: [{ title: "Sua clínica" }] }),
