@@ -53,6 +53,7 @@ import { Route as AdminPatientsIdRouteImport } from './routes/admin.patients.$id
 import { Route as AdminContentVideoEditorRouteImport } from './routes/admin.content.video-editor'
 import { Route as AdminContentNewRouteImport } from './routes/admin.content.new'
 import { Route as AdminContentListRouteImport } from './routes/admin.content.list'
+import { Route as AppLibraryConditionsIdRouteImport } from './routes/app.library.conditions.$id'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -275,6 +276,11 @@ const AdminContentListRoute = AdminContentListRouteImport.update({
   path: '/content/list',
   getParentRoute: () => AdminRoute,
 } as any)
+const AppLibraryConditionsIdRoute = AppLibraryConditionsIdRouteImport.update({
+  id: '/conditions/$id',
+  path: '/conditions/$id',
+  getParentRoute: () => AppLibraryRoute,
+} as any)
 const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
     id: '/api/public/payments/webhook',
@@ -328,6 +334,7 @@ export interface FileRoutesByFullPath {
   '/app/wiki/search': typeof AppWikiSearchRoute
   '/admin/content/': typeof AdminContentIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/app/library/conditions/$id': typeof AppLibraryConditionsIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -375,6 +382,7 @@ export interface FileRoutesByTo {
   '/app/wiki/search': typeof AppWikiSearchRoute
   '/admin/content': typeof AdminContentIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/app/library/conditions/$id': typeof AppLibraryConditionsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -423,6 +431,7 @@ export interface FileRoutesById {
   '/app/wiki/search': typeof AppWikiSearchRoute
   '/admin/content/': typeof AdminContentIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/app/library/conditions/$id': typeof AppLibraryConditionsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -472,6 +481,7 @@ export interface FileRouteTypes {
     | '/app/wiki/search'
     | '/admin/content/'
     | '/api/public/payments/webhook'
+    | '/app/library/conditions/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -519,6 +529,7 @@ export interface FileRouteTypes {
     | '/app/wiki/search'
     | '/admin/content'
     | '/api/public/payments/webhook'
+    | '/app/library/conditions/$id'
   id:
     | '__root__'
     | '/'
@@ -566,6 +577,7 @@ export interface FileRouteTypes {
     | '/app/wiki/search'
     | '/admin/content/'
     | '/api/public/payments/webhook'
+    | '/app/library/conditions/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -890,6 +902,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminContentListRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/app/library/conditions/$id': {
+      id: '/app/library/conditions/$id'
+      path: '/conditions/$id'
+      fullPath: '/app/library/conditions/$id'
+      preLoaderRoute: typeof AppLibraryConditionsIdRouteImport
+      parentRoute: typeof AppLibraryRoute
+    }
     '/api/public/payments/webhook': {
       id: '/api/public/payments/webhook'
       path: '/api/public/payments/webhook'
@@ -968,10 +987,12 @@ const AppContentRouteWithChildren = AppContentRoute._addFileChildren(
 
 interface AppLibraryRouteChildren {
   AppLibraryResultsRoute: typeof AppLibraryResultsRoute
+  AppLibraryConditionsIdRoute: typeof AppLibraryConditionsIdRoute
 }
 
 const AppLibraryRouteChildren: AppLibraryRouteChildren = {
   AppLibraryResultsRoute: AppLibraryResultsRoute,
+  AppLibraryConditionsIdRoute: AppLibraryConditionsIdRoute,
 }
 
 const AppLibraryRouteWithChildren = AppLibraryRoute._addFileChildren(
