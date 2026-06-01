@@ -49,7 +49,7 @@ function Page() {
   [tab, posts]);
 
   return (
-    <>
+    <div style={{ fontFamily: "Poppins, sans-serif" }}>
       <PatientHeader />
       <div className="sticky top-[72px] z-10 flex gap-6 border-b bg-white px-5">
         {TABS.map((t) => {
