@@ -43,6 +43,7 @@ import { Route as AdminBillingRouteImport } from './routes/admin.billing'
 import { Route as AdminContentIndexRouteImport } from './routes/admin.content.index'
 import { Route as AppWikiSearchRouteImport } from './routes/app.wiki.search'
 import { Route as AppWikiSlugRouteImport } from './routes/app.wiki.$slug'
+import { Route as AppScheduleConfirmedRouteImport } from './routes/app.schedule.confirmed'
 import { Route as AppScheduleDoctorIdRouteImport } from './routes/app.schedule.$doctorId'
 import { Route as AppLibraryResultsRouteImport } from './routes/app.library.results'
 import { Route as AppContentFeedRouteImport } from './routes/app.content.feed'
@@ -226,6 +227,11 @@ const AppWikiSlugRoute = AppWikiSlugRouteImport.update({
   path: '/wiki/$slug',
   getParentRoute: () => AppRoute,
 } as any)
+const AppScheduleConfirmedRoute = AppScheduleConfirmedRouteImport.update({
+  id: '/confirmed',
+  path: '/confirmed',
+  getParentRoute: () => AppScheduleRoute,
+} as any)
 const AppScheduleDoctorIdRoute = AppScheduleDoctorIdRouteImport.update({
   id: '/$doctorId',
   path: '/$doctorId',
@@ -330,6 +336,7 @@ export interface FileRoutesByFullPath {
   '/app/content/feed': typeof AppContentFeedRoute
   '/app/library/results': typeof AppLibraryResultsRoute
   '/app/schedule/$doctorId': typeof AppScheduleDoctorIdRoute
+  '/app/schedule/confirmed': typeof AppScheduleConfirmedRoute
   '/app/wiki/$slug': typeof AppWikiSlugRoute
   '/app/wiki/search': typeof AppWikiSearchRoute
   '/admin/content/': typeof AdminContentIndexRoute
@@ -378,6 +385,7 @@ export interface FileRoutesByTo {
   '/app/content/feed': typeof AppContentFeedRoute
   '/app/library/results': typeof AppLibraryResultsRoute
   '/app/schedule/$doctorId': typeof AppScheduleDoctorIdRoute
+  '/app/schedule/confirmed': typeof AppScheduleConfirmedRoute
   '/app/wiki/$slug': typeof AppWikiSlugRoute
   '/app/wiki/search': typeof AppWikiSearchRoute
   '/admin/content': typeof AdminContentIndexRoute
@@ -427,6 +435,7 @@ export interface FileRoutesById {
   '/app/content/feed': typeof AppContentFeedRoute
   '/app/library/results': typeof AppLibraryResultsRoute
   '/app/schedule/$doctorId': typeof AppScheduleDoctorIdRoute
+  '/app/schedule/confirmed': typeof AppScheduleConfirmedRoute
   '/app/wiki/$slug': typeof AppWikiSlugRoute
   '/app/wiki/search': typeof AppWikiSearchRoute
   '/admin/content/': typeof AdminContentIndexRoute
@@ -477,6 +486,7 @@ export interface FileRouteTypes {
     | '/app/content/feed'
     | '/app/library/results'
     | '/app/schedule/$doctorId'
+    | '/app/schedule/confirmed'
     | '/app/wiki/$slug'
     | '/app/wiki/search'
     | '/admin/content/'
@@ -525,6 +535,7 @@ export interface FileRouteTypes {
     | '/app/content/feed'
     | '/app/library/results'
     | '/app/schedule/$doctorId'
+    | '/app/schedule/confirmed'
     | '/app/wiki/$slug'
     | '/app/wiki/search'
     | '/admin/content'
@@ -573,6 +584,7 @@ export interface FileRouteTypes {
     | '/app/content/feed'
     | '/app/library/results'
     | '/app/schedule/$doctorId'
+    | '/app/schedule/confirmed'
     | '/app/wiki/$slug'
     | '/app/wiki/search'
     | '/admin/content/'
@@ -832,6 +844,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppWikiSlugRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/schedule/confirmed': {
+      id: '/app/schedule/confirmed'
+      path: '/confirmed'
+      fullPath: '/app/schedule/confirmed'
+      preLoaderRoute: typeof AppScheduleConfirmedRouteImport
+      parentRoute: typeof AppScheduleRoute
+    }
     '/app/schedule/$doctorId': {
       id: '/app/schedule/$doctorId'
       path: '/$doctorId'
@@ -1001,10 +1020,12 @@ const AppLibraryRouteWithChildren = AppLibraryRoute._addFileChildren(
 
 interface AppScheduleRouteChildren {
   AppScheduleDoctorIdRoute: typeof AppScheduleDoctorIdRoute
+  AppScheduleConfirmedRoute: typeof AppScheduleConfirmedRoute
 }
 
 const AppScheduleRouteChildren: AppScheduleRouteChildren = {
   AppScheduleDoctorIdRoute: AppScheduleDoctorIdRoute,
+  AppScheduleConfirmedRoute: AppScheduleConfirmedRoute,
 }
 
 const AppScheduleRouteWithChildren = AppScheduleRoute._addFileChildren(

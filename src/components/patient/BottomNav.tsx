@@ -1,5 +1,5 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { Home, BookOpen, CalendarDays, User, Activity } from "lucide-react";
+import { Home, BookOpen, CalendarDays, User, Building2 } from "lucide-react";
 import toolbarShape from "@/assets/solaris/toolbar/toolbar-shape.png";
 
 type Tab = {
@@ -20,7 +20,8 @@ export function BottomNav() {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const primary = "#1472D0";
-  const inactive = "#9CA3AF";
+  const inactive = "#94A3B8";
+  const clinicActive = path.startsWith("/app/clinic-profile");
 
   return (
     <nav
@@ -35,60 +36,48 @@ export function BottomNav() {
           draggable={false}
         />
 
-        {/* 4 tabs split around center FAB */}
         <div className="relative grid h-full grid-cols-5 items-center">
-          {/* left two */}
           {tabs.slice(0, 2).map((t) => {
             const active = t.isActive(path);
             const Icon = t.Icon;
             return (
-              <Link
-                key={t.to}
-                to={t.to}
-                className="flex flex-col items-center justify-center gap-1 py-2 transition active:scale-95"
-              >
+              <Link key={t.to} to={t.to} className="flex flex-col items-center justify-center gap-1 py-2 transition active:scale-95">
                 <Icon className="h-6 w-6" style={{ color: active ? primary : inactive }} strokeWidth={active ? 2.4 : 2} />
-                <span className="text-[10px] font-semibold" style={{ color: active ? primary : inactive }}>
-                  {t.label}
-                </span>
+                <span className="text-[10px] font-semibold" style={{ color: active ? primary : inactive }}>{t.label}</span>
               </Link>
             );
           })}
 
-          {/* center FAB placeholder slot */}
+          {/* center FAB → Clínica */}
           <div className="relative">
             <button
               type="button"
-              aria-label="Analisar lesão"
-              onClick={() => navigate({ to: "/app/lesion-camera" })}
+              aria-label="Clínica"
+              onClick={() => navigate({ to: "/app/clinic-profile" })}
               className="absolute left-1/2 top-1/2 grid -translate-x-1/2 -translate-y-1/2 place-items-center transition active:scale-95"
               style={{
-                width: 56,
-                height: 56,
-                borderRadius: 18,
+                width: 60,
+                height: 60,
+                borderRadius: 20,
                 background: `linear-gradient(135deg, ${primary} 0%, #0E5BAA 100%)`,
-                boxShadow: "0 6px 18px rgba(20,114,208,0.45)",
-                marginTop: -22,
+                boxShadow: clinicActive
+                  ? "0 8px 22px rgba(20,114,208,0.55)"
+                  : "0 6px 18px rgba(20,114,208,0.45)",
+                marginTop: -24,
+                border: clinicActive ? "3px solid #fff" : "none",
               }}
             >
-              <Activity className="h-6 w-6 text-white" strokeWidth={2.4} />
+              <Building2 className="h-7 w-7 text-white" strokeWidth={2.4} />
             </button>
           </div>
 
-          {/* right two */}
           {tabs.slice(2).map((t) => {
             const active = t.isActive(path);
             const Icon = t.Icon;
             return (
-              <Link
-                key={t.to}
-                to={t.to}
-                className="flex flex-col items-center justify-center gap-1 py-2 transition active:scale-95"
-              >
+              <Link key={t.to} to={t.to} className="flex flex-col items-center justify-center gap-1 py-2 transition active:scale-95">
                 <Icon className="h-6 w-6" style={{ color: active ? primary : inactive }} strokeWidth={active ? 2.4 : 2} />
-                <span className="text-[10px] font-semibold" style={{ color: active ? primary : inactive }}>
-                  {t.label}
-                </span>
+                <span className="text-[10px] font-semibold" style={{ color: active ? primary : inactive }}>{t.label}</span>
               </Link>
             );
           })}
