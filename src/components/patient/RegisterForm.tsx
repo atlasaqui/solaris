@@ -73,14 +73,14 @@ export function RegisterForm() {
 
   const inputStyle: React.CSSProperties = {
     border: "2px solid var(--clinic-primary)",
-    borderRadius: 15,
-    height: 46,
+    borderRadius: 12,
+    height: 40,
   };
 
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="px-4 pb-10 space-y-4 w-full max-w-md mx-auto"
+      className="h-full px-4 pb-3 pt-1 space-y-2.5 w-full max-w-md mx-auto overflow-y-auto"
       style={{ fontFamily: "Poppins, sans-serif" }}
     >
       <Field label="Nome completo" error={errors.fullName?.message}>
@@ -154,16 +154,16 @@ export function RegisterForm() {
         </div>
       </Field>
 
-      <div className="flex justify-center pt-4">
+      <div className="flex justify-center pt-2">
         <button
           type="submit"
           disabled={submitting}
-          className="text-white font-bold text-[20px] disabled:opacity-60"
+          className="text-white font-bold text-[18px] disabled:opacity-60"
           style={{
             width: 169,
-            height: 45,
+            height: 42,
             background: "var(--clinic-primary)",
-            borderRadius: 15,
+            borderRadius: 12,
             boxShadow: "0px 4px 4px rgba(0,0,0,0.25)",
           }}
         >
@@ -177,9 +177,9 @@ export function RegisterForm() {
 function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="block text-[18px] font-normal text-black mb-1.5">{label}</label>
+      <label className="block text-[14px] font-medium text-black mb-1">{label}</label>
       {children}
-      {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
+      {error && <p className="mt-0.5 text-xs text-red-600">{error}</p>}
     </div>
   );
 }
