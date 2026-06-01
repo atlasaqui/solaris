@@ -10,12 +10,16 @@ export function PatientHeader({
   showBack = false,
   notifications = 0,
   rounded = true,
+  greeting,
+  dateLabel,
 }: {
   title?: string;
   subtitle?: string;
   showBack?: boolean;
   notifications?: number;
   rounded?: boolean;
+  greeting?: string;
+  dateLabel?: string;
 }) {
   const { brand, isWarm } = useWhiteLabel();
   const navigate = useNavigate();
@@ -49,10 +53,15 @@ export function PatientHeader({
           {showBack ? (
             <button
               onClick={() => navigate({ to: ".." as any })}
-              className="grid h-10 w-10 place-items-center rounded-xl bg-white/15 backdrop-blur"
+              className="grid h-10 w-10 place-items-center rounded-full"
+              style={{
+                background: "rgba(255,255,255,0.2)",
+                border: "1px solid rgba(255,255,255,0.3)",
+                backdropFilter: "blur(8px)",
+              }}
               aria-label="Voltar"
             >
-              <span className="text-xl">←</span>
+              <span className="text-xl leading-none">←</span>
             </button>
           ) : (
             <button
@@ -69,10 +78,17 @@ export function PatientHeader({
             </button>
           )}
           <div className="min-w-0">
-            <div className="truncate text-[16px] font-semibold leading-tight">{title ?? brand.name}</div>
-            <div className="truncate text-[12px] font-normal text-white/85">
-              {subtitle ?? brand.doctorName}
-            </div>
+            {greeting && (
+              <div className="text-[12px] font-medium text-white/85 leading-tight">{greeting}</div>
+            )}
+            <div className="truncate text-[18px] font-bold leading-tight">{title ?? brand.name}</div>
+            {dateLabel ? (
+              <div className="truncate text-[12px] font-medium text-white/85">{dateLabel}</div>
+            ) : (
+              <div className="truncate text-[12px] font-normal text-white/85">
+                {subtitle ?? brand.doctorName}
+              </div>
+            )}
           </div>
         </div>
         <button

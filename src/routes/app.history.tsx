@@ -106,7 +106,7 @@ function Section({ title, items }: { title: string; items: Appt[] }) {
       <div className="mb-2 text-[12px] font-bold uppercase tracking-wide" style={{ color: "var(--text-soft)" }}>
         {title}
       </div>
-      <div className="overflow-hidden rounded-2xl bg-white" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>
+      <div className="overflow-hidden rounded-2xl bg-white" style={{ border: "1px solid #E2E8F0" }}>
         {items.map((a) => {
           const meta = statusMeta(a.status, a.scheduled_at);
           const date = new Date(a.scheduled_at);
@@ -117,7 +117,7 @@ function Section({ title, items }: { title: string; items: Appt[] }) {
                 <Icon className="h-5 w-5" style={{ color: meta.color }} />
               </div>
               <div className="min-w-0 flex-1">
-                <div className="text-[14px] font-bold" style={{ color: "var(--text-dark)" }}>
+                <div className="text-[14px] font-semibold" style={{ color: "var(--text-dark)" }}>
                   Dr(a). {a.doctorName ?? "Especialista"}
                 </div>
                 <div className="text-[12px]" style={{ color: "var(--text-medium)" }}>

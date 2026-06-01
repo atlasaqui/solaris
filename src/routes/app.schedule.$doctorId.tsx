@@ -10,7 +10,7 @@ import slotOff from "@/assets/solaris/screen-17-schedule-doctor/unselected_hour_
 import btnSchedule from "@/assets/solaris/screen-17-schedule-doctor/btn-primary-schedule.png";
 import arrowLeft from "@/assets/solaris/screen-17-schedule-doctor/arrow_left_schedue.png";
 import arrowRight from "@/assets/solaris/screen-17-schedule-doctor/arrow_right_schedue.png";
-import chatBtn from "@/assets/solaris/screen-17-schedule-doctor/doctor_chat_btn.png";
+
 
 export const Route = createFileRoute("/app/schedule/$doctorId")({
   head: () => ({ meta: [{ title: "Perfil do médico" }] }),
@@ -135,9 +135,6 @@ function Page() {
                 {doctor.crm ? ` · CRM ${doctor.crm}` : ""}
               </div>
             </div>
-            <button aria-label="Conversar com o médico" className="absolute right-3 top-3 transition active:scale-95">
-              <img src={chatBtn} alt="" className="h-11" />
-            </button>
           </div>
           <div className="grid grid-cols-2 gap-3 p-4">
             <Stat icon={GraduationCap} label="Especialidade" value={doctor.specialty ?? "Dermatologia"} />
@@ -285,7 +282,10 @@ function Page() {
 
 function Stat({ icon: Icon, label, value }: { icon: typeof Award; label: string; value: string }) {
   return (
-    <div className="flex items-center gap-2 rounded-2xl p-3" style={{ background: "var(--bg-page)" }}>
+    <div
+      className="flex items-center gap-2 rounded-xl bg-white p-3"
+      style={{ border: "1px solid #E2E8F0" }}
+    >
       <Icon className="h-5 w-5" style={{ color: "var(--clinic-primary)" }} />
       <div className="min-w-0">
         <div className="text-[10px] font-bold uppercase tracking-wide" style={{ color: "var(--text-soft)" }}>
