@@ -11,12 +11,12 @@ type Tab = {
 
 const tabs: Tab[] = [
   { to: "/app/home", label: "Início", Icon: Home, isActive: (p) => p === "/app/home" || p.startsWith("/app/home/") },
-  { to: "/app/library", label: "Biblioteca", Icon: BookOpen, isActive: (p) => p.startsWith("/app/library") || p.startsWith("/app/content") },
+  { to: "/app/library", label: "Biblioteca", Icon: BookOpen, isActive: (p) => (p.startsWith("/app/library") && !p.startsWith("/app/library/conditions")) || p.startsWith("/app/content") },
   { to: "/app/history", label: "Agenda", Icon: CalendarDays, isActive: (p) => p.startsWith("/app/history") || p.startsWith("/app/schedule") },
   { to: "/app/profile", label: "Perfil", Icon: User, isActive: (p) => p.startsWith("/app/profile") },
 ];
 
-export function BottomNav() {
+export function BottomNav({ forceInactive = false }: { forceInactive?: boolean }) {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const primary = "#1472D0";
@@ -38,7 +38,7 @@ export function BottomNav() {
 
         <div className="relative grid h-full grid-cols-5 items-center">
           {tabs.slice(0, 2).map((t) => {
-            const active = t.isActive(path);
+            const active = !forceInactive && t.isActive(path);
             const Icon = t.Icon;
             return (
               <Link key={t.to} to={t.to} className="flex flex-col items-center justify-center gap-1 py-2 transition active:scale-95">
@@ -72,7 +72,7 @@ export function BottomNav() {
           </div>
 
           {tabs.slice(2).map((t) => {
-            const active = t.isActive(path);
+            const active = !forceInactive && t.isActive(path);
             const Icon = t.Icon;
             return (
               <Link key={t.to} to={t.to} className="flex flex-col items-center justify-center gap-1 py-2 transition active:scale-95">
