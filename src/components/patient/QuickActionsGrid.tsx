@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Search, CalendarDays, Camera, Clock } from "lucide-react";
 
 const items = [
-  { to: "/app/symptom-checker", Icon: Search, label: "Pesquisar lesão" },
+  { to: "/app/library", Icon: Search, label: "Pesquisar lesão" },
   { to: "/app/schedule", Icon: CalendarDays, label: "Agendar consulta" },
   { to: "/app/lesion-camera", Icon: Camera, label: "Analisar lesão" },
   { to: "/app/history", Icon: Clock, label: "Histórico" },
