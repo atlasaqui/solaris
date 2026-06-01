@@ -88,7 +88,7 @@ export function RegisterForm() {
     <form
       onSubmit={handleSubmit(onSubmit)}
       className="px-4 pb-10 space-y-4 w-full max-w-md mx-auto"
-      style={{ fontFamily: "Nunito, sans-serif" }}
+      style={{ fontFamily: "Poppins, sans-serif" }}
     >
       <Field label="Nome completo" error={errors.fullName?.message}>
         <input
