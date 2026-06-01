@@ -135,6 +135,9 @@ function Page() {
                 {doctor.crm ? ` · CRM ${doctor.crm}` : ""}
               </div>
             </div>
+            <button aria-label="Conversar com o médico" className="absolute right-3 top-3 transition active:scale-95">
+              <img src={chatBtn} alt="" className="h-11" />
+            </button>
           </div>
           <div className="grid grid-cols-2 gap-3 p-4">
             <Stat icon={GraduationCap} label="Especialidade" value={doctor.specialty ?? "Dermatologia"} />
