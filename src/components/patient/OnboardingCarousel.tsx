@@ -1,117 +1,69 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
-import { toast } from "sonner";
-import doctorImg from "@/assets/solaris-doctor.png";
-import logoImg from "@/assets/solaris-logo.png";
 import { ClinicCodeInput } from "./ClinicCodeInput";
+import logoWhite from "@/assets/solaris/screen-01-onboarding-splash/logo-solaris-white.png";
+import logo2 from "@/assets/solaris/screen02/logo-solaris.png";
+import subLogo2 from "@/assets/solaris/screen02/sub-logo-solaris.png";
+import headline1 from "@/assets/solaris/screen02/text-onboarding-headline-1.png";
+import dots2 from "@/assets/solaris/screen02/pagination-dots.png";
+import illusDigital from "@/assets/solaris/screen-03/illus-digital-clinic.png";
+import headline2 from "@/assets/solaris/screen-03/text-onboarding-headline-2.png";
+import dots3 from "@/assets/solaris/screen-03/pagination-dots.png";
 
-function GoogleIcon({ size = 38 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
-      <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 35.5 24 35.5c-6.3 0-11.5-5.1-11.5-11.5S17.7 12.5 24 12.5c2.9 0 5.6 1.1 7.6 2.9l5.7-5.7C33.6 6.4 29 4.5 24 4.5 13.2 4.5 4.5 13.2 4.5 24S13.2 43.5 24 43.5 43.5 34.8 43.5 24c0-1.2-.1-2.3-.4-3.5z" />
-      <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.7 19 12.5 24 12.5c2.9 0 5.6 1.1 7.6 2.9l5.7-5.7C33.6 6.4 29 4.5 24 4.5 16.3 4.5 9.7 8.9 6.3 14.7z" />
-      <path fill="#4CAF50" d="M24 43.5c5 0 9.5-1.9 12.9-5l-6-5.1c-1.9 1.4-4.3 2.3-6.9 2.3-5.3 0-9.7-3.1-11.3-7.5l-6.5 5C9.6 39.1 16.2 43.5 24 43.5z" />
-      <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.3 4.1-4.2 5.5l6 5.1c-.4.4 6.4-4.7 6.4-14.6 0-1.2-.1-2.3-.4-3.5z" />
-    </svg>
-  );
-}
-
-function FacebookIcon({ size = 38 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
-      <path
-        fill="var(--clinic-primary)"
-        d="M12 2C6.48 2 2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95 0-5.52-4.48-10-10-10z"
-      />
-    </svg>
-  );
-}
-
-type Step = "welcome" | "clinic-code";
+type Step = 0 | 1 | 2;
 
 export function OnboardingCarousel() {
   const navigate = useNavigate();
-  const [step, setStep] = useState<Step>("welcome");
+  const [step, setStep] = useState<Step>(0);
 
-  const signInOAuth = async (provider: "google" | "facebook") => {
-    try {
-      if (provider === "google") {
-        await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/app/home" });
-      } else {
-        const { error } = await supabase.auth.signInWithOAuth({
-          provider: "facebook",
-          options: { redirectTo: window.location.origin + "/app/home" },
-        });
-        if (error) throw error;
-      }
-    } catch (e: any) {
-      toast.error(e?.message ?? "Erro ao entrar");
-    }
-  };
+  const next = () => setStep((s) => (s < 2 ? ((s + 1) as Step) : s));
+  const prev = () => (step === 0 ? navigate({ to: "/app/splash" }) : setStep((s) => ((s - 1) as Step)));
 
-  if (step === "welcome") {
+  if (step === 0) {
     return (
-      <div className="patient-app min-h-screen bg-white flex flex-col" style={{ fontFamily: "Nunito, sans-serif" }}>
-        <div className="relative h-[55vh] w-full overflow-hidden">
-          <img src={doctorImg} alt="" className="absolute inset-0 h-full w-full object-cover" />
-          <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/40 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/60 to-transparent" />
-          <img src={logoImg} alt="Solaris" className="absolute left-1/2 top-6 -translate-x-1/2 w-[160px] drop-shadow-lg" />
-          <div className="absolute inset-x-6 bottom-8 text-center text-white text-[28px] font-semibold leading-tight">
-            cuidar da saúde é<br />um ato de amor
-          </div>
+      <div className="patient-app flex min-h-screen flex-col items-center bg-white px-8 pt-12">
+        <img src={logo2} alt="Solaris" className="w-[180px]" />
+        <img src={subLogo2} alt="" className="mt-2 w-[180px]" />
+        <div className="flex-1 flex flex-col items-center justify-center w-full gap-8">
+          <img src={headline1} alt="Bem-vindo" className="w-[280px] max-w-full" />
         </div>
-        <div className="flex-1 flex flex-col items-center justify-center gap-8 px-6 py-8">
-          <div className="flex items-center gap-6">
-            <button onClick={() => signInOAuth("google")} aria-label="Google" className="active:scale-95 transition">
-              <GoogleIcon />
-            </button>
-            <button onClick={() => signInOAuth("facebook")} aria-label="Facebook" className="active:scale-95 transition">
-              <FacebookIcon />
-            </button>
-          </div>
-          <div className="flex w-full max-w-sm gap-4">
-            <button
-              onClick={() => setStep("clinic-code")}
-              className="flex-1 py-4 text-white text-[18px] font-bold"
-              style={{ background: "var(--clinic-primary)", borderRadius: 15, boxShadow: "0px 4px 4px rgba(0,0,0,0.25)" }}
-            >
-              Cadastro
-            </button>
-            <button
-              onClick={() => navigate({ to: "/auth/login" })}
-              className="flex-1 py-4 text-white text-[18px] font-bold"
-              style={{ background: "var(--clinic-primary)", borderRadius: 15, boxShadow: "0px 4px 4px rgba(0,0,0,0.25)" }}
-            >
-              Login
-            </button>
-          </div>
+        <img src={dots2} alt="" className="mb-6 h-3" />
+        <button
+          onClick={next}
+          className="mb-10 w-full max-w-sm rounded-2xl py-4 text-[18px] font-bold text-white"
+          style={{ background: "var(--clinic-primary)", boxShadow: "0px 4px 4px rgba(0,0,0,0.25)" }}
+        >
+          Avançar
+        </button>
+      </div>
+    );
+  }
+
+  if (step === 1) {
+    return (
+      <div className="patient-app flex min-h-screen flex-col items-center bg-white px-8 pt-12">
+        <img src={logoWhite} alt="Solaris" className="w-[160px]" style={{ filter: "invert(35%) sepia(95%) saturate(2200%) hue-rotate(190deg) brightness(95%)" }} />
+        <div className="flex-1 flex flex-col items-center justify-center w-full gap-8">
+          <img src={illusDigital} alt="" className="w-[260px] max-w-full" />
+          <img src={headline2} alt="" className="w-[300px] max-w-full" />
+        </div>
+        <img src={dots3} alt="" className="mb-6 h-3" />
+        <div className="mb-10 flex w-full max-w-sm gap-3">
+          <button onClick={prev} className="flex-1 rounded-2xl border-2 py-4 text-[16px] font-bold" style={{ borderColor: "var(--clinic-primary)", color: "var(--clinic-primary)" }}>
+            Voltar
+          </button>
+          <button onClick={next} className="flex-1 rounded-2xl py-4 text-[18px] font-bold text-white" style={{ background: "var(--clinic-primary)", boxShadow: "0px 4px 4px rgba(0,0,0,0.25)" }}>
+            Avançar
+          </button>
         </div>
       </div>
     );
   }
 
+  // step 2 — clinic code
   return (
-    <div
-      className="patient-app min-h-screen bg-white flex flex-col items-center px-8 pt-16"
-      style={{ fontFamily: "Nunito, sans-serif" }}
-    >
-      <img src={logoImg} alt="Solaris" className="w-[236px]" />
-      <div className="flex-1 flex flex-col items-center justify-center gap-6 text-center w-full">
-        <p className="text-black font-semibold text-[22px] leading-snug max-w-xs">
-          Para começar, insira o código fornecido pela sua clínica.
-        </p>
-        <ClinicCodeInput onValid={() => navigate({ to: "/auth/register-patient" })} />
-        <button
-          onClick={() => setStep("welcome")}
-          className="text-sm font-semibold mt-2"
-          style={{ color: "var(--clinic-primary)" }}
-        >
-          ← Voltar
-        </button>
-      </div>
+    <div className="patient-app flex min-h-screen flex-col items-center bg-white px-8 pt-12">
+      <ClinicCodeInput onValid={() => navigate({ to: "/auth/register-patient" })} onBack={prev} />
     </div>
   );
 }

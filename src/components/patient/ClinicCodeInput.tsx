@@ -1,11 +1,17 @@
 import { useState } from "react";
 import { useWhiteLabel } from "@/components/clinic/WhiteLabelProvider";
+import iconClinic from "@/assets/solaris/screen-04-clinic-code/icon-clinic.png";
+import btnConfirm from "@/assets/solaris/screen-04-clinic-code/btn-primary-confirm-code.png";
+import inputBg from "@/assets/solaris/screen-04-clinic-code/input-clinic-code.png";
+import dots from "@/assets/solaris/screen-04-clinic-code/pagination-dots-3.png";
+import hint from "@/assets/solaris/screen-04-clinic-code/text-clinic-code-hint.png";
 
 interface Props {
   onValid: (clinicId: string) => void;
+  onBack?: () => void;
 }
 
-export function ClinicCodeInput({ onValid }: Props) {
+export function ClinicCodeInput({ onValid, onBack }: Props) {
   const { loadByAccessCode } = useWhiteLabel();
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,36 +36,45 @@ export function ClinicCodeInput({ onValid }: Props) {
   };
 
   return (
-    <form onSubmit={submit} className="flex flex-col items-center gap-5 w-full" style={{ fontFamily: "Nunito, sans-serif" }}>
-      <input
-        autoFocus
-        value={code}
-        onChange={(e) => setCode(e.target.value.toUpperCase())}
-        placeholder="Informe o código da clínica aqui."
-        className="text-center text-[14px] outline-none bg-white"
-        style={{
-          width: 270,
-          height: 53,
-          border: "2px solid var(--clinic-primary)",
-          borderRadius: 15,
-          color: "var(--text-dark)",
-        }}
-      />
+    <form onSubmit={submit} className="flex w-full flex-col items-center gap-6">
+      <img src={iconClinic} alt="" className="w-[88px]" />
+      <img src={hint} alt="Insira o código da sua clínica" className="w-[280px] max-w-full" />
+
+      <div className="relative w-full max-w-[300px]">
+        <img src={inputBg} alt="" className="pointer-events-none w-full" draggable={false} />
+        <input
+          autoFocus
+          value={code}
+          onChange={(e) => setCode(e.target.value.toUpperCase())}
+          placeholder="SLR-XXXXX"
+          className="absolute inset-0 m-auto h-[80%] w-[90%] bg-transparent text-center text-[15px] font-semibold outline-none"
+          style={{ color: "var(--text-dark)" }}
+        />
+      </div>
+
       {error && <p className="text-sm text-red-600">{error}</p>}
+
       <button
         type="submit"
         disabled={loading}
-        className="text-white font-medium text-[16px] disabled:opacity-60"
-        style={{
-          width: 200,
-          height: 47,
-          background: "var(--clinic-primary)",
-          borderRadius: 15,
-          boxShadow: "0px 4px 4px rgba(0,0,0,0.25)",
-        }}
+        className="transition active:scale-95 disabled:opacity-60"
+        aria-label="Confirmar"
       >
-        {loading ? "Verificando..." : "Confirmar"}
+        <img src={btnConfirm} alt={loading ? "Verificando..." : "Confirmar"} className="w-[220px]" draggable={false} />
       </button>
+
+      <img src={dots} alt="" className="mt-2 h-3" />
+
+      {onBack && (
+        <button
+          type="button"
+          onClick={onBack}
+          className="text-sm font-semibold"
+          style={{ color: "var(--clinic-primary)" }}
+        >
+          ← Voltar
+        </button>
+      )}
     </form>
   );
 }
