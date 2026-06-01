@@ -1,4 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/Poppins-Regular.ttf') format('truetype'); }
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 500; font-display: swap; src: url('/fonts/Poppins-Medium.ttf') format('truetype'); }
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/Poppins-SemiBold.ttf') format('truetype'); }
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 700; font-display: swap; src: url('/fonts/Poppins-Bold.ttf') format('truetype'); }
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 800; font-display: swap; src: url('/fonts/Poppins-ExtraBold.ttf') format('truetype'); }
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 900; font-display: swap; src: url('/fonts/Poppins-Black.ttf') format('truetype'); }
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
@@ -143,17 +148,17 @@
   --chart-5: #8B5CF6;
 
   /* === WHITE LABEL — injetadas dinamicamente === */
-  --clinic-primary: #29B6E8;
-  --clinic-primary-hover: #1E9FD4;
-  --clinic-primary-dark: #1E9FD4;
-  --clinic-primary-light: #E8F7FD;
-  --clinic-primary-rgb: 41, 182, 232;
+  --clinic-primary: #1472D0;
+  --clinic-primary-hover: #105FB0;
+  --clinic-primary-dark: #0E5BAA;
+  --clinic-primary-light: #E8F2FC;
+  --clinic-primary-rgb: 20, 114, 208;
   --clinic-accent: #0A1628;
 
   /* === PATIENT APP TOKENS === */
-  --font-patient: 'Nunito', system-ui, sans-serif;
-  --solaris-teal: #1B8A7A;
-  --bg-page: #F2F6F9;
+  --font-patient: 'Poppins', system-ui, sans-serif;
+  --solaris-teal: #1472D0;
+  --bg-page: #F8FAFC;
   --text-dark: #1A1A2E;
   --text-medium: #4A4A6A;
   --text-soft: #8A8AA8;
@@ -169,7 +174,7 @@
   --prob-low-bg: #F0FDF4;
 }
 
-/* Patient app uses Nunito */
+/* Patient app uses Poppins */
 .patient-app, .patient-app * {
   font-family: var(--font-patient);
 }

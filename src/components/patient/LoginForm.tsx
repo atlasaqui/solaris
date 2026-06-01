@@ -2,10 +2,14 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Eye, EyeOff, Check } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Link, useNavigate } from "@tanstack/react-router";
+import backBtn from "@/assets/solaris/screen-06-login/btn_icon-back.png";
+import checkSquare from "@/assets/solaris/screen-06-login/check_square_icon.png";
+import inputBar from "@/assets/solaris/screen-06-login/input_bar.png";
+import btnEnter from "@/assets/solaris/screen-06-login/btn-primary-enter-code.png";
 
 const schema = z.object({
   email: z.string().trim().email("E-mail inválido"),
@@ -49,89 +53,63 @@ export function LoginForm() {
     }
   };
 
-  const inputStyle: React.CSSProperties = {
-    border: "2px solid var(--clinic-primary)",
-    borderRadius: 15,
-    height: 46,
-  };
-
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="px-4 pb-10 space-y-4 w-full max-w-md mx-auto"
-      style={{ fontFamily: "Nunito, sans-serif" }}
-    >
-      <Field label="Email" error={errors.email?.message}>
+    <form onSubmit={handleSubmit(onSubmit)} className="mx-auto w-full max-w-md space-y-5 px-5 pb-10">
+      <button
+        type="button"
+        onClick={() => navigate({ to: "/app/splash" })}
+        className="active:scale-95"
+        aria-label="Voltar"
+      >
+        <img src={backBtn} alt="" className="h-10 w-10" />
+      </button>
+
+      <Field label="Email" error={errors.email?.message} bg={inputBar}>
         <input
           {...register("email")}
           type="email"
           placeholder="seu@email.com"
-          className="w-full px-4 outline-none bg-white text-[15px]"
-          style={inputStyle}
+          className="absolute inset-0 m-auto h-[80%] w-[92%] bg-transparent px-3 text-[15px] outline-none"
         />
       </Field>
 
-      <Field label="Senha" error={errors.password?.message}>
-        <div className="relative">
-          <input
-            {...register("password")}
-            type={show ? "text" : "password"}
-            placeholder="••••••••"
-            className="w-full pl-4 pr-12 outline-none bg-white text-[15px]"
-            style={inputStyle}
-          />
-          <button
-            type="button"
-            onClick={() => setShow((s) => !s)}
-            className="absolute right-3 top-1/2 -translate-y-1/2"
-            style={{ color: "var(--clinic-primary)" }}
-            aria-label="Mostrar senha"
-          >
-            {show ? <EyeOff size={20} /> : <Eye size={20} />}
-          </button>
-        </div>
-      </Field>
-
-      <label className="flex items-center gap-2 text-[15px] text-black select-none cursor-pointer">
-        <span
-          className="grid place-items-center"
-          style={{
-            width: 20,
-            height: 20,
-            borderRadius: 4,
-            border: "2px solid var(--clinic-primary)",
-            background: remember ? "var(--clinic-primary)" : "transparent",
-          }}
-        >
-          {remember && <Check size={14} color="white" strokeWidth={3} />}
-        </span>
+      <Field label="Senha" error={errors.password?.message} bg={inputBar}>
         <input
-          type="checkbox"
-          checked={!!remember}
-          onChange={(e) => setValue("remember", e.target.checked)}
-          className="sr-only"
+          {...register("password")}
+          type={show ? "text" : "password"}
+          placeholder="••••••••"
+          className="absolute inset-0 m-auto h-[80%] w-[92%] bg-transparent px-3 pr-10 text-[15px] outline-none"
         />
+        <button
+          type="button"
+          onClick={() => setShow((s) => !s)}
+          className="absolute right-4 top-1/2 -translate-y-1/2"
+          style={{ color: "var(--clinic-primary)" }}
+          aria-label="Mostrar senha"
+        >
+          {show ? <EyeOff size={20} /> : <Eye size={20} />}
+        </button>
+      </Field>
+
+      <label className="flex select-none items-center gap-2 text-[15px] text-black">
+        <button
+          type="button"
+          onClick={() => setValue("remember", !remember)}
+          className="relative h-6 w-6"
+          aria-pressed={!!remember}
+        >
+          <img src={checkSquare} alt="" className="h-full w-full" style={{ opacity: remember ? 1 : 0.35 }} />
+        </button>
         Lembrar usuário
       </label>
 
-      <div className="flex justify-center pt-4">
-        <button
-          type="submit"
-          disabled={loading}
-          className="text-white font-bold text-[20px] disabled:opacity-60"
-          style={{
-            width: 169,
-            height: 45,
-            background: "var(--clinic-primary)",
-            borderRadius: 15,
-            boxShadow: "0px 4px 4px rgba(0,0,0,0.25)",
-          }}
-        >
-          {loading ? "..." : "Entrar"}
+      <div className="flex justify-center pt-2">
+        <button type="submit" disabled={loading} className="active:scale-95 disabled:opacity-60" aria-label="Entrar">
+          <img src={btnEnter} alt={loading ? "..." : "Entrar"} className="w-[200px]" draggable={false} />
         </button>
       </div>
 
-      <div className="text-center text-[15px] pt-2">
+      <div className="pt-2 text-center text-[15px]">
         Não tem conta?{" "}
         <Link to="/app/onboarding" className="font-semibold" style={{ color: "var(--clinic-primary)" }}>
           Cadastre-se
@@ -141,11 +119,14 @@ export function LoginForm() {
   );
 }
 
-function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
+function Field({ label, error, bg, children }: { label: string; error?: string; bg: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="block text-[18px] font-normal text-black mb-1.5">{label}</label>
-      {children}
+      <label className="mb-1.5 block text-[16px] font-semibold text-black">{label}</label>
+      <div className="relative w-full">
+        <img src={bg} alt="" className="pointer-events-none w-full" draggable={false} />
+        {children}
+      </div>
       {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
     </div>
   );

@@ -1,8 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
-import { useWhiteLabel } from "@/components/clinic/WhiteLabelProvider";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Sun } from "lucide-react";
+import bgSplash from "@/assets/solaris/screen-01-onboarding-splash/bg-splash.png";
+import bgSplash2 from "@/assets/solaris/screen-01-onboarding-splash/bg-splash2.png";
+import doctorImg from "@/assets/solaris/screen-01-onboarding-splash/bg_doctor_image.png";
+import logoWhite from "@/assets/solaris/screen-01-onboarding-splash/logo-solaris-white.png";
+import headline from "@/assets/solaris/screen-01-onboarding-splash/text-splash-headline.png";
+import btnCadastro from "@/assets/solaris/screen-01-onboarding-splash/btn-primary-cadastro.png";
+import btnLogin from "@/assets/solaris/screen-01-onboarding-splash/btn-secondary-login.png";
 
 export const Route = createFileRoute("/app/splash")({
   head: () => ({ meta: [{ title: "Solaris" }] }),
@@ -10,37 +15,50 @@ export const Route = createFileRoute("/app/splash")({
 });
 
 function Page() {
-  const { brand } = useWhiteLabel();
   const nav = useNavigate();
+  const [checking, setChecking] = useState(true);
+
   useEffect(() => {
-    const t = setTimeout(async () => {
+    (async () => {
       const { data } = await supabase.auth.getSession();
-      nav({ to: data.session ? "/app/home" : "/app/onboarding" });
-    }, 2400);
-    return () => clearTimeout(t);
+      if (data.session) {
+        nav({ to: "/app/home" });
+      } else {
+        setChecking(false);
+      }
+    })();
   }, [nav]);
 
+  if (checking) {
+    return <div className="patient-app min-h-screen bg-white" />;
+  }
+
   return (
-    <div className="patient-app grid min-h-screen place-items-center bg-white px-6 text-center">
-      <div className="animate-[scaleIn_0.8s_ease-out]">
-        {brand.logoUrl ? (
-          <img src={brand.logoUrl} alt={brand.name} className="mx-auto h-32" />
-        ) : (
-          <div className="mx-auto grid h-32 w-32 place-items-center rounded-full" style={{ background: "var(--clinic-primary-light)" }}>
-            <Sun className="h-16 w-16" style={{ color: "var(--clinic-primary)" }} />
-          </div>
-        )}
-        <div className="mt-3 text-[14px]" style={{ color: "var(--clinic-primary)" }}>Clínica Digital</div>
-        <div className="mt-10 text-[18px] font-bold" style={{ color: "var(--text-dark)" }}>
-          A tecnologia da clínica<br />cuidando da sua pele
-        </div>
+    <div className="patient-app relative min-h-screen overflow-hidden bg-white">
+      <img src={bgSplash} alt="" className="pointer-events-none absolute inset-0 h-full w-full object-cover" />
+      <img src={bgSplash2} alt="" className="pointer-events-none absolute inset-0 h-full w-full object-cover mix-blend-multiply opacity-90" />
+      <img src={doctorImg} alt="" className="pointer-events-none absolute inset-x-0 top-0 mx-auto h-[62vh] w-full object-cover object-top" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[55vh] bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+
+      <img src={logoWhite} alt="Solaris" className="absolute left-1/2 top-8 w-[170px] -translate-x-1/2 drop-shadow-lg" />
+
+      <div className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-6 px-8 pb-10">
+        <img src={headline} alt="cuidar da saúde é um ato de amor" className="w-[280px] max-w-full" />
+        <button
+          onClick={() => nav({ to: "/app/onboarding" })}
+          className="active:scale-95 transition"
+          aria-label="Cadastro"
+        >
+          <img src={btnCadastro} alt="Cadastro" className="w-[280px] max-w-[80vw]" draggable={false} />
+        </button>
+        <button
+          onClick={() => nav({ to: "/auth/login" })}
+          className="active:scale-95 transition"
+          aria-label="Login"
+        >
+          <img src={btnLogin} alt="Login" className="w-[280px] max-w-[80vw]" draggable={false} />
+        </button>
       </div>
-      <div className="absolute bottom-16 flex gap-2">
-        {[0, 1, 2].map((i) => (
-          <span key={i} className="h-2 w-2 animate-pulse rounded-full" style={{ background: "var(--clinic-primary)", animationDelay: `${i * 200}ms` }} />
-        ))}
-      </div>
-      <style>{`@keyframes scaleIn{from{transform:scale(0.5);opacity:0}to{transform:scale(1);opacity:1}}`}</style>
     </div>
   );
 }
