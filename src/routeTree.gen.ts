@@ -25,6 +25,7 @@ import { Route as AppSplashRouteImport } from './routes/app.splash'
 import { Route as AppScheduleRouteImport } from './routes/app.schedule'
 import { Route as AppProfileRouteImport } from './routes/app.profile'
 import { Route as AppOnboardingRouteImport } from './routes/app.onboarding'
+import { Route as AppLibraryRouteImport } from './routes/app.library'
 import { Route as AppLesionResultsRouteImport } from './routes/app.lesion-results'
 import { Route as AppLesionCameraRouteImport } from './routes/app.lesion-camera'
 import { Route as AppHomeRouteImport } from './routes/app.home'
@@ -43,6 +44,7 @@ import { Route as AdminContentIndexRouteImport } from './routes/admin.content.in
 import { Route as AppWikiSearchRouteImport } from './routes/app.wiki.search'
 import { Route as AppWikiSlugRouteImport } from './routes/app.wiki.$slug'
 import { Route as AppScheduleDoctorIdRouteImport } from './routes/app.schedule.$doctorId'
+import { Route as AppLibraryResultsRouteImport } from './routes/app.library.results'
 import { Route as AppContentFeedRouteImport } from './routes/app.content.feed'
 import { Route as AppContentSlugRouteImport } from './routes/app.content.$slug'
 import { Route as AppConditionSlugRouteImport } from './routes/app.condition.$slug'
@@ -51,6 +53,7 @@ import { Route as AdminPatientsIdRouteImport } from './routes/admin.patients.$id
 import { Route as AdminContentVideoEditorRouteImport } from './routes/admin.content.video-editor'
 import { Route as AdminContentNewRouteImport } from './routes/admin.content.new'
 import { Route as AdminContentListRouteImport } from './routes/admin.content.list'
+import { Route as AppLibraryConditionsIdRouteImport } from './routes/app.library.conditions.$id'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -131,6 +134,11 @@ const AppProfileRoute = AppProfileRouteImport.update({
 const AppOnboardingRoute = AppOnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLibraryRoute = AppLibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
   getParentRoute: () => AppRoute,
 } as any)
 const AppLesionResultsRoute = AppLesionResultsRouteImport.update({
@@ -223,6 +231,11 @@ const AppScheduleDoctorIdRoute = AppScheduleDoctorIdRouteImport.update({
   path: '/$doctorId',
   getParentRoute: () => AppScheduleRoute,
 } as any)
+const AppLibraryResultsRoute = AppLibraryResultsRouteImport.update({
+  id: '/results',
+  path: '/results',
+  getParentRoute: () => AppLibraryRoute,
+} as any)
 const AppContentFeedRoute = AppContentFeedRouteImport.update({
   id: '/feed',
   path: '/feed',
@@ -263,6 +276,11 @@ const AdminContentListRoute = AdminContentListRouteImport.update({
   path: '/content/list',
   getParentRoute: () => AdminRoute,
 } as any)
+const AppLibraryConditionsIdRoute = AppLibraryConditionsIdRouteImport.update({
+  id: '/conditions/$id',
+  path: '/conditions/$id',
+  getParentRoute: () => AppLibraryRoute,
+} as any)
 const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
     id: '/api/public/payments/webhook',
@@ -289,6 +307,7 @@ export interface FileRoutesByFullPath {
   '/app/home': typeof AppHomeRoute
   '/app/lesion-camera': typeof AppLesionCameraRoute
   '/app/lesion-results': typeof AppLesionResultsRoute
+  '/app/library': typeof AppLibraryRouteWithChildren
   '/app/onboarding': typeof AppOnboardingRoute
   '/app/profile': typeof AppProfileRoute
   '/app/schedule': typeof AppScheduleRouteWithChildren
@@ -309,11 +328,13 @@ export interface FileRoutesByFullPath {
   '/app/condition/$slug': typeof AppConditionSlugRoute
   '/app/content/$slug': typeof AppContentSlugRoute
   '/app/content/feed': typeof AppContentFeedRoute
+  '/app/library/results': typeof AppLibraryResultsRoute
   '/app/schedule/$doctorId': typeof AppScheduleDoctorIdRoute
   '/app/wiki/$slug': typeof AppWikiSlugRoute
   '/app/wiki/search': typeof AppWikiSearchRoute
   '/admin/content/': typeof AdminContentIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/app/library/conditions/$id': typeof AppLibraryConditionsIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -334,6 +355,7 @@ export interface FileRoutesByTo {
   '/app/home': typeof AppHomeRoute
   '/app/lesion-camera': typeof AppLesionCameraRoute
   '/app/lesion-results': typeof AppLesionResultsRoute
+  '/app/library': typeof AppLibraryRouteWithChildren
   '/app/onboarding': typeof AppOnboardingRoute
   '/app/profile': typeof AppProfileRoute
   '/app/schedule': typeof AppScheduleRouteWithChildren
@@ -354,11 +376,13 @@ export interface FileRoutesByTo {
   '/app/condition/$slug': typeof AppConditionSlugRoute
   '/app/content/$slug': typeof AppContentSlugRoute
   '/app/content/feed': typeof AppContentFeedRoute
+  '/app/library/results': typeof AppLibraryResultsRoute
   '/app/schedule/$doctorId': typeof AppScheduleDoctorIdRoute
   '/app/wiki/$slug': typeof AppWikiSlugRoute
   '/app/wiki/search': typeof AppWikiSearchRoute
   '/admin/content': typeof AdminContentIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/app/library/conditions/$id': typeof AppLibraryConditionsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -380,6 +404,7 @@ export interface FileRoutesById {
   '/app/home': typeof AppHomeRoute
   '/app/lesion-camera': typeof AppLesionCameraRoute
   '/app/lesion-results': typeof AppLesionResultsRoute
+  '/app/library': typeof AppLibraryRouteWithChildren
   '/app/onboarding': typeof AppOnboardingRoute
   '/app/profile': typeof AppProfileRoute
   '/app/schedule': typeof AppScheduleRouteWithChildren
@@ -400,11 +425,13 @@ export interface FileRoutesById {
   '/app/condition/$slug': typeof AppConditionSlugRoute
   '/app/content/$slug': typeof AppContentSlugRoute
   '/app/content/feed': typeof AppContentFeedRoute
+  '/app/library/results': typeof AppLibraryResultsRoute
   '/app/schedule/$doctorId': typeof AppScheduleDoctorIdRoute
   '/app/wiki/$slug': typeof AppWikiSlugRoute
   '/app/wiki/search': typeof AppWikiSearchRoute
   '/admin/content/': typeof AdminContentIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/app/library/conditions/$id': typeof AppLibraryConditionsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -427,6 +454,7 @@ export interface FileRouteTypes {
     | '/app/home'
     | '/app/lesion-camera'
     | '/app/lesion-results'
+    | '/app/library'
     | '/app/onboarding'
     | '/app/profile'
     | '/app/schedule'
@@ -447,11 +475,13 @@ export interface FileRouteTypes {
     | '/app/condition/$slug'
     | '/app/content/$slug'
     | '/app/content/feed'
+    | '/app/library/results'
     | '/app/schedule/$doctorId'
     | '/app/wiki/$slug'
     | '/app/wiki/search'
     | '/admin/content/'
     | '/api/public/payments/webhook'
+    | '/app/library/conditions/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -472,6 +502,7 @@ export interface FileRouteTypes {
     | '/app/home'
     | '/app/lesion-camera'
     | '/app/lesion-results'
+    | '/app/library'
     | '/app/onboarding'
     | '/app/profile'
     | '/app/schedule'
@@ -492,11 +523,13 @@ export interface FileRouteTypes {
     | '/app/condition/$slug'
     | '/app/content/$slug'
     | '/app/content/feed'
+    | '/app/library/results'
     | '/app/schedule/$doctorId'
     | '/app/wiki/$slug'
     | '/app/wiki/search'
     | '/admin/content'
     | '/api/public/payments/webhook'
+    | '/app/library/conditions/$id'
   id:
     | '__root__'
     | '/'
@@ -517,6 +550,7 @@ export interface FileRouteTypes {
     | '/app/home'
     | '/app/lesion-camera'
     | '/app/lesion-results'
+    | '/app/library'
     | '/app/onboarding'
     | '/app/profile'
     | '/app/schedule'
@@ -537,11 +571,13 @@ export interface FileRouteTypes {
     | '/app/condition/$slug'
     | '/app/content/$slug'
     | '/app/content/feed'
+    | '/app/library/results'
     | '/app/schedule/$doctorId'
     | '/app/wiki/$slug'
     | '/app/wiki/search'
     | '/admin/content/'
     | '/api/public/payments/webhook'
+    | '/app/library/conditions/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -670,6 +706,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppOnboardingRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/library': {
+      id: '/app/library'
+      path: '/library'
+      fullPath: '/app/library'
+      preLoaderRoute: typeof AppLibraryRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/lesion-results': {
       id: '/app/lesion-results'
       path: '/lesion-results'
@@ -796,6 +839,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppScheduleDoctorIdRouteImport
       parentRoute: typeof AppScheduleRoute
     }
+    '/app/library/results': {
+      id: '/app/library/results'
+      path: '/results'
+      fullPath: '/app/library/results'
+      preLoaderRoute: typeof AppLibraryResultsRouteImport
+      parentRoute: typeof AppLibraryRoute
+    }
     '/app/content/feed': {
       id: '/app/content/feed'
       path: '/feed'
@@ -851,6 +901,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/content/list'
       preLoaderRoute: typeof AdminContentListRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/app/library/conditions/$id': {
+      id: '/app/library/conditions/$id'
+      path: '/conditions/$id'
+      fullPath: '/app/library/conditions/$id'
+      preLoaderRoute: typeof AppLibraryConditionsIdRouteImport
+      parentRoute: typeof AppLibraryRoute
     }
     '/api/public/payments/webhook': {
       id: '/api/public/payments/webhook'
@@ -928,6 +985,20 @@ const AppContentRouteWithChildren = AppContentRoute._addFileChildren(
   AppContentRouteChildren,
 )
 
+interface AppLibraryRouteChildren {
+  AppLibraryResultsRoute: typeof AppLibraryResultsRoute
+  AppLibraryConditionsIdRoute: typeof AppLibraryConditionsIdRoute
+}
+
+const AppLibraryRouteChildren: AppLibraryRouteChildren = {
+  AppLibraryResultsRoute: AppLibraryResultsRoute,
+  AppLibraryConditionsIdRoute: AppLibraryConditionsIdRoute,
+}
+
+const AppLibraryRouteWithChildren = AppLibraryRoute._addFileChildren(
+  AppLibraryRouteChildren,
+)
+
 interface AppScheduleRouteChildren {
   AppScheduleDoctorIdRoute: typeof AppScheduleDoctorIdRoute
 }
@@ -949,6 +1020,7 @@ interface AppRouteChildren {
   AppHomeRoute: typeof AppHomeRoute
   AppLesionCameraRoute: typeof AppLesionCameraRoute
   AppLesionResultsRoute: typeof AppLesionResultsRoute
+  AppLibraryRoute: typeof AppLibraryRouteWithChildren
   AppOnboardingRoute: typeof AppOnboardingRoute
   AppProfileRoute: typeof AppProfileRoute
   AppScheduleRoute: typeof AppScheduleRouteWithChildren
@@ -971,6 +1043,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppHomeRoute: AppHomeRoute,
   AppLesionCameraRoute: AppLesionCameraRoute,
   AppLesionResultsRoute: AppLesionResultsRoute,
+  AppLibraryRoute: AppLibraryRouteWithChildren,
   AppOnboardingRoute: AppOnboardingRoute,
   AppProfileRoute: AppProfileRoute,
   AppScheduleRoute: AppScheduleRouteWithChildren,
@@ -1000,13 +1073,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
